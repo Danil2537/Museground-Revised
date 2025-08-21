@@ -4,66 +4,115 @@ import { CreateUserDTO } from '../users/DTO/createUser.dto';
 import { UsersService } from '../users/users.service';
 import { generateFromEmail } from 'unique-username-generator';
 import * as bcrypt from 'bcrypt';
+import { JwtLoginDto } from './DTO/jwtLoginDto';
 @Injectable()
 export class AuthService {
     constructor(private usersService: UsersService, private jwtService: JwtService){}
 
-    async generateJwt(payload: any) {
-        return await this.jwtService.signAsync(payload);
-    }
-
-    async signIn(user) {
-    if (!user) {
-        throw new UnauthorizedException();
-    }
-
-    // Use email as the username for OAuth users
-    const username = user.username.split('@')[0] ?? user.email.split('@')[0];
-    console.log(username);
-    const userExists = await this.usersService.findOne(username);
-
-    if (!userExists) {
-        // Generate a random password (since OAuth users don't log in with it)
-        const randomPassword = Math.random().toString(36).slice(-12);
-        const hashedPassword = await bcrypt.hash(randomPassword, 10);
-
-        const dto: CreateUserDTO = {
-        username,
-        email: user.email,
-        hashedPassword,
-        };
-
-        const newUser = await this.usersService.createUser(dto);
-        return this.generateJwt({ sub: newUser.id, username: newUser.username });
-    }
-
-    return this.generateJwt({ sub: userExists.id, username: userExists.username });
-    }
-
-    async registerUser(user: CreateUserDTO)
+    async loginJwt(loginData: JwtLoginDto)
     {
-        try 
+        if(!loginData)
         {
-            const newUser = await this.usersService.createUser(user);
-            return this.generateJwt({sub: newUser.id, username: newUser.username})
+            throw new UnauthorizedException();
         }
-        catch 
+
+        const dbUser = await this.usersService.findOne(loginData.username);
+        if(!dbUser)
         {
-            throw new InternalServerErrorException();
+            throw new UnauthorizedException("Specified user not found");
+        }
+        else
+        {
+            const isPasswordValid =  await bcrypt.compare(loginData.password, dbUser.password);
+            if(isPasswordValid==true)
+            {
+                return {access_token: await this.jwtService.signAsync({ sub: dbUser.id, username: dbUser.username })};
+            }
+            else
+            {
+                throw new UnauthorizedException("Wrong Password");
+            }
         }
     }
 
-    async findUserByUsername(username)
+    async registerJwt(registerData: CreateUserDTO)
     {
-        const user = this.usersService.findOne(username);
-
-        if(!user)
+        if(!registerData)
         {
-            return null;
+            throw new UnauthorizedException("Incorrect data sent to server");
         }
-        return user;
+        const isDuplicateUser = await this.usersService.findOne(registerData.username);
+        if(!isDuplicateUser)
+        {
+            return await this.usersService.createUser(registerData);
+        }
+        else
+        {
+            throw new UnauthorizedException("User already exists");
+        }
+    }
+
+    async getUserById(id: string) {
+        return this.usersService.findById(id);
     }
 }
+
+    // async generateJwt(payload: any) {
+    //     return await this.jwtService.signAsync(payload);
+    // }
+
+    // async signIn(user) {
+    //     if (!user) {
+    //         throw new UnauthorizedException();
+    //     }
+
+    //     // Use email as the username for OAuth users
+    //     const username = user.username.split('@')[0] ?? user.email.split('@')[0];
+    //     console.log(username);
+    //     const userExists = await this.usersService.findOne(username);
+
+    //     if (!userExists) {
+    //         // Generate a random password (since OAuth users don't log in with it)
+    //         const randomPassword = Math.random().toString(36).slice(-12);
+    //         const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+    //         const dto: CreateUserDTO = {
+    //         username,
+    //         email: user.email,
+    //         hashedPassword,
+    //         };
+
+    //         const newUser = await this.usersService.createUser(dto);
+    //         return this.generateJwt({ sub: newUser.id, username: newUser.username });
+    //     }
+
+    //     return this.generateJwt({ sub: userExists.id, username: userExists.username });
+    // }
+
+    // async registerUser(user: CreateUserDTO)
+    // {
+    //     try 
+    //     {
+    //         const newUser = await this.usersService.createUser(user);
+    //         return this.generateJwt({sub: newUser.id, username: newUser.username})
+    //     }
+    //     catch 
+    //     {
+    //         throw new InternalServerErrorException();
+    //     }
+    // }
+
+    // async findUserByUsername(username)
+    // {
+    //     const user = this.usersService.findOne(username);
+
+    //     if(!user)
+    //     {
+    //         return null;
+    //     }
+    //     return user;
+    // }
+
     // async signIn(username: string, pass: string): Promise<{access_token: string}> {
     //     const user = await this.usersService.findOne(username);
     //     if(user?.password !== pass) {

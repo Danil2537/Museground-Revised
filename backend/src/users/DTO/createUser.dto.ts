@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateUserDTO {
     constructor() {console.log("Creating a DTO\n");}
@@ -8,9 +8,10 @@ export class CreateUserDTO {
     username: string;
 
     @IsString()
+    @IsEmail()
     email: string;
 
     @IsNotEmpty()
     @IsString()
-    hashedPassword: string;
+    password: string;
 }

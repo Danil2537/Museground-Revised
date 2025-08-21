@@ -1,15 +1,18 @@
 "use client"
 import React from "react";
 import {useState} from "react"
-
+import {useRouter} from "next/navigation"
 export default function Register() 
 {   
+    const BACKEND_PORT = process.env.BACKEND_PORT ?? '3001';
+    const BACKEND_URL = process.env.BACKEND_URL ? `${process.env.BACKEND_URL}${BACKEND_PORT}` : `http://localhost:${BACKEND_PORT}`; 
     const [errors, setErrors] = useState<string[]>([]);
     const [formData,setFormData] = useState({username:"", email:"", password:"", confirmedPassword:"",});
+    const router = useRouter(); 
     const handleFormDatachange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({...formData, [e.target.name]: e.target.value});
     };
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if(formData.password!=formData.confirmedPassword)
         {
@@ -18,6 +21,29 @@ export default function Register()
         }
         setErrors([]);
         alert(`Form data submited. The data is: ${JSON.stringify(formData)}`);
+        try {
+            const url = `${BACKEND_URL}/auth/register-jwt`;
+            alert(url);
+            const res = await fetch(url, {
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    username: formData.username, 
+                    email: formData.email, 
+                    password: formData.password.toString(), 
+                })
+            });
+            const data = await res.json();
+            alert(JSON.stringify(data));
+            if(res.ok)
+            {
+                setErrors(['Registration Successful! Please log in.'])
+                router.push('/login');
+            }
+        } catch (error) {
+            console.error("Error registering on server", error);
+            setErrors([...errors, "Server Error Registering User"]);
+        }
     };
 
 

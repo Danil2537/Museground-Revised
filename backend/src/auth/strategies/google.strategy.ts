@@ -27,8 +27,7 @@ async validate(
     provider: 'google',
     providerId: id,
     email: emails[0].value,
-    username: emails[0].value,
-    name: `${name.givenName} ${name.familyName}`,
+    username: `${name.givenName} ${name.familyName}`,
     picture: photos[0].value,
   };
 

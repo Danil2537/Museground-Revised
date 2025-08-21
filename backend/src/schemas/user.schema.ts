@@ -10,7 +10,7 @@ export class User
     email: string;
 
     @Prop()
-    hashedPassword: string;
+    password: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
