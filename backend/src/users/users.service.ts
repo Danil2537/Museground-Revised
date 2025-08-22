@@ -9,13 +9,13 @@ import * as bcrypt from "bcrypt";
 export class UsersService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) {console.log("creating user service", userModel)}
 
-    // private readonly users = [
-    //     {userId: 1, username: 'john', password: 'changeme',},
-    //     {userId: 2, username: 'maria', password: 'guess',},
-    // ];
-
+  
     async createUser(createUserDTO: CreateUserDTO) {
-        createUserDTO.password = await bcrypt.hash(createUserDTO.password, 10);
+        console.log("creating a user in user service\n");
+        if (createUserDTO.password) 
+        {
+            createUserDTO.password = await bcrypt.hash(createUserDTO.password, 10);
+        }
         const newUser = new this.userModel(createUserDTO);
         return newUser.save();
     }
@@ -26,5 +26,10 @@ export class UsersService {
 
     async findById(id: string) {
         return this.userModel.findById(id).exec();
+    }
+
+    async findByEmail(email) {
+        console.log("serching user by email\n")
+        return await this.userModel.findOne({email: email}).exec();
     }
 }

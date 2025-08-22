@@ -9,14 +9,34 @@ import { CreateUserDTO } from 'src/users/DTO/createUser.dto';
 @Controller('auth')
 export class AuthController {
     constructor(private authService: AuthService) {}
+    extractJwtFromCookie = (req) => req?.cookies?.access_token;
 
  
+    // @HttpCode(HttpStatus.OK)
+    // @Post('login-jwt')
+    // loginJwt(@Body() loginData: JwtLoginDto)
+    // {
+    //     console.log(JSON.stringify(loginData));
+    //     return this.authService.loginJwt(loginData);
+    // }
 
+    @HttpCode(HttpStatus.OK)
     @Post('login-jwt')
-    loginJwt(@Body() loginData: JwtLoginDto)
-    {
-        console.log(JSON.stringify(loginData));
-        return this.authService.loginJwt(loginData);
+    async loginJwt(
+        @Body() loginData: JwtLoginDto,
+        @Res() res: Response,
+    ) {
+        const tokenObj = await this.authService.loginJwt(loginData);
+
+        // Set token in HTTP-only cookie
+        res.cookie('access_token', tokenObj.access_token, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false, // set true if using HTTPS
+        maxAge: 2592000000, // ~30 days
+        });
+
+        return res.send({ message: 'Login successful' });
     }
 
     @Post('register-jwt')
@@ -39,37 +59,27 @@ export class AuthController {
             };
         }
     }
+
+    @Get('google')
+    @UseGuards(GoogleOauthGuard)
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    async auth() {}
+
+    @Get('google/callback')
+    @UseGuards(GoogleOauthGuard)
+    async googleAuthCallback(@Req() req, @Res() res: Response) {
+        const tokenObj = await this.authService.signInGoogle(req.user); // { access_token: string }
+
+        res.cookie('access_token', tokenObj.access_token, {
+            httpOnly: true,     // 🔹 prevents JS access
+            maxAge: 2592000000, // ~30 days
+            sameSite: 'lax',    // safe default
+            secure: false,      // true if you’re on https
+        });
+
+        // return res.json(tokenObj);
+        return res.redirect('http://localhost:3000/profile');
+    }
+
+    
 }
-
-   // @HttpCode(HttpStatus.OK)
-    // @Post('login')
-    // signIn(@Body() signInDto: Record<string,any>) {
-    //     return this.authService.signIn(signInDto);
-    // }
-
-    // @Get('google')
-    // @UseGuards(GoogleOauthGuard)
-    // // eslint-disable-next-line @typescript-eslint/no-empty-function
-    // async auth() {}
-
-    // @UseGuards(JwtAuthGuard)
-    // @Get('profile')
-    // getProfile(@Request() req) {
-    //     return req.user;
-    // }
-
-    // @Get('google/callback')
-    // @UseGuards(GoogleOauthGuard)
-    // async googleAuthCallback(@Req() req, @Res() res: Response) {
-    // const tokenObj = await this.authService.signIn(req.user);
-
-    // // tokenObj is { access_token: 'jwtstring' }
-    // const jwtToken = await this.authService.signIn(req.user); // returns string
-    //     res.cookie('access_token', jwtToken, {
-    //     maxAge: 2592000000,
-    //     sameSite: true,
-    //     secure: false,
-    //     });
-    //     //return res.redirect("http://localhost:3000/auth/profile")
-    //     return res.status(200).send(`Logged in with google, token: ${jwtToken}`);
-    // }

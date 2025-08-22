@@ -1,36 +1,62 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function Profile() {
-  const [profile, setProfile] = useState<{username:string, email:string}|null>(null);
-  const [error, setError] = useState("");
+export default function ProfilePage() {
+  const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
+  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${BACKEND_PORT}`
+    : `http://localhost:${BACKEND_PORT}`;
+
+  const [user, setUser] = useState<{ username: string; email: string } | null>(null);
+  const [error, setError] = useState<string>("");
+
+  const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      setError("Not logged in");
-      return;
-    }
+    const fetchProfile = async () => {
+      try {
+        const res = await fetch(`${BACKEND_URL}/auth/profile`, {
+          method: "GET",
+          credentials: "include", // 🔹 send cookies
+        });
 
-    fetch("http://localhost:3001/auth/profile", {
-      headers: {
-        "Authorization": `Bearer ${token}`,
-      },
-    })
-    
-    .then(res => res.json())
-    .then(data => setProfile(data))
-    .catch(err => setError("Failed to load profile"));
-  }, []);
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else if (res.status === 401) {
+          router.push("/login");
+        } else {
+          setError("Failed to load profile");
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Server error loading profile");
+      }
+    };
 
-  if (error) return <h3>{error}</h3>;
-  if (!profile) return <h3>Loading...</h3>;
+    fetchProfile();
+  }, [BACKEND_URL, router]);
+
+  if (error) return <p>{error}</p>;
+  if (!user) return <p>Loading...</p>;
 
   return (
-    <>
+    <div>
       <h1>Profile</h1>
-      <p>Username: {profile.username}</p>
-      <p>Email: {profile.email}</p>
-    </>
+      <p><strong>Username:</strong> {user.username}</p>
+      <p><strong>Email:</strong> {user.email}</p>
+      <button
+        onClick={async () => {
+          await fetch(`${BACKEND_URL}/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+          });
+          router.push("/login");
+        }}
+      >
+        Logout
+      </button>
+    </div>
   );
 }

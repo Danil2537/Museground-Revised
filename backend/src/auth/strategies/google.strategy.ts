@@ -13,6 +13,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL')!,
     scope: ['profile', 'email'],
     });
+    console.log("Google callback URL:", configService.get<string>('GOOGLE_CALLBACK_URL'));
   }
 
 async validate(
@@ -22,13 +23,14 @@ async validate(
   done: VerifyCallback,
 ): Promise<any> {
   const { id, name, emails, photos } = profile;
-
+  console.log(profile);
   const user = {
     provider: 'google',
     providerId: id,
     email: emails[0].value,
     username: `${name.givenName} ${name.familyName}`,
     picture: photos[0].value,
+    password: null,
   };
 
   done(null, user);

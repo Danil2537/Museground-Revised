@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateUserDTO {
     constructor() {console.log("Creating a DTO\n");}
@@ -11,7 +11,6 @@ export class CreateUserDTO {
     @IsEmail()
     email: string;
 
-    @IsNotEmpty()
-    @IsString()
-    password: string;
+    @IsOptional()
+    password?: string|null;
 }
