@@ -7,22 +7,22 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
 
-
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),MongooseModule.forRoot(process.env.MONGODB_URI as string),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.MONGODB_URI as string),
     UsersModule,
     AuthModule,
     JwtModule.registerAsync({
-        imports: [ConfigModule],
-        inject: [ConfigService],
-        useFactory: async (configService: ConfigService) => ({
-            secret: configService.get<string>('JWT_SECRET'),
-            signOptions: {expiresIn: '120s'}, 
-        }),
-        global: true,
-    })
-],
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '120s' },
+      }),
+      global: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

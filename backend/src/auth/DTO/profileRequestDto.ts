@@ -1,9 +1,9 @@
 import { IsString } from 'class-validator';
 
-export class JwtLoginDto {
+export class ProfileRequestDto {
   @IsString()
-  username: string;
+  id: string;
 
   @IsString()
-  password: string;
+  username: string;
 }

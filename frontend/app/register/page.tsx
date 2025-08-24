@@ -55,54 +55,108 @@ export default function Register() {
   };
 
   return (
-    <>
-      <h1>Register</h1>
-      <form method="POST" onSubmit={handleSubmit}>
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          required
-          value={formData.username}
-          onChange={handleFormDatachange}
-        />
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          required
-          value={formData.email}
-          onChange={handleFormDatachange}
-        />
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          required
-          value={formData.password}
-          onChange={handleFormDatachange}
-        />
-        <label htmlFor="confirmedPassword">Confirm</label>
-        <input
-          type="password"
-          id="confirmedPassword"
-          name="confirmedPassword"
-          required
-          value={formData.confirmedPassword}
-          onChange={handleFormDatachange}
-        />
-        <button type="submit">Register</button>
-      </form>
-      {errors.length > 0 && (
-        <ul>
-          {errors.map((err, i) => (
-            <li key={i}>{err}</li>
-          ))}
-        </ul>
-      )}
-    </>
+    <div className="flex items-center justify-center min-h-screen bg-neutral-800 px-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white shadow-xl rounded-2xl p-6">
+        {errors.length > 0 && (
+            <ul>
+            {errors.map((err, i) => (
+                <li key={i}>{err}</li>
+            ))}
+            </ul>
+        )}
+
+          <h1 className="text-2xl font-bold font-suprapower text-center mb-6 text-gray-700">Register</h1>
+
+          <form method="POST" onSubmit={handleSubmit} className="space-y-4">
+            <div className="relative">
+              <input
+                type="text"
+                id="username"
+                name="username"
+                required
+                placeholder=" "
+                value={formData.username}
+                onChange={handleFormDatachange}
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+              />
+              <label
+                htmlFor="username"
+                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+              >
+                Username
+              </label>
+            </div>
+
+            <div className="relative">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                placeholder=" "
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+              />
+              <label
+                htmlFor="email"
+                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+              >
+                Email Address
+              </label>
+            </div>
+
+            <div className="relative">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                placeholder=" "
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+              />
+              <label
+                htmlFor="password"
+                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+              >
+                Password
+              </label>
+            </div>
+
+            <div className="relative">
+              <input
+                type="password"
+                id="password2"
+                name="password2"
+                required
+                placeholder=" "
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+              />
+              <label
+                htmlFor="password2"
+                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+              >
+                Confirm Password
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-2 rounded-lg bg-blue-600 text-white font-suprapower  hover:bg-blue-700 transition"
+            >
+              Register
+            </button>
+
+            <button
+              type="button"
+              onClick={() => (window.location.href = "/login")}
+              className="w-full py-2 rounded-lg bg-blue-600 text-white font-suprapower  hover:bg-blue-700 transition"
+            >
+              Log In
+            </button>
+          
+          </form>
+        </div>
+      </div>
+    </div>
   );
 }

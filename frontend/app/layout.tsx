@@ -1,15 +1,27 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const suprapower = localFont({
+  src: [
+    {
+      path: "../public/fonts/suprapower/SuprapowerSE-Heavy.woff",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-suprapower",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const programme = localFont({
+  src: [
+    {
+      path: "../public/fonts/programme/Programme-Regular.woff",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-programme",
 });
 
 export const metadata: Metadata = {
@@ -19,16 +31,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html lang="en" className={`${suprapower.variable} ${programme.variable}`}>
+      <body className="font-programme antialiased">{children}</body>
     </html>
   );
 }
