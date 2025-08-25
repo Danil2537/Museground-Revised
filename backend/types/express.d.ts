@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { User as MyUserType } from './my-user.type';
 declare global {
   namespace Express {

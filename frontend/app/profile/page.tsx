@@ -20,9 +20,9 @@ export default function ProfilePage() {
       try {
         const res = await fetch(`${BACKEND_URL}/auth/profile`, {
           method: "GET",
-          credentials: "include", // 🔹 send cookies
+          credentials: "include", // send cookies
         });
-
+        
         if (res.ok) {
           const data = await res.json();
           setUser(data);

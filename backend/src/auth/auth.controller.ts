@@ -74,10 +74,10 @@ export class AuthController {
           httpOnly: true,
           maxAge: 2592000000,
           sameSite: 'lax',
-          secure: false,
+          secure: process.env.NODE_ENV === 'production',
         });
       }
     }
-    return res.redirect('http://localhost:3000/profile');
+    return res.redirect(`${process.env.FRONTEND_ORIGIN}/profile`);
   }
 }
