@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
+  //const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
-    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${BACKEND_PORT}`
-    : `http://localhost:${BACKEND_PORT}`;
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}` //${BACKEND_PORT}`
+    : `https://museground-revised.onrender.com`; //${BACKEND_PORT}`;
 
   const [user, setUser] = useState<{ username: string; email: string } | null>(
     null,

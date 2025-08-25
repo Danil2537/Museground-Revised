@@ -3,10 +3,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
-  const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
+  //const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
-    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${BACKEND_PORT}`
-    : `http://museground-revised.onrender.com:${BACKEND_PORT}`;
+    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}` //${BACKEND_PORT}`
+    : `https://museground-revised.onrender.com`; //:${BACKEND_PORT}`;
 
   const [error, setError] = useState<string>("");
   const [formData, setFormData] = useState({ username: "", password: "" });
