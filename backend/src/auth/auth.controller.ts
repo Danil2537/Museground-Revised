@@ -17,11 +17,15 @@ import { CreateUserDTO } from 'src/users/DTO/createUser.dto';
 import { ProfileRequestDto } from './DTO/profileRequestDto';
 import { CurrentUser } from './decorators/user.decorator';
 import type { Request, Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 //import { ProfileRequestDto } from './DTO/profileRequestDto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @HttpCode(HttpStatus.OK)
   @Post('login-jwt')
@@ -29,9 +33,9 @@ export class AuthController {
     const tokenObj = await this.authService.loginJwt(loginData);
 
     res.cookie('access_token', tokenObj?.access_token, {
-      httpOnly: true,
+      httpOnly: false,
       sameSite: 'lax',
-      secure: false,
+      secure: this.configService.get<string>('NODE_ENV') === 'production', //process.env.NODE_ENV === 'production',
       maxAge: 2592000000, // ~30 days
     });
 
@@ -71,13 +75,15 @@ export class AuthController {
       const tokenObj = await this.authService.signInGoogle(req.user);
       if (tokenObj) {
         res.cookie('access_token', tokenObj.access_token, {
-          httpOnly: true,
+          httpOnly: false,
           maxAge: 2592000000,
           sameSite: 'lax',
-          secure: process.env.NODE_ENV === 'production',
+          secure: this.configService.get<string>('NODE_ENV') === 'production',
         });
       }
     }
-    return res.redirect(`${process.env.FRONTEND_ORIGIN}/profile`);
+    return res.redirect(
+      `${this.configService.get<string>('FRONTEND_ORIGIN')}/profile`,
+    );
   }
 }
