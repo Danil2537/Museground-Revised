@@ -1,8 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-
+import { Profile } from 'passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth2';
+
+export interface GoogleUser {
+  provider: 'google';
+  providerId: string;
+  email: string;
+  username: string;
+  picture: string;
+  password: null;
+}
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
@@ -13,29 +22,31 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       callbackURL: configService.get<string>('GOOGLE_CALLBACK_URL')!,
       scope: ['profile', 'email'],
     });
-    console.log(
-      'Google callback URL:',
-      configService.get<string>('GOOGLE_CALLBACK_URL'),
-    );
   }
 
-  async validate(
+  validate(
     _accessToken: string,
     _refreshToken: string,
-    profile: any,
+    profile: Profile,
     done: VerifyCallback,
-  ): Promise<any> {
+  ): void {
     const { id, name, emails, photos } = profile;
-    console.log(profile);
-    const user = {
+
+    if (!emails?.length) {
+      return done(new Error('Google account has no email'), null);
+    }
+
+    const user: GoogleUser = {
       provider: 'google',
       providerId: id,
       email: emails[0].value,
-      username: `${name.givenName} ${name.familyName}`,
-      picture: photos[0].value,
+      username: `${name?.givenName ?? ''} ${name?.familyName ?? ''}`.trim(),
+      picture: photos?.[0]?.value ?? '',
       password: null,
     };
-    console.log(`\n\n\nvalidate user object is: ${JSON.stringify(user)}`);
-    await done(null, user);
+
+    console.log(`\n\nGoogle validate user: ${JSON.stringify(user, null, 2)}`);
+
+    done(null, user);
   }
 }

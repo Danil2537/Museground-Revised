@@ -1,38 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from '../schemas/user.schema';
+import { User, UserDocument } from '../schemas/user.schema';
 import { CreateUserDTO } from './DTO/createUser.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {
-    console.log('creating user service', userModel);
-  }
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async createUser(createUserDTO: CreateUserDTO) {
-    console.log('creating a user in user service\n');
+  async createUser(createUserDTO: CreateUserDTO): Promise<UserDocument> {
+    console.log('creating a new user\n');
     if (createUserDTO.password) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       createUserDTO.password = await bcrypt.hash(createUserDTO.password, 10);
     }
+
     const newUser = new this.userModel({
-    ...createUserDTO,
-    provider: createUserDTO.provider ?? 'local',
-  });
+      ...createUserDTO,
+      provider: createUserDTO.provider ?? 'local',
+    });
+
     return newUser.save();
   }
 
-  async findOne(username: string) {
-    return await this.userModel.findOne({ username: username }).exec();
+  async findOne(username: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ username }).exec();
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).exec();
   }
 
-  async findByEmail(email) {
-    console.log(`serching user by email: ${email}\n`);
-    return await this.userModel.findOne({ email: email }).exec();
+  async findByEmail(email: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email }).exec();
   }
 }

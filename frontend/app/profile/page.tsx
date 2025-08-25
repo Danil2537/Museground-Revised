@@ -8,7 +8,9 @@ export default function ProfilePage() {
     ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${BACKEND_PORT}`
     : `http://localhost:${BACKEND_PORT}`;
 
-  const [user, setUser] = useState<{ username: string; email: string } | null>(null);
+  const [user, setUser] = useState<{ username: string; email: string } | null>(
+    null,
+  );
   const [error, setError] = useState<string>("");
 
   const router = useRouter();
@@ -44,8 +46,12 @@ export default function ProfilePage() {
   return (
     <div>
       <h1>Profile</h1>
-      <p><strong>Username:</strong> {user.username}</p>
-      <p><strong>Email:</strong> {user.email}</p>
+      <p>
+        <strong>Username:</strong> {user.username}
+      </p>
+      <p>
+        <strong>Email:</strong> {user.email}
+      </p>
       <button
         onClick={async () => {
           await fetch(`${BACKEND_URL}/auth/logout`, {

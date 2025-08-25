@@ -15,7 +15,7 @@ const handler = NextAuth({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         try {
@@ -45,7 +45,13 @@ const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      session.user = token.user as any;
+      session.user = token.user as
+        | {
+            name?: string | null | undefined;
+            email?: string | null | undefined;
+            image?: string | null | undefined;
+          }
+        | undefined;
       return session;
     },
   },

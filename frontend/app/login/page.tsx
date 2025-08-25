@@ -44,12 +44,12 @@ export default function Login() {
     window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
-return (
+  return (
     <div className="flex items-center justify-center min-h-screen bg-neutral-800 px-4">
       <div className="w-full max-w-md">
         <div className="bg-white shadow-xl rounded-2xl p-6">
           {error && (
-            <div className="mb-4 text-sm text-red-600 bg-red-100 p-2 rounded">
+            <div className="mb-4 text-sm text-red-500 bg-red-100 p-2 rounded">
               {error}
             </div>
           )}
@@ -70,10 +70,9 @@ return (
                 onChange={handleFormDatachange}
                 className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
-                <label
+              <label
                 htmlFor="username"
                 className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
-
               >
                 Username
               </label>
@@ -85,20 +84,18 @@ return (
                 id="password"
                 name="password"
                 required
-                placeholder=" " 
+                placeholder=" "
                 value={formData.password}
                 onChange={handleFormDatachange}
                 className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
-            <label
+              <label
                 htmlFor="password"
                 className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
-
               >
                 Password
-            </label>
+              </label>
             </div>
-     
 
             <button
               type="submit"

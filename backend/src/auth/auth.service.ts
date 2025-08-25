@@ -5,6 +5,14 @@ import { UsersService } from '../users/users.service';
 import { generateFromEmail } from 'unique-username-generator';
 import * as bcrypt from 'bcrypt';
 import { JwtLoginDto } from './DTO/jwtLoginDto';
+import { UserDocument } from '../schemas/user.schema';
+import { User } from 'src/schemas/user.schema';
+
+interface JwtPayload {
+  sub: string;
+  username: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -12,99 +20,86 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async loginJwt(loginData: JwtLoginDto) {
-    if (!loginData) {
-      throw new UnauthorizedException();
-    }
+  async loginJwt(
+    loginData: JwtLoginDto,
+  ): Promise<{ access_token: string } | undefined> {
+    if (!loginData) throw new UnauthorizedException();
 
     const dbUser = await this.usersService.findOne(loginData.username);
-    if (!dbUser) {
-      throw new UnauthorizedException('Specified user not found');
-    }
-    if (dbUser.provider !== 'local') {
-      throw new UnauthorizedException('Use Google login for this account');
-    } else {
-      const isPasswordValid = await bcrypt.compare(
-        loginData.password,
-        dbUser.password,
-      );
-      if (isPasswordValid == true) {
-        return {
-          access_token: await this.jwtService.signAsync({
-            sub: dbUser.id,
-            username: dbUser.username,
-          }),
-        };
-      } else {
+    if (!dbUser) throw new UnauthorizedException('Specified user not found');
+    if (dbUser) {
+      if (dbUser.provider !== 'local')
+        throw new UnauthorizedException('Use Google login for this account');
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      if (!(await bcrypt?.compare(loginData.password, dbUser?.password ?? '')))
         throw new UnauthorizedException('Wrong Password');
-      }
+
+      return this.issueToken(dbUser);
     }
   }
 
-  async registerJwt(registerData: CreateUserDTO) {
-    if (!registerData) {
-      throw new UnauthorizedException('Incorrect data sent to server');
-    }
-
-    const isDuplicateUser = await this.usersService.findOne(
-      registerData.username,
+  async registerJwt(registerData: CreateUserDTO): Promise<UserDocument> {
+    console.log(
+      `starting registerJwt service. registerData is:\n${JSON.stringify(registerData)}\n\n`,
     );
-    if (!isDuplicateUser) {
-      return await this.usersService.createUser(registerData);
-    } else {
-      throw new UnauthorizedException('User already exists');
-    }
+    if (!registerData)
+      throw new UnauthorizedException('Incorrect data sent to server');
+
+    const isDuplicateUser = await this.usersService.findByEmail(
+      registerData.email,
+    );
+
+    if (!isDuplicateUser) return this.usersService.createUser(registerData);
+
+    throw new UnauthorizedException('User with specified email already exists');
   }
 
-  async getUserById(id: string) {
-    console.log(`searching user with id: ${id}`);
+  async getUserById(id: string): Promise<UserDocument | null> {
     return this.usersService.findById(id);
   }
 
-  async registerGoogle(user: any) {
-    //console.log('creating createuserdto from google');
+  async registerGoogle(
+    user: Pick<User, 'username' | 'email'>,
+  ): Promise<UserDocument> {
     const newUser: CreateUserDTO = {
       username: user.username ?? generateFromEmail(user.email, 3),
       email: user.email,
       password: null,
+      provider: 'google',
     };
-    //console.log('dto created\n');
-
     return this.usersService.createUser(newUser);
   }
 
-async signInGoogle(user: any) {
-  console.log('Google sign-in payload:', user);
+  async signInGoogle(
+    user: Pick<User, 'username' | 'email'>,
+  ): Promise<{ access_token: string }> {
+    const existingUser = await this.usersService.findByEmail(user.email);
 
-  let existingUser = await this.usersService.findByEmail(user.email);
+    if (!existingUser) {
+      const dbUser = await this.usersService.createUser({
+        username: user.username ?? generateFromEmail(user.email, 3),
+        email: user.email,
+        password: null,
+        provider: 'google',
+      });
+      return this.issueToken(dbUser);
+    }
 
-  if (!existingUser) {
-    // First-time Google login → register new
-    const dbUser = await this.usersService.createUser({
-      username: user.username ?? generateFromEmail(user.email, 3),
-      email: user.email,
-      password: null,
-      provider: 'google',
-    });
-    return this.issueToken(dbUser);
+    if (existingUser.provider === 'local')
+      throw new UnauthorizedException(
+        'Account already exists with local login. Use password login.',
+      );
+
+    return this.issueToken(existingUser);
   }
 
-  // If the user exists but was created with local provider
-  if (existingUser.provider === 'local') {
-    // Optional: either reject or link Google account
-    throw new UnauthorizedException('Account already exists with local login. Use password login.');
-  }
-
-  // Otherwise → Google account already exists
-  return this.issueToken(existingUser);
-}
-
-async issueToken(user: any) {
-  return {
-    access_token: await this.jwtService.signAsync({
-      sub: user.id,
+  async issueToken(user: UserDocument): Promise<{ access_token: string }> {
+    const payload: JwtPayload = {
+      sub: user.id as string,
       username: user.username,
-    }),
-  };
-}
+    } as JwtPayload;
+    const token: string = await this.jwtService.signAsync(payload);
+    return { access_token: token };
+  }
 }

@@ -32,6 +32,8 @@ export default function Register() {
     setErrors([]);
 
     try {
+      alert(`${BACKEND_URL}/auth/register-jwt`);
+      alert(JSON.stringify(formData));
       const res = await fetch(`${BACKEND_URL}/auth/register-jwt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -39,6 +41,7 @@ export default function Register() {
           username: formData.username,
           email: formData.email,
           password: formData.password,
+          provider: "local",
         }),
       });
 
@@ -57,16 +60,18 @@ export default function Register() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-neutral-800 px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white shadow-xl rounded-2xl p-6">
-        {errors.length > 0 && (
+        <div className="bg-white shadow-xl rounded-2xl p-6 text-red-500">
+          {errors.length > 0 && (
             <ul>
-            {errors.map((err, i) => (
+              {errors.map((err, i) => (
                 <li key={i}>{err}</li>
-            ))}
+              ))}
             </ul>
-        )}
+          )}
 
-          <h1 className="text-2xl font-bold font-suprapower text-center mb-6 text-gray-700">Register</h1>
+          <h1 className="text-2xl font-bold font-suprapower text-center mb-6 text-gray-700">
+            Register
+          </h1>
 
           <form method="POST" onSubmit={handleSubmit} className="space-y-4">
             <div className="relative">
@@ -95,6 +100,8 @@ export default function Register() {
                 name="email"
                 required
                 placeholder=" "
+                value={formData.email}
+                onChange={handleFormDatachange}
                 className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
@@ -112,6 +119,8 @@ export default function Register() {
                 name="password"
                 required
                 placeholder=" "
+                value={formData.password}
+                onChange={handleFormDatachange}
                 className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
@@ -125,10 +134,12 @@ export default function Register() {
             <div className="relative">
               <input
                 type="password"
-                id="password2"
-                name="password2"
+                id="confirmedPassword"
+                name="confirmedPassword"
                 required
                 placeholder=" "
+                value={formData.confirmedPassword}
+                onChange={handleFormDatachange}
                 className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
@@ -153,7 +164,6 @@ export default function Register() {
             >
               Log In
             </button>
-          
           </form>
         </div>
       </div>

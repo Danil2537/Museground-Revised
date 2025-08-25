@@ -6,17 +6,18 @@ import {
   Get,
   UseGuards,
   Post,
-  Request,
   Req,
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwtauth.guard';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
-import type { Response } from 'express';
 import { JwtLoginDto } from './DTO/jwtLoginDto';
 import { CreateUserDTO } from 'src/users/DTO/createUser.dto';
 import { ProfileRequestDto } from './DTO/profileRequestDto';
+import { CurrentUser } from './decorators/user.decorator';
+import type { Request, Response } from 'express';
+//import { ProfileRequestDto } from './DTO/profileRequestDto';
 
 @Controller('auth')
 export class AuthController {
@@ -27,7 +28,7 @@ export class AuthController {
   async loginJwt(@Body() loginData: JwtLoginDto, @Res() res: Response) {
     const tokenObj = await this.authService.loginJwt(loginData);
 
-    res.cookie('access_token', tokenObj.access_token, {
+    res.cookie('access_token', tokenObj?.access_token, {
       httpOnly: true,
       sameSite: 'lax',
       secure: false,
@@ -39,20 +40,21 @@ export class AuthController {
 
   @Post('register-jwt')
   registerJwt(@Body() registerData: CreateUserDTO) {
-    console.log('lalala', registerData);
+    console.log('registerJwt controller data: \n', registerData);
     return this.authService.registerJwt(registerData);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  async getProfile(@Request() req: any) {
+  async getProfile(@CurrentUser() user: ProfileRequestDto) {
     //console.log(`profile request: ${JSON.stringify(req)}`);
-    const user = await this.authService.getUserById(req.user.id);
+    //const user = await this.authService.getUserById(req.user.id);
+    const dbUser = await this.authService.getUserById(user.id);
     console.log('\n\n', JSON.stringify(user));
-    if (user) {
+    if (dbUser) {
       return {
-        username: user.username,
-        email: user.email,
+        username: dbUser.username,
+        email: dbUser.email,
       };
     }
   }
@@ -63,17 +65,19 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
-  async googleAuthCallback(@Req() req, @Res() res: Response) {
-    const tokenObj = await this.authService.signInGoogle(req.user); // { access_token: string }
-    //console.log("google callback request object:\n", req);
-    res.cookie('access_token', tokenObj.access_token, {
-      httpOnly: true, // 🔹 prevents JS access
-      maxAge: 2592000000, // ~30 days
-      sameSite: 'lax', // safe default
-      secure: false, // true if you’re on https
-    });
-
-    // return res.json(tokenObj);
+  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+    // req.user is now typed from your global.d.ts declaration
+    if (req.user) {
+      const tokenObj = await this.authService.signInGoogle(req.user);
+      if (tokenObj) {
+        res.cookie('access_token', tokenObj.access_token, {
+          httpOnly: true,
+          maxAge: 2592000000,
+          sameSite: 'lax',
+          secure: false,
+        });
+      }
+    }
     return res.redirect('http://localhost:3000/profile');
   }
 }
