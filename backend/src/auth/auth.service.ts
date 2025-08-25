@@ -23,9 +23,13 @@ export class AuthService {
   async loginJwt(
     loginData: JwtLoginDto,
   ): Promise<{ access_token: string } | undefined> {
+    console.log(
+      `Starting jwt login in auth service. Login data is: ${JSON.stringify(loginData)}\n`,
+    );
     if (!loginData) throw new UnauthorizedException();
 
     const dbUser = await this.usersService.findOne(loginData.username);
+    console.log(`db user object is: ${JSON.stringify(dbUser)}`);
     if (!dbUser) throw new UnauthorizedException('Specified user not found');
     if (dbUser) {
       if (dbUser.provider !== 'local')
@@ -95,6 +99,7 @@ export class AuthService {
   }
 
   async issueToken(user: UserDocument): Promise<{ access_token: string }> {
+    console.log('Issuing a token\n');
     const payload: JwtPayload = {
       sub: user.id as string,
       username: user.username,

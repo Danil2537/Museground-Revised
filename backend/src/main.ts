@@ -16,10 +16,11 @@ async function bootstrap(): Promise<void> {
       transform: true,
     }),
   );
-
   app.enableCors({
-    origin: [process.env.FRONTEND_ORIGIN],
+    origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
     credentials: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
   const port = process.env.PORT ? Number(process.env.PORT) : 3001;

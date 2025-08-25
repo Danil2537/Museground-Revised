@@ -21,17 +21,20 @@ export default function Login() {
     setError("");
 
     try {
+      alert(`${BACKEND_URL}/auth/login-jwt`);
+      alert(JSON.stringify(formData));
       const res = await fetch(`${BACKEND_URL}/auth/login-jwt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // 🔹 important to include cookies
+        credentials: "include", 
         body: JSON.stringify(formData),
       });
-
+      
+      const data = await res.json();
+      alert(JSON.stringify(data));
       if (res.ok) {
         router.push("/profile");
       } else {
-        const data = await res.json();
         setError(data?.error ?? "Login failed");
       }
     } catch (err) {

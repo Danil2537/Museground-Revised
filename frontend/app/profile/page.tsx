@@ -22,9 +22,10 @@ export default function ProfilePage() {
           method: "GET",
           credentials: "include", // send cookies
         });
-        
+        const data = await res.json();
+        alert(JSON.stringify(data));
         if (res.ok) {
-          const data = await res.json();
+          
           setUser(data);
         } else if (res.status === 401) {
           router.push("/login");

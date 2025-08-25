@@ -35,9 +35,15 @@ export class AuthController {
     res.cookie('access_token', tokenObj?.access_token, {
       httpOnly: false,
       sameSite: 'lax',
-      secure: this.configService.get<string>('NODE_ENV') === 'production', //process.env.NODE_ENV === 'production',
-      maxAge: 2592000000, // ~30 days
+      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      maxAge: 2592000000,
     });
+
+    res.header(
+      'Access-Control-Allow-Origin',
+      this.configService.get<string>('FRONTEND_ORIGIN'),
+    );
+    res.header('Access-Control-Allow-Credentials', 'true');
 
     return res.send({ message: 'Login successful' });
   }
@@ -53,6 +59,7 @@ export class AuthController {
   async getProfile(@CurrentUser() user: ProfileRequestDto) {
     //console.log(`profile request: ${JSON.stringify(req)}`);
     //const user = await this.authService.getUserById(req.user.id);
+    console.log('Opening user profile route\n');
     const dbUser = await this.authService.getUserById(user.id);
     console.log('\n\n', JSON.stringify(user));
     if (dbUser) {
