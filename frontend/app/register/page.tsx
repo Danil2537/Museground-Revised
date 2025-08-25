@@ -6,7 +6,7 @@ export default function Register() {
   const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
     ? `${process.env.NEXT_PUBLIC_BACKEND_URL}:${BACKEND_PORT}`
-    : `http://localhost:${BACKEND_PORT}`;
+    : `http://museground-revised.onrender.com:${BACKEND_PORT}`;
 
   const [errors, setErrors] = useState<string[]>([]);
   const [formData, setFormData] = useState({
