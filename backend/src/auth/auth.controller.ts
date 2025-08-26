@@ -34,9 +34,9 @@ export class AuthController {
     const tokenObj = await this.authService.loginJwt(loginData);
 
     res.cookie('access_token', tokenObj?.access_token, {
-      httpOnly: false,
-      sameSite: 'lax',
-      secure: this.configService.get<string>('NODE_ENV') === 'production',
+      httpOnly: true,
+      sameSite: 'none',
+      secure: this.configService.get<boolean>('SECURE_COOKIES'),
       maxAge: 2592000000,
     });
     // res.header(

@@ -24,10 +24,21 @@ async function bootstrap(): Promise<void> {
   //       'Content-Type, Accept, Authorization, Access-Control-Allow-Origin',
   //   });
   app.enableCors({
-    origin: '*',
+    origin: [
+      process.env.FRONTEND_ORIGIN, // your Next.js frontend
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    credentials: true, // important for cookies/authorization headers
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
+    exposedHeaders: [
+      'Set-Cookie', // allow frontend to see cookies in response
+    ],
   });
   const port = process.env.PORT ? Number(process.env.PORT) : 3001;
 
