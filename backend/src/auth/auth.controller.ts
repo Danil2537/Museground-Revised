@@ -39,11 +39,11 @@ export class AuthController {
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       maxAge: 2592000000,
     });
-    res.header(
-      'Access-Control-Allow-Origin',
-      this.configService.get<string>('FRONTEND_ORIGIN'),
-    );
-    res.header('Access-Control-Allow-Credentials', 'true');
+    // res.header(
+    //   'Access-Control-Allow-Origin',
+    //   this.configService.get<string>('FRONTEND_ORIGIN'),
+    // );
+    // res.header('Access-Control-Allow-Credentials', 'true');
 
     return res.send({ message: 'Login successful' });
   }
