@@ -31,16 +31,14 @@ export class AuthService {
     const dbUser = await this.usersService.findOne(loginData.username);
     console.log(`db user object is: ${JSON.stringify(dbUser)}`);
     if (!dbUser) throw new UnauthorizedException('Specified user not found');
-    if (dbUser) {
-      if (dbUser.provider !== 'local')
-        throw new UnauthorizedException('Use Google login for this account');
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      if (!(await bcrypt?.compare(loginData.password, dbUser?.password ?? '')))
-        throw new UnauthorizedException('Wrong Password');
+    if (dbUser.provider !== 'local')
+      throw new UnauthorizedException('Use Google login for this account');
 
-      return this.issueToken(dbUser);
-    }
+    if (!(await bcrypt?.compare(loginData.password, dbUser?.password ?? '')))
+      throw new UnauthorizedException('Wrong Password');
+
+    return this.issueToken(dbUser);
   }
 
   async registerJwt(registerData: CreateUserDTO): Promise<UserDocument> {

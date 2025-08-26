@@ -22,7 +22,7 @@ export default function Login() {
 
     try {
       alert(`${BACKEND_URL}/auth/login-jwt`);
-      alert(JSON.stringify(formData));
+      //alert(JSON.stringify(formData));
       const res = await fetch(`${BACKEND_URL}/auth/login-jwt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

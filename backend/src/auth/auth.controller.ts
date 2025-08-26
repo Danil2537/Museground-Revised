@@ -30,6 +30,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login-jwt')
   async loginJwt(@Body() loginData: JwtLoginDto, @Res() res: Response) {
+    console.log(`starting jwt login, data is: ${JSON.stringify(loginData)}\n`);
     const tokenObj = await this.authService.loginJwt(loginData);
 
     res.cookie('access_token', tokenObj?.access_token, {
@@ -38,7 +39,6 @@ export class AuthController {
       secure: this.configService.get<string>('NODE_ENV') === 'production',
       maxAge: 2592000000,
     });
-
     res.header(
       'Access-Control-Allow-Origin',
       this.configService.get<string>('FRONTEND_ORIGIN'),
