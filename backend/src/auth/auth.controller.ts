@@ -82,10 +82,10 @@ export class AuthController {
       const tokenObj = await this.authService.signInGoogle(req.user);
       if (tokenObj) {
         res.cookie('access_token', tokenObj.access_token, {
-          httpOnly: false,
+          httpOnly: true,
           maxAge: 2592000000,
-          sameSite: 'lax',
-          secure: this.configService.get<string>('NODE_ENV') === 'production',
+          sameSite: 'none',
+          secure: this.configService.get<boolean>('SECURE_COOKIES'),
         });
       }
     }

@@ -24,9 +24,7 @@ async function bootstrap(): Promise<void> {
   //       'Content-Type, Accept, Authorization, Access-Control-Allow-Origin',
   //   });
   app.enableCors({
-    origin: [
-      process.env.FRONTEND_ORIGIN, // your Next.js frontend
-    ],
+    origin: ['http://localhost:3000', 'https://museground.netlify.app'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // important for cookies/authorization headers
     allowedHeaders: [
