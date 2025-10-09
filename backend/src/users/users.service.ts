@@ -12,7 +12,6 @@ export class UsersService {
   async createUser(createUserDTO: CreateUserDTO): Promise<UserDocument> {
     console.log('creating a new user\n');
     if (createUserDTO.password) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       createUserDTO.password = await bcrypt.hash(createUserDTO.password, 10);
     }
 

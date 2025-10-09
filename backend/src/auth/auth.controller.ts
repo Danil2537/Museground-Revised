@@ -77,7 +77,7 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
-    // req.user is now typed from your global.d.ts declaration
+    // req.user is now typed from  global.d.ts declaration
     if (req.user) {
       const tokenObj = await this.authService.signInGoogle(req.user);
       if (tokenObj) {
