@@ -6,6 +6,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtModule } from '@nestjs/jwt';
+import { MaterialModule } from './material/material.module';
+import { SampleSchema } from './schemas/sample.schema';
+import { PresetSchema } from './schemas/preset.schema';
+import { PackSchema } from './schemas/pack.schema';
 
 @Module({
   imports: [
@@ -22,6 +26,10 @@ import { JwtModule } from '@nestjs/jwt';
       }),
       global: true,
     }),
+    MaterialModule.register({ modelName: 'Sample', schema: SampleSchema }),
+    MaterialModule.register({ modelName: 'Preset', schema: PresetSchema }),
+    MaterialModule.register({ modelName: 'Pack', schema: PackSchema }),
+
   ],
   controllers: [AppController],
   providers: [AppService],

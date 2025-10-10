@@ -1,45 +1,33 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
-import { MaterialService } from 'src/material/material.service';
-import { Document } from 'mongoose';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { MaterialService } from './material.service';
+import { FilterQuery } from 'mongoose';
 
-export function MaterialController<T extends Document>(prefix: string) {
-  @Controller(prefix)
-  class GenericController {
-    constructor(readonly service: MaterialService<T>) {}
+@Controller('presets') // each strategy could have its own endpoint
+export class PresetController {
+  constructor(private readonly service: MaterialService) {}
 
-    @Post()
-    create(@Body() dto: any): Promise<T> {
-      return this.service.createMaterial(dto);
-    }
-
-    @Get()
-    findAll(): Promise<T[]> {
-      return this.service.findAll();
-    }
-
-    @Get(':id')
-    findOne(@Param('id') id: string): Promise<T | null> {
-      return this.service.findOne(id);
-    }
-
-    @Put(':id')
-    update(@Param('id') id: string, @Body() dto: any): Promise<T | null> {
-      return this.service.update(id, dto);
-    }
-
-    @Delete(':id')
-    delete(@Param('id') id: string): Promise<T | null> {
-      return this.service.delete(id);
-    }
+  @Post()
+  async create(@Body() createDto: Record<string, any>) {
+    return this.service.create(createDto);
   }
 
-  return GenericController;
+  @Get()
+  async findAll(@Query() query: Record<string, any>) {
+    return this.service.findAll(query as FilterQuery<any>);
+  }
+
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.service.findOne(id);
+  }
+
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateDto: Record<string, any>) {
+    return this.service.update(id, updateDto);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.service.delete(id);
+  }
 }

@@ -1,27 +1,36 @@
-import { Model, Document } from 'mongoose';
+import { Injectable } from '@nestjs/common';
+import { FilterQuery, Model } from 'mongoose';
 
-export class MaterialService<T extends Document> {
-  constructor(private model: Model<T>) {}
+@Injectable()
+export class MaterialService {
 
-  async createMaterial(createDto: any): Promise<T> {
+  constructor(
+    private options: any,
+    private model: Model<Document>, // model is passed from factory
+  ) {}
+
+  async create(createDto: Record<string, any>) {
     const doc = new this.model(createDto);
     return doc.save();
   }
 
-  async findAll(): Promise<T[]> {
-    return this.model.find().exec();
+  async findAll(filter: FilterQuery<Document> = {}) {
+    return this.model.find(filter).exec();
   }
 
-  async findOne(id: string): Promise<T | null> {
+  async findOne(id: string) {
     return this.model.findById(id).exec();
   }
 
-  async update(id: string, updateDto: any): Promise<T | null> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  async update(id: string, updateDto: Record<string, any>) {
     return this.model.findByIdAndUpdate(id, updateDto, { new: true }).exec();
   }
 
-  async delete(id: string): Promise<T | null> {
+  async delete(id: string) {
     return this.model.findByIdAndDelete(id).exec();
+  }
+
+  async findByConditions(conditions: FilterQuery<Document>) {
+    return this.model.find(conditions).exec();
   }
 }

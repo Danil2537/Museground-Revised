@@ -1,30 +1,31 @@
-import { DynamicModule, Provider } from '@nestjs/common';
-import { MaterialController } from './material.controller';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { MaterialService } from './material.service';
-import { Model, Document } from 'mongoose';
+import { MATERIAL_OPTIONS } from './constants';
+import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { MaterialModuleOptions } from './interfaces';
+import { PresetController } from './material.controller';
 
-export interface MaterialModuleOptions<T extends Document> {
-  prefix: string; // route prefix
-  model: Model<T>; // Mongoose model
-}
-
-export function MaterialModule<T extends Document>(
-  options: MaterialModuleOptions<T>,
-): DynamicModule {
-  // Provider for MaterialService
-  const serviceProvider: Provider = {
-    provide: MaterialService,
-    useFactory: () => new MaterialService(options.model),
-  };
-
-  // Generate controller class
-  const ControllerClass = MaterialController<T>(options.prefix);
-
-  return {
-    module: class {},
-    providers: [serviceProvider],
-    exports: [serviceProvider],
-    controllers: [ControllerClass],
-    global: true,
-  };
+@Module({})
+export class MaterialModule {
+  static register(options: MaterialModuleOptions): DynamicModule {
+     const materialProvider: Provider = {
+      provide: MaterialService,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      useFactory: (model: any) => new MaterialService(options, model),
+      inject: [getModelToken(options.modelName)],
+    };
+    return {
+      module: MaterialModule,
+      imports: [
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        MongooseModule.forFeature([{ name: options.modelName, schema: options.schema }]),
+      ],
+      providers: [
+        { provide: MATERIAL_OPTIONS, useValue: options },
+        materialProvider,
+      ],
+      controllers: options.modelName === 'Preset' ? [PresetController] : [],
+      exports: [MaterialService],
+    };
+  }
 }
