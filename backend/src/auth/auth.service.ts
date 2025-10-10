@@ -6,7 +6,7 @@ import { generateFromEmail } from 'unique-username-generator';
 import * as bcrypt from 'bcrypt';
 import { JwtLoginDto } from './DTO/jwtLoginDto';
 import { UserDocument } from '../schemas/user.schema';
-import { User } from 'src/schemas/user.schema';
+import { User } from '../schemas/user.schema';
 
 interface JwtPayload {
   sub: string;

@@ -29,7 +29,6 @@ import { PackSchema } from './schemas/pack.schema';
     MaterialModule.register({ modelName: 'Sample', schema: SampleSchema }),
     MaterialModule.register({ modelName: 'Preset', schema: PresetSchema }),
     MaterialModule.register({ modelName: 'Pack', schema: PackSchema }),
-
   ],
   controllers: [AppController],
   providers: [AppService],

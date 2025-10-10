@@ -3,7 +3,6 @@ import { FilterQuery, Model } from 'mongoose';
 
 @Injectable()
 export class MaterialService {
-
   constructor(
     private options: any,
     private model: Model<Document>, // model is passed from factory

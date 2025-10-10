@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwtauth.guard';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
 import { JwtLoginDto } from './DTO/jwtLoginDto';
-import { CreateUserDTO } from 'src/users/DTO/createUser.dto';
+import { CreateUserDTO } from '../users/DTO/createUser.dto';
 import { ProfileRequestDto } from './DTO/profileRequestDto';
 import { CurrentUser } from './decorators/user.decorator';
 import type { Request, Response } from 'express';
