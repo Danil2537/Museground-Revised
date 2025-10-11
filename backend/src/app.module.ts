@@ -10,6 +10,7 @@ import { MaterialModule } from './material/material.module';
 import { SampleSchema } from './schemas/sample.schema';
 import { PresetSchema } from './schemas/preset.schema';
 import { PackSchema } from './schemas/pack.schema';
+import { BucketModule } from './r2bucket/bucket.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PackSchema } from './schemas/pack.schema';
       }),
       global: true,
     }),
+    BucketModule,
     MaterialModule.register({ modelName: 'Sample', schema: SampleSchema }),
     MaterialModule.register({ modelName: 'Preset', schema: PresetSchema }),
     MaterialModule.register({ modelName: 'Pack', schema: PackSchema }),
