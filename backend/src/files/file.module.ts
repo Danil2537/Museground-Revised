@@ -3,6 +3,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { FileSchema } from "src/schemas/file.schema";
 import { FileService } from "./file.service";
 import { FileController } from "./file.controller";
+import { BucketModule } from "src/r2bucket/bucket.module";
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { FileController } from "./file.controller";
         schema: FileSchema,
       },
     ]),
+    BucketModule,
   ],
   providers: [FileService],
   controllers: [FileController],

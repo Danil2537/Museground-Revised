@@ -1,11 +1,12 @@
 import { Controller } from '@nestjs/common';
-import { BaseMaterialController } from './material.controller';
 import { MaterialService } from '../material.service';
+import { PresetDocument } from 'src/schemas/preset.schema';
+import { FileService } from 'src/files/file.service';
 
 @Controller('presets')
-export class PresetController extends BaseMaterialController {
-  constructor(service: MaterialService) {
-    super(service);
+export class PresetController { //extends BaseMaterialController {
+  constructor(private readonly materialService: MaterialService<PresetDocument>, private readonly fileervice: FileService) {
+    //super(service);
   }
 
   // Example of overriding:

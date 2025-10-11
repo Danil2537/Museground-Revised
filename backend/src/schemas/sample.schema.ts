@@ -8,15 +8,13 @@ export class Sample {
   @IsString()
   name: string;
 
-  @Prop({ required: true })
+  @Prop()
   @IsString()
   fileUrl?: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   authorId: Types.ObjectId;
 
-  @Prop({ type: Types.ObjectId, ref: 'Folder', required: true })
-  rootFolder: Types.ObjectId;
 
   @Prop()
   @IsNumber()

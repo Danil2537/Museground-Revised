@@ -7,7 +7,7 @@ export class File {
   @IsString()
   name: string;
 
-  @Prop({ required: true })
+  @Prop()
   @IsNumber()
   size: number; //probably in megs
 
