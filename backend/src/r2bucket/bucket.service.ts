@@ -44,6 +44,18 @@ try {
     }));
     return { key, url: this.getPublicUrl(key) };
   }
+  
+  async createFolder(path: string) {
+    if (!path.endsWith('/')) path += '/';
+    await this.s3.send(
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: path,
+        Body: '',
+      }),
+    );
+    return { key: path, url: this.getPublicUrl(path) };
+  }
 
   async getFile(key: string): Promise<Readable> {
     console.log(key,'\n\n');
