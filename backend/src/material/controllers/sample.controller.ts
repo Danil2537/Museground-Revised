@@ -1,6 +1,9 @@
 import {
+    BadRequestException,
   Body,
   Controller,
+  Delete,
+  Get,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -11,6 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateSampleDTO } from '../DTO/createSample.dto';
 import { FileService } from 'src/files/file.service';
 import { SampleDocument } from 'src/schemas/sample.schema';
+import { Types } from 'mongoose';
 
 @Controller('samples')
 export class SampleController {
@@ -38,7 +42,27 @@ export class SampleController {
     });
     console.log('adding file url to sample model object\n');
     newSample.fileUrl = fileUpload.url;
+    newSample.fileId = fileUpload._id as Types.ObjectId;
     return await newSample.save();
+  }
+
+  @Get('sample/:id')
+  async getSample(@Body('id') sampleId: string)
+  {
+    return await this.materialService.findOne(sampleId);
+  }
+
+  @Delete('delete/:id')
+  async deleteSample(@Body('id') sampleId: string)
+  {
+    const toBeDeleted = await this.materialService.findOne(sampleId);
+    if(toBeDeleted)
+    {
+    const r2 = await this.fileService.deleteFile(toBeDeleted.fileId as unknown as string);
+    const db = await this.materialService.delete(sampleId);
+    return {db: db, r2: r2};
+    }
+    else throw new BadRequestException('Sample with specified id not found\n');
   }
 
   // Example of overriding:

@@ -32,4 +32,7 @@ export class CreateSampleDTO {
   @IsString()
   @MaxLength(4) //like C#m or G♭
   key?: string;
+
+  @IsOptional()
+  fileId: Types.ObjectId;
 }

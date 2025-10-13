@@ -1,6 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { IsOptional, IsString, IsUrl } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 @Schema()
 export class Preset {
@@ -37,6 +37,9 @@ export class Preset {
   @IsOptional()
   @IsString()
   types?: string;
+
+  @Prop({type: Types.ObjectId, ref: 'File'})
+  fileId: Types.ObjectId;
 }
 export type PresetDocument = Preset & Document;
 export const PresetSchema = SchemaFactory.createForClass(Preset);

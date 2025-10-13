@@ -1,6 +1,8 @@
 import {
+    BadRequestException,
   Body,
   Controller,
+  Delete,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -10,6 +12,7 @@ import { PresetDocument } from 'src/schemas/preset.schema';
 import { FileService } from 'src/files/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreatePresetDTO } from '../DTO/createPreset.dto';
+import { Types } from 'mongoose';
 
 @Controller('presets')
 export class PresetController {
@@ -37,13 +40,20 @@ export class PresetController {
     });
     console.log('adding file url to preset model object\n');
     newPreset.fileUrl = fileUpload.url;
+    newPreset.fileId = fileUpload._id as Types.ObjectId;
     return await newPreset.save();
   }
-  // Example of overriding:
-  // Add custom filtering or validation
-  // @Post()
-  // async create(@Body() dto) {
-  //   // custom preset logic
-  //   return super.create(dto);
-  // }
+
+    @Delete('delete/:id')
+    async deletePreset(@Body('id') presetId: string)
+    {
+      const toBeDeleted = await this.materialService.findOne(presetId);
+      if(toBeDeleted)
+      {
+      const r2 = await this.fileService.deleteFile(toBeDeleted.fileId as unknown as string);
+      const db = await this.materialService.delete(presetId);
+      return {db: db, r2: r2};
+      }
+      else throw new BadRequestException('Preset with specified id not found\n');
+    }
 }
