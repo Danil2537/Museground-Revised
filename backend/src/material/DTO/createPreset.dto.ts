@@ -1,8 +1,10 @@
-import { IsOptional, IsString, IsUrl } from "class-validator";
+import { IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CreatePresetDTO {
-    constructor(){console.log('creating preset upload dto');}
-    
+  constructor() {
+    console.log('creating preset upload dto');
+  }
+
   @IsString()
   name: string;
 

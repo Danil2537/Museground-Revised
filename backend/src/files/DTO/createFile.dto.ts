@@ -7,10 +7,10 @@ export class CreateFileDTO {
 
   @IsString()
   @IsNotEmpty()
-  key: string; 
-  
-  buffer: Buffer; 
-  
+  key: string;
+
+  buffer: Buffer;
+
   @IsString()
   @IsNotEmpty()
   contentType: string;

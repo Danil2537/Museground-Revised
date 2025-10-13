@@ -1,33 +1,35 @@
-import { IsOptional, IsString, MaxLength } from "class-validator";
-import { Types } from "mongoose";
+import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class CreateSampleDTO {
-    constructor(){console.log('creating sample upload dto');}
-    
-    @IsString()
-    name: string;
+  constructor() {
+    console.log('creating sample upload dto');
+  }
 
-    @IsOptional()
-    @IsString()
-    fileUrl?: string;
+  @IsString()
+  name: string;
 
-    @IsOptional()
-    authorId: Types.ObjectId;
+  @IsOptional()
+  @IsString()
+  fileUrl?: string;
 
-    //@IsNumber()
-    @IsOptional()
-    BPM?: number;
+  @IsOptional()
+  authorId: Types.ObjectId;
 
-    @IsOptional()
-    @IsString()
-    instruments?: string;
+  //@IsNumber()
+  @IsOptional()
+  BPM?: number;
 
-    @IsOptional()
-    @IsString()
-    genres?: string;
+  @IsOptional()
+  @IsString()
+  instruments?: string;
 
-    @IsOptional()
-    @IsString()
-    @MaxLength(4) //like C#m or G♭
-    key?: string;
+  @IsOptional()
+  @IsString()
+  genres?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(4) //like C#m or G♭
+  key?: string;
 }

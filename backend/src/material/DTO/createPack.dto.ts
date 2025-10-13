@@ -1,9 +1,11 @@
-import { IsOptional, IsString, IsUrl } from "class-validator";
-import { Types } from "mongoose";
+import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class CreatePackDTO {
-    constructor(){console.log('creating preset pack dto');}
-    
+  constructor() {
+    console.log('creating preset pack dto');
+  }
+
   @IsString()
   name: string;
 

@@ -1,9 +1,10 @@
-import { Module } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
-import { FileSchema } from "src/schemas/file.schema";
-import { FileService } from "./file.service";
-import { FileController } from "./file.controller";
-import { BucketModule } from "src/r2bucket/bucket.module";
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { File, FileSchema } from 'src/schemas/file.schema';
+import { FileService } from './file.service';
+import { FileController } from './file.controller';
+import { BucketModule } from 'src/r2bucket/bucket.module';
+import { Folder, FolderSchema } from 'src/schemas/folder.schema';
 
 @Module({
   imports: [
@@ -11,6 +12,12 @@ import { BucketModule } from "src/r2bucket/bucket.module";
       {
         name: File.name,
         schema: FileSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: Folder.name,
+        schema: FolderSchema,
       },
     ]),
     BucketModule,

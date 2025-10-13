@@ -12,7 +12,9 @@ import { Document, Model, Schema } from 'mongoose';
 
 @Module({})
 export class MaterialModule {
-  static register<T extends Document>(options: MaterialModuleOptions): DynamicModule {
+  static register<T extends Document>(
+    options: MaterialModuleOptions,
+  ): DynamicModule {
     const controllerMap: Record<string, Type<any>> = {
       Sample: SampleController,
       Preset: PresetController,
@@ -30,7 +32,9 @@ export class MaterialModule {
     return {
       module: MaterialModule,
       imports: [
-        MongooseModule.forFeature([{ name: options.modelName, schema: options.schema as Schema}]),
+        MongooseModule.forFeature([
+          { name: options.modelName, schema: options.schema as Schema },
+        ]),
         FileModule,
         FolderModule,
       ],
