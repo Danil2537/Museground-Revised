@@ -11,12 +11,14 @@ import { SampleSchema } from './schemas/sample.schema';
 import { PresetSchema } from './schemas/preset.schema';
 import { PackSchema } from './schemas/pack.schema';
 import { BucketModule } from './r2bucket/bucket.module';
+import { UserMaterialModule } from './userMaterials/userMaterial.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.MONGODB_URI as string),
     UsersModule,
+    UserMaterialModule,
     AuthModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
