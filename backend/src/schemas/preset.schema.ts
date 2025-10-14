@@ -18,7 +18,7 @@ export class Preset {
   @IsString()
   author: string;
 
-  @Prop({ required: true })
+  @Prop()
   @IsString()
   @IsUrl()
   fileUrl: string;

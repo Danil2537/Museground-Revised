@@ -6,6 +6,7 @@ import {
   Get,
   Param,
   Post,
+  Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,8 +18,10 @@ import { FolderService } from 'src/folder/folder.service';
 import { Types } from 'mongoose';
 import { PACK_FOLDER_ID } from '../constants';
 import { CreateFolderDTO } from 'src/folder/DTO/createFolder.dto';
-//import { CreateFileDTO } from 'src/files/DTO/createFile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import type { Response } from 'express';
+import { Stream } from 'stream';
+import archiver from 'archiver';
 
 @Controller('packs')
 export class PackController {
@@ -59,8 +62,9 @@ export class PackController {
     @UploadedFile() file: Express.Multer.File,
     @Body('key') key: string,
     @Body('type') type: 'sample' | 'preset' | 'pack',
-    @Body('parent') parent?: string, // <–– allow passing parent folder id
+    @Body('parent') parent?: string, 
   ) {
+    console.log(`key ${key}\n`);
     const savedFile = await this.fileService.uploadFile({
       key,
       buffer: file.buffer,
@@ -109,5 +113,66 @@ export class PackController {
     const dbDeletion = await this.materialService.delete(packId);
 
     return { db: dbDeletion, bucket: folderDeletion };
+  }
+
+  @Get('download-file/:fileId')
+  async downloadFile(@Param('fileId') fileId: string, @Res() res: Response) {
+    const file = await this.fileService.getFileById(fileId);
+    if (!file) throw new BadRequestException('File not found');
+
+    // Get full S3/R2 key using folder hierarchy
+    const key = await this.fileService['buildFilePath'](file);
+
+    // Get file stream
+    const stream = await this.fileService.downloadFile(key);
+
+    // Set headers for download
+    res.setHeader('Content-Disposition', `attachment; filename="${file.name.split('/').pop()}"`);
+    res.setHeader('Content-Type', 'application/octet-stream');
+
+    (stream as Stream).pipe(res);
+  }
+
+  @Get('download-folder/:folderId')
+  async downloadFolder(@Param('folderId') folderId: string, @Res() res: Response) {
+    const folder = await this.folderService.getFolderById(folderId);
+    if (!folder) throw new BadRequestException('Folder not found');
+
+    // Resolve full folder path in bucket
+    const folderPath = await this.folderService['getFullFolderPath'](folder);
+
+    console.log(`folder id ${folderId},\n folder data: ${JSON.stringify(folder)},\n folderPath: ${folderPath}\n`);
+
+    // Set ZIP headers
+    res.setHeader('Content-Disposition', `attachment; filename="${folder.name}.zip"`);
+    res.setHeader('Content-Type', 'application/zip');
+
+    // Create ZIP archive
+    const archive = archiver('zip', { zlib: { level: 9 } });
+    archive.on('error', (err) => { throw new BadRequestException(err.message); });
+    archive.pipe(res);
+
+    // Recursively add files from folder
+    const addFilesRecursively = async (folderId: Types.ObjectId) => {
+    // get files in this folder
+    const files = await this.fileService.getFilesByParent(folderId);
+    for (const file of files) {
+        //const key = await this.fileService.buildFilePath(file);
+        const key = file.name;
+        console.log(`key: ${key},\n filename: ${file.name.split('/').pop()}\n`);
+        const fileStream = await this.fileService.downloadFile(key);
+        archive.append(fileStream, { name: file.name.split('/').pop() ?? "unknown" });
+    }
+
+    // get subfolders
+    const subfolders = await this.folderService.getSubfolders(folderId);
+    for (const sub of subfolders) {
+        await addFilesRecursively(sub._id as Types.ObjectId);
+    }
+    };
+
+    await addFilesRecursively(folder._id as Types.ObjectId);
+
+    await archive.finalize();
   }
 }

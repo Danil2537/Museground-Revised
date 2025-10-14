@@ -112,4 +112,9 @@ export class FolderService {
       throw new BadRequestException(`Folder ${folderId as string} not found`);
     return folder;
   }
+
+  async getSubfolders(parentId: Types.ObjectId): Promise<FolderDocument[]> {
+  return this.folderModel.find({ parent: parentId }).exec();
+}
+
 }

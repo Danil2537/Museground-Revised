@@ -16,6 +16,7 @@ export class CreatePresetDTO {
   @IsString()
   author: string;
 
+  @IsOptional()
   @IsString()
   @IsUrl()
   fileUrl: string;

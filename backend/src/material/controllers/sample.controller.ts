@@ -94,7 +94,7 @@ async downloadSample(@Param('id') sampleId: string, @Res() res: Response) {
 }
 
   @Delete('delete/:id')
-  async deleteSample(@Body('id') sampleId: string) {
+  async deleteSample(@Param('id') sampleId: string) {
     const toBeDeleted = await this.materialService.findOne(sampleId);
     if (toBeDeleted) {
       const r2 = await this.fileService.deleteFile(
@@ -105,12 +105,4 @@ async downloadSample(@Param('id') sampleId: string, @Res() res: Response) {
     } else
       throw new BadRequestException('Sample with specified id not found\n');
   }
-
-  // Example of overriding:
-  // Add custom filtering or validation
-  // @Post()
-  // async create(@Body() dto) {
-  //   // custom sample logic
-  //   return super.create(dto);
-  // }
 }
