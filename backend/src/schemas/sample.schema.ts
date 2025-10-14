@@ -24,7 +24,7 @@ export class Sample {
   @Prop()
   key?: string;
 
-  @Prop({type: Types.ObjectId, ref: 'File'})
+  @Prop({ type: Types.ObjectId, ref: 'File' })
   fileId: Types.ObjectId;
 }
 export type SampleDocument = Sample & Document;

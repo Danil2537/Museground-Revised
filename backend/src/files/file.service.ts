@@ -68,6 +68,11 @@ export class FileService {
     return { deleted: true, key: fileKey };
   }
 
+  async getFileById(fileId: string) {
+    console.log(`file id: ${fileId}\n`);
+    return this.fileModel.findById(fileId);
+  }
+
   /**
    * Construct the full S3 key for a file
    */

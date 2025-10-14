@@ -38,7 +38,7 @@ export class Preset {
   @IsString()
   types?: string;
 
-  @Prop({type: Types.ObjectId, ref: 'File'})
+  @Prop({ type: Types.ObjectId, ref: 'File' })
   fileId: Types.ObjectId;
 }
 export type PresetDocument = Preset & Document;

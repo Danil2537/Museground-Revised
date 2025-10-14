@@ -1,8 +1,10 @@
 import {
-    BadRequestException,
+  BadRequestException,
   Body,
   Controller,
   Delete,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -44,16 +46,21 @@ export class PresetController {
     return await newPreset.save();
   }
 
-    @Delete('delete/:id')
-    async deletePreset(@Body('id') presetId: string)
-    {
-      const toBeDeleted = await this.materialService.findOne(presetId);
-      if(toBeDeleted)
-      {
-      const r2 = await this.fileService.deleteFile(toBeDeleted.fileId as unknown as string);
+  @Get(':id')
+  async getPreset(@Param('id') presetId: string) {
+    return await this.materialService.findOne(presetId);
+  }
+
+  @Delete('delete/:id')
+  async deletePreset(@Body('id') presetId: string) {
+    const toBeDeleted = await this.materialService.findOne(presetId);
+    if (toBeDeleted) {
+      const r2 = await this.fileService.deleteFile(
+        toBeDeleted.fileId as unknown as string,
+      );
       const db = await this.materialService.delete(presetId);
-      return {db: db, r2: r2};
-      }
-      else throw new BadRequestException('Preset with specified id not found\n');
-    }
+      return { db: db, r2: r2 };
+    } else
+      throw new BadRequestException('Preset with specified id not found\n');
+  }
 }

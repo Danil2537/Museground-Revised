@@ -125,6 +125,7 @@ export class BucketService {
   }
 
   getPublicUrl(key: string): string {
-    return `https://${this.configService.get<string>('R2_ENDPOINT')}/${key}`;
+    const endpoint = this.configService.get<string>('R2_ENDPOINT')!;
+    return `${endpoint.replace(/\/+$/, '')}/${key}`;
   }
 }

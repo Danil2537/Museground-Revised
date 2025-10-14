@@ -3,6 +3,8 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -88,6 +90,11 @@ export class PackController {
     console.log(`Deleting file with id: ${body.fileId}`);
     const result = await this.fileService.deleteFile(body.fileId);
     return result;
+  }
+
+  @Get(':id')
+  async getPack(@Param('id') packId: string) {
+    return this.materialService.findOne(packId);
   }
 
   @Delete('delete-pack')
