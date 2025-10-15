@@ -20,6 +20,7 @@ import { Sample, SampleDocument } from 'src/schemas/sample.schema';
 import { type FilterQuery, Types } from 'mongoose';
 import type { Response } from 'express';
 import { Stream } from 'stream';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('samples')
 export class SampleController {
@@ -27,6 +28,7 @@ export class SampleController {
   constructor(
     private readonly materialService: MaterialService<SampleDocument>,
     private readonly fileService: FileService,
+    private readonly userService: UsersService,
   ) {
     //super(materialService);
   }
@@ -57,41 +59,82 @@ export class SampleController {
   }
 
   @Get('filter/query')
-  async getFiltered(@Query() query: Record<string, any>) {
+  async getFiltered(@Query() query: Record<string, string>) {
     const filter: FilterQuery<Sample> = {};
 
-    // Convert each string into a case-insensitive regex
-    for (const [key, value] of Object.entries(query)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      filter[key] = { $regex: value, $options: 'i' };
+    // Handle BPM range safely
+    const minBPM = query.minBPM ? Number(query.minBPM) : undefined;
+    const maxBPM = query.maxBPM ? Number(query.maxBPM) : undefined;
+
+    if (minBPM !== undefined || maxBPM !== undefined) {
+      const bpmFilter: Record<string, number> = {};
+      if (minBPM !== undefined) bpmFilter.$gte = minBPM;
+      if (maxBPM !== undefined) bpmFilter.$lte = maxBPM;
+      filter.BPM = bpmFilter as unknown as Sample['BPM'];
     }
 
+    // Handle string fields safely
+    const stringFields: (keyof Sample)[] = [
+      'name',
+      'instruments',
+      'genres',
+      'key',
+    ];
+    stringFields.forEach((field) => {
+      const value = query[field];
+      if (value && value.trim() !== '') {
+        filter[field] = { $regex: value.trim(), $options: 'i' } as unknown;
+      }
+    });
+
+    // Handle author username --> lookup in Users collection
+    const authorName = query.author?.trim();
+    console.log(authorName);
+    if (authorName) {
+      const user = await this.userService.findByName(authorName);
+      if (user) {
+        console.log(
+          `user with specified author name for sample found: ${JSON.stringify(user)}\n\n`,
+        );
+        filter.authorId = user._id;
+      } else {
+        // No matching user --> no results
+        return [];
+      }
+    }
+    console.log(`sample filter query is: ${JSON.stringify(filter)}\n\n`);
     return this.materialService.findByConditions(filter);
   }
 
   @Get('download/:id')
-async downloadSample(@Param('id') sampleId: string, @Res() res: Response) {
-  const toBeDownloaded = await this.materialService.findOne(sampleId);
-  if (!toBeDownloaded) throw new BadRequestException('Sample not found');
+  async downloadSample(@Param('id') sampleId: string, @Res() res: Response) {
+    const toBeDownloaded = await this.materialService.findOne(sampleId);
+    if (!toBeDownloaded) throw new BadRequestException('Sample not found');
 
-  const file = await this.fileService.getFileById(toBeDownloaded.fileId as unknown as string);
-  if (!file) throw new BadRequestException('File not found');
+    const file = await this.fileService.getFileById(
+      toBeDownloaded.fileId as unknown as string,
+    );
+    if (!file) throw new BadRequestException('File not found');
 
-  // Extract key from file URL
-  const keyMatch = file.url.match(/\/(samples|presets|packs)\/.+$/);
-  if (!keyMatch) throw new BadRequestException(`Invalid file URL: ${file.url}`);
-  const key = keyMatch[1] ? keyMatch[0].slice(1) : file.name;
+    // Extract key from file URL
+    const keyMatch = file.url.match(/\/(samples|presets|packs)\/.+$/);
+    if (!keyMatch)
+      throw new BadRequestException(`Invalid file URL: ${file.url}`);
+    const key = keyMatch[1] ? keyMatch[0].slice(1) : file.name;
 
-  // Get stream from bucket
-  const stream = await this.fileService.downloadFile(key);
+    // Get stream from bucket
+    const stream = await this.fileService.downloadFile(key);
 
-  // Set headers for download
-  res.setHeader('Content-Disposition', `attachment; filename="${file.name.split('/').pop()}"`);
-  res.setHeader('Content-Type', 'audio/mpeg');
+    // Set headers for download
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${file.name.split('/').pop()}"`,
+    );
+    res.setHeader('Content-Type', 'audio/mpeg');
 
-  // Pipe the stream to the response
-  (stream as Stream).pipe(res);
-}
+    // Pipe the stream to the response
+    (stream as Stream).pipe(res);
+  }
 
   @Delete('delete/:id')
   async deleteSample(@Param('id') sampleId: string) {

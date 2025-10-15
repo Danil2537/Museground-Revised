@@ -11,8 +11,9 @@ import { SavedItem, SavedItemDocument } from 'src/schemas/savedItem.schema';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(SavedItem.name) private savedItemModel: Model<SavedItemDocument>,) 
-    {}
+    @InjectModel(SavedItem.name)
+    private savedItemModel: Model<SavedItemDocument>,
+  ) {}
 
   async createUser(createUserDTO: CreateUserDTO): Promise<UserDocument> {
     console.log('creating a new user\n');
@@ -36,6 +37,10 @@ export class UsersService {
     return this.userModel.findById(id).exec();
   }
 
+  async findByName(username: string): Promise<UserDocument | null> {
+    return this.userModel.findOne({ username }).exec();
+  }
+
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }
@@ -45,10 +50,18 @@ export class UsersService {
   }
 
   async getSavedItems(userId: string, type: string) {
-    return await this.savedItemModel.find({userId: userId, itemType: type}).exec();
+    return await this.savedItemModel
+      .find({ userId: userId, itemType: type })
+      .exec();
   }
 
   async deleteSavedItem(saveItemDto: SaveItemDTO) {
-    return await this.savedItemModel.deleteOne({userId: saveItemDto.userId, itemType: saveItemDto.itemType, itemId: saveItemDto.itemId}).exec();
+    return await this.savedItemModel
+      .deleteOne({
+        userId: saveItemDto.userId,
+        itemType: saveItemDto.itemType,
+        itemId: saveItemDto.itemId,
+      })
+      .exec();
   }
 }

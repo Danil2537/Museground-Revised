@@ -76,7 +76,7 @@ export class FileService {
   /**
    * Construct the full S3 key for a file
    */
-    async buildFilePath(file: FileDocument): Promise<string> {
+  async buildFilePath(file: FileDocument): Promise<string> {
     if (!file.parent) return file.name; // root files
 
     const parentFolder = await this.folderModel.findById(file.parent);
@@ -107,7 +107,6 @@ export class FileService {
   }
 
   async getFilesByParent(parentId: Types.ObjectId): Promise<FileDocument[]> {
-  return this.fileModel.find({ parent: parentId }).exec();
-}
-
+    return this.fileModel.find({ parent: parentId }).exec();
+  }
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Header from "../components/header";
 export default function ProfilePage() {
   //const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
@@ -25,7 +25,6 @@ export default function ProfilePage() {
         const data = await res.json();
         alert(JSON.stringify(data));
         if (res.ok) {
-          
           setUser(data);
         } else if (res.status === 401) {
           router.push("/login");
@@ -45,25 +44,30 @@ export default function ProfilePage() {
   if (!user) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h1>Profile</h1>
-      <p>
-        <strong>Username:</strong> {user.username}
-      </p>
-      <p>
-        <strong>Email:</strong> {user.email}
-      </p>
-      <button
-        onClick={async () => {
-          await fetch(`${BACKEND_URL}/auth/logout`, {
-            method: "POST",
-            credentials: "include",
-          });
-          router.push("/login");
-        }}
-      >
-        Logout
-      </button>
-    </div>
+    <>
+      <Header activeTop="Profile" />
+      <div className="pt-20 px-4">
+        {" "}
+        {/*moving this div down by the height of the header*/}
+        <h1>Profile</h1>
+        <p>
+          <strong>Username:</strong> {user.username}
+        </p>
+        <p>
+          <strong>Email:</strong> {user.email}
+        </p>
+        <button
+          onClick={async () => {
+            await fetch(`${BACKEND_URL}/auth/logout`, {
+              method: "POST",
+              credentials: "include",
+            });
+            router.push("/login");
+          }}
+        >
+          Logout
+        </button>
+      </div>
+    </>
   );
 }

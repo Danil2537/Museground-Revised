@@ -6,7 +6,6 @@ import {
   Get,
   UseGuards,
   Post,
-  Req,
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -18,7 +17,20 @@ import { ProfileRequestDto } from './DTO/profileRequestDto';
 import { CurrentUser } from './decorators/user.decorator';
 import type { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-//import { ProfileRequestDto } from './DTO/profileRequestDto';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { type GoogleUser } from './strategies/google.strategy';
+
+export const GoogleUserImpl = createParamDecorator(
+  (_data: unknown, ctx: ExecutionContext): GoogleUser => {
+    const request = ctx
+      .switchToHttp()
+      .getRequest<Request & { user?: GoogleUser }>();
+    if (!request.user) {
+      throw new Error('No Google user found on request');
+    }
+    return request.user;
+  },
+);
 
 @Controller('auth')
 export class AuthController {
@@ -63,10 +75,11 @@ export class AuthController {
     const dbUser = await this.authService.getUserById(user.id);
     console.log('\n\n', JSON.stringify(user));
     if (dbUser) {
-      return {
-        username: dbUser.username,
-        email: dbUser.email,
-      };
+      return dbUser;
+      //   return {
+      //     username: dbUser.username,
+      //     email: dbUser.email,
+      //   };
     }
   }
 
@@ -74,20 +87,40 @@ export class AuthController {
   @UseGuards(GoogleOauthGuard)
   async auth() {}
 
+  //   @Get('google/callback')
+  //   @UseGuards(GoogleOauthGuard)
+  //   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
+  //     // req.user is now typed from  global.d.ts declaration
+  //     if (req.user) {
+  //       const tokenObj = await this.authService.signInGoogle(req.user);
+  //       if (tokenObj) {
+  //         res.cookie('access_token', tokenObj.access_token, {
+  //           httpOnly: true,
+  //           maxAge: 2592000000,
+  //           sameSite: 'none',
+  //           secure: this.configService.get<boolean>('SECURE_COOKIES'),
+  //         });
+  //       }
+  //     }
+  //     return res.redirect(
+  //       `${this.configService.get<string>('FRONTEND_ORIGIN')}/profile`,
+  //     );
+  //   }
+
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
-  async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
-    // req.user is now typed from  global.d.ts declaration
-    if (req.user) {
-      const tokenObj = await this.authService.signInGoogle(req.user);
-      if (tokenObj) {
-        res.cookie('access_token', tokenObj.access_token, {
-          httpOnly: true,
-          maxAge: 2592000000,
-          sameSite: 'none',
-          secure: this.configService.get<boolean>('SECURE_COOKIES'),
-        });
-      }
+  async googleAuthCallback(
+    @GoogleUserImpl() user: GoogleUser,
+    @Res() res: Response,
+  ) {
+    const tokenObj = await this.authService.signInGoogle(user);
+    if (tokenObj) {
+      res.cookie('access_token', tokenObj.access_token, {
+        httpOnly: true,
+        maxAge: 2592000000,
+        sameSite: 'none',
+        secure: this.configService.get<boolean>('SECURE_COOKIES'),
+      });
     }
     return res.redirect(
       `${this.configService.get<string>('FRONTEND_ORIGIN')}/profile`,

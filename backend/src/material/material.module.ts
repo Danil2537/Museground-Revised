@@ -9,6 +9,7 @@ import { PackController } from './controllers/pack.controller';
 import { FileModule } from 'src/files/file.module';
 import { FolderModule } from 'src/folder/folder.module';
 import { Document, Model, Schema } from 'mongoose';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({})
 export class MaterialModule {
@@ -37,6 +38,7 @@ export class MaterialModule {
         ]),
         FileModule,
         FolderModule,
+        UsersModule,
       ],
       providers: [
         { provide: MATERIAL_OPTIONS, useValue: options },

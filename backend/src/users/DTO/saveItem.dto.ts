@@ -1,8 +1,7 @@
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 
 export class SaveItemDTO {
-  constructor() {
-  }
+  constructor() {}
 
   @IsString()
   @IsNotEmpty()

@@ -62,7 +62,7 @@ export class PackController {
     @UploadedFile() file: Express.Multer.File,
     @Body('key') key: string,
     @Body('type') type: 'sample' | 'preset' | 'pack',
-    @Body('parent') parent?: string, 
+    @Body('parent') parent?: string,
   ) {
     console.log(`key ${key}\n`);
     const savedFile = await this.fileService.uploadFile({
@@ -127,48 +127,63 @@ export class PackController {
     const stream = await this.fileService.downloadFile(key);
 
     // Set headers for download
-    res.setHeader('Content-Disposition', `attachment; filename="${file.name.split('/').pop()}"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${file.name.split('/').pop()}"`,
+    );
     res.setHeader('Content-Type', 'application/octet-stream');
 
     (stream as Stream).pipe(res);
   }
 
   @Get('download-folder/:folderId')
-  async downloadFolder(@Param('folderId') folderId: string, @Res() res: Response) {
+  async downloadFolder(
+    @Param('folderId') folderId: string,
+    @Res() res: Response,
+  ) {
     const folder = await this.folderService.getFolderById(folderId);
     if (!folder) throw new BadRequestException('Folder not found');
 
     // Resolve full folder path in bucket
     const folderPath = await this.folderService['getFullFolderPath'](folder);
 
-    console.log(`folder id ${folderId},\n folder data: ${JSON.stringify(folder)},\n folderPath: ${folderPath}\n`);
+    console.log(
+      `folder id ${folderId},\n folder data: ${JSON.stringify(folder)},\n folderPath: ${folderPath}\n`,
+    );
 
     // Set ZIP headers
-    res.setHeader('Content-Disposition', `attachment; filename="${folder.name}.zip"`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${folder.name}.zip"`,
+    );
     res.setHeader('Content-Type', 'application/zip');
 
     // Create ZIP archive
     const archive = archiver('zip', { zlib: { level: 9 } });
-    archive.on('error', (err) => { throw new BadRequestException(err.message); });
+    archive.on('error', (err) => {
+      throw new BadRequestException(err.message);
+    });
     archive.pipe(res);
 
     // Recursively add files from folder
     const addFilesRecursively = async (folderId: Types.ObjectId) => {
-    // get files in this folder
-    const files = await this.fileService.getFilesByParent(folderId);
-    for (const file of files) {
+      // get files in this folder
+      const files = await this.fileService.getFilesByParent(folderId);
+      for (const file of files) {
         //const key = await this.fileService.buildFilePath(file);
         const key = file.name;
         console.log(`key: ${key},\n filename: ${file.name.split('/').pop()}\n`);
         const fileStream = await this.fileService.downloadFile(key);
-        archive.append(fileStream, { name: file.name.split('/').pop() ?? "unknown" });
-    }
+        archive.append(fileStream, {
+          name: file.name.split('/').pop() ?? 'unknown',
+        });
+      }
 
-    // get subfolders
-    const subfolders = await this.folderService.getSubfolders(folderId);
-    for (const sub of subfolders) {
+      // get subfolders
+      const subfolders = await this.folderService.getSubfolders(folderId);
+      for (const sub of subfolders) {
         await addFilesRecursively(sub._id as Types.ObjectId);
-    }
+      }
     };
 
     await addFilesRecursively(folder._id as Types.ObjectId);

@@ -17,7 +17,6 @@ export class BucketService {
 
   constructor(private configService: ConfigService) {
     try {
-      //const accountId = this.configService.get<string>('ACCOUNT_ID')!;
       const accessKeyId = this.configService.get<string>(
         'ACCESS_TOKEN_KEY_ID',
       )!;

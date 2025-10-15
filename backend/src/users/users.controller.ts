@@ -18,7 +18,7 @@ export class UsersController {
     return await this.usersService.saveItem(saveItemDto);
   }
 
-    @Post('delete-saved')
+  @Post('delete-saved')
   async deleteSavedItem(@Body() saveItemDto: SaveItemDTO) {
     return await this.usersService.deleteSavedItem(saveItemDto);
   }

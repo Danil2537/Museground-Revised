@@ -114,7 +114,6 @@ export class FolderService {
   }
 
   async getSubfolders(parentId: Types.ObjectId): Promise<FolderDocument[]> {
-  return this.folderModel.find({ parent: parentId }).exec();
-}
-
+    return this.folderModel.find({ parent: parentId }).exec();
+  }
 }

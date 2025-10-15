@@ -51,45 +51,51 @@ export class PresetController {
   }
 
   @Get('filter/query')
-    async getFiltered(@Query() query: Record<string, any>) {
-      const filter: FilterQuery<Preset> = {};
-  
-      // Convert each string into a case-insensitive regex
-      for (const [key, value] of Object.entries(query)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        filter[key] = { $regex: value, $options: 'i' };
-      }
-  
-      return this.materialService.findByConditions(filter);
+  async getFiltered(@Query() query: Record<string, any>) {
+    const filter: FilterQuery<Preset> = {};
+
+    // Convert each string into a case-insensitive regex
+    for (const [key, value] of Object.entries(query)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      filter[key] = { $regex: value, $options: 'i' };
     }
+
+    return this.materialService.findByConditions(filter);
+  }
 
   @Get('get/:id')
   async getPreset(@Param('id') presetId: string) {
     return await this.materialService.findOne(presetId);
   }
 
-    @Get('download/:id')
+  @Get('download/:id')
   async downloadSample(@Param('id') presetId: string, @Res() res: Response) {
     const toBeDownloaded = await this.materialService.findOne(presetId);
-      if (!toBeDownloaded) throw new BadRequestException('Preset not found');
-    
-      const file = await this.fileService.getFileById(toBeDownloaded.fileId as unknown as string);
-      if (!file) throw new BadRequestException('File not found');
-    
-      // Extract key from file URL
-      const keyMatch = file.url.match(/\/(samples|presets|packs)\/.+$/);
-      if (!keyMatch) throw new BadRequestException(`Invalid file URL: ${file.url}`);
-      const key = keyMatch[1] ? keyMatch[0].slice(1) : file.name;
-    
-      // Get stream from bucket
-      const stream = await this.fileService.downloadFile(key);
-    
-      // Set headers for download
-      res.setHeader('Content-Disposition', `attachment; filename="${file.name.split('/').pop()}"`);
-      res.setHeader('Content-Type', 'application/octet-stream');
-    
-      // Pipe the stream to the response
-      (stream as Stream).pipe(res);
+    if (!toBeDownloaded) throw new BadRequestException('Preset not found');
+
+    const file = await this.fileService.getFileById(
+      toBeDownloaded.fileId as unknown as string,
+    );
+    if (!file) throw new BadRequestException('File not found');
+
+    // Extract key from file URL
+    const keyMatch = file.url.match(/\/(samples|presets|packs)\/.+$/);
+    if (!keyMatch)
+      throw new BadRequestException(`Invalid file URL: ${file.url}`);
+    const key = keyMatch[1] ? keyMatch[0].slice(1) : file.name;
+
+    // Get stream from bucket
+    const stream = await this.fileService.downloadFile(key);
+
+    // Set headers for download
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="${file.name.split('/').pop()}"`,
+    );
+    res.setHeader('Content-Type', 'application/octet-stream');
+
+    // Pipe the stream to the response
+    (stream as Stream).pipe(res);
   }
 
   @Delete('delete/:id')
