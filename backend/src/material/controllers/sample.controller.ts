@@ -40,6 +40,12 @@ export class SampleController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     console.log('starting upload sample in sampleController\n');
+    if (
+      createSampleDto.authorId &&
+      typeof createSampleDto.authorId === 'string'
+    ) {
+      createSampleDto.authorId = new Types.ObjectId(createSampleDto.authorId);
+    }
     const newSample = await this.materialService.create(createSampleDto);
     const fileUpload = await this.fileService.uploadFile({
       key: file.originalname,

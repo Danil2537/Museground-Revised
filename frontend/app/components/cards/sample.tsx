@@ -4,7 +4,7 @@ import { BACKEND_URL } from "@/app/constants";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import WaveSurfer, { WaveSurferOptions } from "wavesurfer.js";
+import WaveSurfer from "wavesurfer.js";
 
 interface Sample {
   _id: string;
@@ -14,7 +14,7 @@ interface Sample {
   key: string;
   genres: string;
   instruments: string;
-  author: string;
+  authorName: string;
 }
 
 export default function SampleCard({ sample }: { sample: Sample }) {
@@ -22,7 +22,7 @@ export default function SampleCard({ sample }: { sample: Sample }) {
   const [wave, setWave] = useState<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loudness, setLoudness] = useState(0.5);
-
+  const [pitch, setPitch] = useState(1.0);
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -35,23 +35,45 @@ export default function SampleCard({ sample }: { sample: Sample }) {
   useEffect(() => {
     if (!waveformRef.current) return;
 
-    const options: WaveSurferOptions = {
-      container: waveformRef.current,
-      waveColor: "#999",
-      progressColor: "#0af",
-      height: 80,
+    let ws: WaveSurfer | null = null;
+    let isCancelled = false;
+
+    const initWaveform = async () => {
+      try {
+        ws = WaveSurfer.create({
+          container: waveformRef.current!,
+          waveColor: "#00F0FF",
+          progressColor: "#0070FF",
+          height: 80,
+        });
+
+        await ws.load(sample.fileUrl);
+
+        if (isCancelled) {
+          ws.destroy();
+          return;
+        }
+
+        ws.on("play", () => setIsPlaying(true));
+        ws.on("pause", () => setIsPlaying(false));
+
+        setWave(ws);
+      } catch (err) {
+        console.error("WaveSurfer init error:", err);
+      }
     };
 
-    const ws = WaveSurfer.create(options);
-    ws.load(sample.fileUrl);
-
-    ws.on("play", () => setIsPlaying(true));
-    ws.on("pause", () => setIsPlaying(false));
-
-    setWave(ws);
+    initWaveform();
 
     return () => {
-      ws.destroy();
+      isCancelled = true;
+      if (ws) {
+        try {
+          ws.destroy();
+        } catch (err) {
+          console.warn("WaveSurfer destroy error:", err);
+        }
+      }
     };
   }, [sample.fileUrl]);
 
@@ -62,7 +84,13 @@ export default function SampleCard({ sample }: { sample: Sample }) {
   const handleLoudnessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setLoudness(newVolume);
-    wave?.setVolume(newVolume);
+    wave?.setVolume(loudness);
+  };
+
+  const handlePitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newPitch = parseFloat(e.target.value);
+    setPitch(newPitch);
+    wave?.setPlaybackRate(newPitch, false);
   };
 
   const handleSave = async () => {
@@ -87,25 +115,22 @@ export default function SampleCard({ sample }: { sample: Sample }) {
   if (!user) return null;
 
   return (
-    <tr className="sample-card">
-      <td>
-        <h3>{sample.name}</h3>
-      </td>
-      <td>
-        <div ref={waveformRef}></div>
-      </td>
-      <td>
+    <tr className="hover:bg-zinc-800 transition-colors">
+      <td className="px-4 py-3">
         <button
           onClick={handlePlayPause}
-          className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 transition"
           aria-label={isPlaying ? "Pause" : "Play"}
+          className="text-cyan-400 hover:text-sky-500 transition"
         >
-          <span className="material-symbols-outlined">
+          <span className="material-symbols-outlined text-3xl">
             {isPlaying ? "pause" : "play_arrow"}
           </span>
         </button>
       </td>
-      <td>
+      <td className="px-4 py-3 w-[250px]">
+        <div ref={waveformRef} className="w-full"></div>
+      </td>
+      <td className="px-4 py-3">
         <input
           type="range"
           min="0.01"
@@ -113,25 +138,40 @@ export default function SampleCard({ sample }: { sample: Sample }) {
           step="0.01"
           value={loudness}
           onChange={handleLoudnessChange}
+          className="w-full accent-cyan-400"
         />
       </td>
-      <td>
-        <span>{sample.BPM}</span>
+      <td className="px-4 py-3">
+        <input
+          type="range"
+          min="0.1"
+          max="2"
+          step="0.1"
+          value={pitch}
+          onChange={handlePitchChange}
+          onMouseUp={() => {
+            setPitch(1.0);
+            wave?.setPlaybackRate(1.0, false);
+          }}
+          onTouchEnd={() => {
+            setPitch(1.0);
+            wave?.setPlaybackRate(1.0, false);
+          }}
+          className="w-full accent-cyan-400"
+        />
       </td>
-      <td>
-        <span>{sample.key}</span>
-      </td>
-      <td>
-        <span>{sample.genres}</span>
-      </td>
-      <td>
-        <span>{sample.instruments}</span>
-      </td>
-      <td>
-        <span>{sample.author}</span>
-      </td>
-      <td>
-        <button onClick={handleSave}>Save</button>
+      <td className="px-4 py-3">{sample.key}</td>
+      <td className="px-4 py-3">{sample.BPM}</td>
+      <td className="px-4 py-3">{sample.genres}</td>
+      <td className="px-4 py-3">{sample.instruments}</td>
+      <td className="px-4 py-3">{sample.authorName}</td>
+      <td className="px-4 py-3">
+        <button
+          onClick={handleSave}
+          className="bg-cyan-400 text-shadow-white hover:bg-sky-500 hover:text-[#343a40] font-semibold rounded-lg px-3 py-1 transition"
+        >
+          Save
+        </button>
       </td>
     </tr>
   );

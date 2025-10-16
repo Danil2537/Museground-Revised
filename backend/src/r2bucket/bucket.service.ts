@@ -23,7 +23,7 @@ export class BucketService {
       const secretAccessKey =
         this.configService.get<string>('SECRET_ACCESS_KEY')!;
       const bucketName = this.configService.get<string>('BUCKET_NAME')!;
-      const endpoint = this.configService.get<string>('R2_ENDPOINT')!;
+      const endpoint = this.configService.get<string>('R2_PRIVATE_ENDPOINT')!;
 
       if (!accessKeyId || !secretAccessKey || !bucketName || !endpoint) {
         throw new BadRequestException('Missing R2 environment variables');
@@ -125,6 +125,7 @@ export class BucketService {
 
   getPublicUrl(key: string): string {
     const endpoint = this.configService.get<string>('R2_ENDPOINT')!;
+    console.log(`r2 endpoint: ${endpoint}\n, key: ${key}\n\n`);
     return `${endpoint.replace(/\/+$/, '')}/${key}`;
   }
 }

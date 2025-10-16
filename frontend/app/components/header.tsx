@@ -13,13 +13,13 @@ export default function Header({ activeTop, activeBottom }: HeaderProps) {
   const bottomLinks = ["Samples", "Preset", "Packs"];
 
   const baseLinkClasses =
-    "block py-1 text-white hover:text-[#343a40] hover:bg-[#00f0ff] transition-colors text-center";
+    "block py-1 text-white hover:text-zinc-800 hover:bg-cyan-400 transition-colors text-center";
   const activeLinkClasses =
-    "bg-[#0396ff] text-[#343a40] font-semibold rounded-lg";
+    "bg-cyan-400 text-shadow-white font-semibold rounded-lg";
 
   return (
     <header className="w-full fixed top-0 z-50">
-      <nav className="bg-[#343a40]">
+      <nav className="bg-zinc-800">
         <ul className="flex justify-center space-x-2">
           {topLinks.map((link) => (
             <li key={link} className="flex-1 min-w-[140px]">
