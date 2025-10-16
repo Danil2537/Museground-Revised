@@ -62,7 +62,6 @@ export class SampleController {
   async getFiltered(@Query() query: Record<string, string>) {
     const filter: FilterQuery<Sample> = {};
 
-    // Handle BPM range safely
     const minBPM = query.minBPM ? Number(query.minBPM) : undefined;
     const maxBPM = query.maxBPM ? Number(query.maxBPM) : undefined;
 
@@ -73,37 +72,45 @@ export class SampleController {
       filter.BPM = bpmFilter as unknown as Sample['BPM'];
     }
 
-    // Handle string fields safely
     const stringFields: (keyof Sample)[] = [
       'name',
       'instruments',
       'genres',
       'key',
     ];
-    stringFields.forEach((field) => {
+    for (const field of stringFields) {
       const value = query[field];
       if (value && value.trim() !== '') {
         filter[field] = { $regex: value.trim(), $options: 'i' } as unknown;
       }
-    });
+    }
 
-    // Handle author username --> lookup in Users collection
     const authorName = query.author?.trim();
-    console.log(authorName);
     if (authorName) {
-      const user = await this.userService.findByName(authorName);
-      if (user) {
-        console.log(
-          `user with specified author name for sample found: ${JSON.stringify(user)}\n\n`,
-        );
-        filter.authorId = user._id;
+      const searchedUser = await this.userService.findByName(authorName);
+      if (searchedUser) {
+        filter.authorId = searchedUser._id;
       } else {
-        // No matching user --> no results
         return [];
       }
     }
-    console.log(`sample filter query is: ${JSON.stringify(filter)}\n\n`);
-    return this.materialService.findByConditions(filter);
+
+    const filterResult = await this.materialService.findByConditions(filter);
+
+    const samplesWithAuthors = await Promise.all(
+      filterResult.map(async (sampleDoc) => {
+        const sample = sampleDoc.toObject() as Sample;
+        const author = await this.userService.findById(
+          sample.authorId.toString(),
+        );
+        return {
+          ...sample,
+          authorName: author ? author.username : 'Unknown',
+        };
+      }),
+    );
+
+    return samplesWithAuthors;
   }
 
   @Get('download/:id')

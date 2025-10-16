@@ -47,7 +47,9 @@ export class AuthController {
 
     res.cookie('access_token', tokenObj?.access_token, {
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: this.configService.get<boolean>('SECURE_COOKIES')
+        ? 'none'
+        : 'lax',
       secure: this.configService.get<boolean>('SECURE_COOKIES'),
       maxAge: 2592000000,
     });

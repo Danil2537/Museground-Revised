@@ -1,6 +1,8 @@
-import type { Metadata } from "next";
+import { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import "./globalicons.css";
+import { AuthProvider } from "./context/AuthContext";
 
 const suprapower = localFont({
   src: [
@@ -36,7 +38,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${suprapower.variable} ${programme.variable}`}>
-      <body className="font-programme antialiased">{children}</body>
+      <head></head>
+      <body className="font-programme antialiased">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

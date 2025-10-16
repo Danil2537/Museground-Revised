@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../schemas/user.schema';
@@ -46,7 +46,12 @@ export class UsersService {
   }
 
   async saveItem(saveItemDto: SaveItemDTO) {
-    return await new this.savedItemModel(saveItemDto).save();
+    await new this.savedItemModel(saveItemDto).save();
+    const user = await this.userModel.findById(saveItemDto.userId).exec();
+    if (user) {
+      user.totalDownloads += 1;
+      return user.save();
+    } else throw new BadRequestException("Couldn't Save Item");
   }
 
   async getSavedItems(userId: string, type: string) {

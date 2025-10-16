@@ -1,13 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { BACKEND_URL } from "../constants";
+import { useAuth } from "../context/AuthContext";
 export default function Login() {
-  //const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
-    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}` //${BACKEND_PORT}`
-    : `https://museground-revised.onrender.com`; //:${BACKEND_PORT}`;
-
+  const { refetchUser } = useAuth();
   const [error, setError] = useState<string>("");
   const [formData, setFormData] = useState({ username: "", password: "" });
   const router = useRouter();
@@ -33,7 +30,10 @@ export default function Login() {
       const data = await res.json();
       alert(JSON.stringify(data));
       if (res.ok) {
-        router.push("/profile");
+        if (res.ok) {
+          await refetchUser(); // ensures AuthProvider has user info
+          router.push("/profile");
+        }
       } else {
         setError(data?.error ?? "Login failed");
       }

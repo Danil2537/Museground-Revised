@@ -1,13 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { BACKEND_URL } from "../constants";
 export default function Register() {
-  //const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
-    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}`
-    : `https://museground-revised.onrender.com`;
-
   const [errors, setErrors] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     username: "",

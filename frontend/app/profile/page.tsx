@@ -1,47 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "../components/header";
+import { useAuth } from "../context/AuthContext";
+import { BACKEND_URL } from "../constants";
 export default function ProfilePage() {
-  //const BACKEND_PORT = process.env.NEXT_PUBLIC_BACKEND_PORT ?? "3001";
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
-    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}` //${BACKEND_PORT}`
-    : `https://museground-revised.onrender.com`; //${BACKEND_PORT}`;
-
-  const [user, setUser] = useState<{ username: string; email: string } | null>(
-    null,
-  );
-  const [error, setError] = useState<string>("");
-
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const res = await fetch(`${BACKEND_URL}/auth/profile`, {
-          method: "GET",
-          credentials: "include", // send cookies
-        });
-        const data = await res.json();
-        alert(JSON.stringify(data));
-        if (res.ok) {
-          setUser(data);
-        } else if (res.status === 401) {
-          router.push("/login");
-        } else {
-          setError("Failed to load profile");
-        }
-      } catch (err) {
-        console.error(err);
-        setError("Server error loading profile");
-      }
-    };
+    if (!loading && !user) {
+      router.push("/login");
+    }
+  }, [loading, user, router]);
 
-    fetchProfile();
-  }, [BACKEND_URL, router]);
-
-  if (error) return <p>{error}</p>;
-  if (!user) return <p>Loading...</p>;
+  if (loading) return <p>Loading...</p>;
+  if (!user) return null;
 
   return (
     <>

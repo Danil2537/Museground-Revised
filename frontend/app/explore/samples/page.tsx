@@ -3,13 +3,9 @@
 import SampleCard from "@/app/components/cards/sample";
 import Header from "@/app/components/header";
 import { useState, FormEvent } from "react";
-
+import { BACKEND_URL } from "@/app/constants";
 
 export default function ExploreSamplesPage() {
-  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL
-    ? `${process.env.NEXT_PUBLIC_BACKEND_URL}`
-    : `https://museground-revised.onrender.com`;
-
   const [sampleFilterFormData, setSampleFilterFormData] = useState({
     name: "",
     author: "",
@@ -54,7 +50,10 @@ export default function ExploreSamplesPage() {
       if (!res.ok) throw new Error("Failed to fetch samples");
       const data = await res.json();
       alert(JSON.stringify(data));
-      setResults(data);
+
+      // Backend returns { filterResult: [...], author: "..." }
+      // So store only the sample array in `results`
+      setResults(Array.isArray(data) ? data : (data.filterResult ?? []));
     } catch (err) {
       console.error(err);
       setError("Error fetching filtered samples");
@@ -110,24 +109,26 @@ export default function ExploreSamplesPage() {
 
         {results.length > 0 && (
           <div className="mt-6 space-y-4">
-            {/* <table>
-                <thead>
-                    <tr>
-                        <td>play/pause</td>
-                        <td>soundwave</td>
-                        <td>pitch up/down</td>
-                        <td>key</td>
-                        <td>BPM</td>
-                        <td>genres</td>
-                        <td>instruments</td>
-                        <td>author</td>
-                        <td>save</td>
-                    </tr>
-                </thead> */}
-
-            {results.map((sample: any) => (
-              <SampleCard key={sample._id} sample={sample} />
-            ))}
+            <table>
+              <thead>
+                <tr>
+                  <td>play/pause</td>
+                  <td>soundwave</td>
+                  <td>pitch up/down</td>
+                  <td>key</td>
+                  <td>BPM</td>
+                  <td>genres</td>
+                  <td>instruments</td>
+                  <td>author</td>
+                  <td>save</td>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((sample: any) => (
+                  <SampleCard key={sample._id} sample={sample} />
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </main>

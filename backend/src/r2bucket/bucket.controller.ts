@@ -53,7 +53,6 @@ export class BucketController {
       Key: fileKey,
     });
 
-     
     const url: string = await getSignedUrl(s3, command, { expiresIn: 3600 });
     console.log(url);
     return { url };
