@@ -83,6 +83,25 @@ export class FolderService {
     return { deleted: true, path: folderPath };
   }
 
+  async findChildren(
+    folderId: Types.ObjectId | string,
+  ): Promise<FolderDocument[]> {
+    const children = await this.folderModel.find({ parent: folderId }).exec();
+    let allDescendants: FolderDocument[] = [...children];
+
+    for (const child of children) {
+      const subChildren = await this.findChildren(child._id as Types.ObjectId);
+      allDescendants = allDescendants.concat(subChildren);
+    }
+
+    return allDescendants;
+  }
+
+  async findChildrenPaths(folderId: Types.ObjectId | string) {
+    const children = await this.findChildren(folderId);
+    return await Promise.all(children.map((c) => this.getFullFolderPath(c)));
+  }
+
   private async getFullFolderPath(folder: FolderDocument): Promise<string> {
     const nameChain = [folder.name];
     let currentParent = folder.parent as Types.ObjectId;

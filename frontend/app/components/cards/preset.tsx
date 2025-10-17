@@ -54,7 +54,7 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
         });
 
         await ws.load(preset.soundFileUrl);
-
+        alert(preset.soundFileUrl);
         if (isCancelled) {
           ws.destroy();
           return;

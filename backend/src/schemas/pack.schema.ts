@@ -10,7 +10,7 @@ export class Pack {
   imageUrl?: string;
 
   @Prop({ required: true })
-  author: string;
+  authorId: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Folder' })
   rootFolder: Types.ObjectId;

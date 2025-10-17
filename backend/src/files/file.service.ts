@@ -89,7 +89,7 @@ export class FileService {
   }
 
   /**
-   * Recursively constructs full folder path
+   * ly constructs full folder path
    * e.g., packs/SampleMusic2000/bass/bass_synth
    */
   private async getFullFolderPath(folder: FolderDocument): Promise<string> {

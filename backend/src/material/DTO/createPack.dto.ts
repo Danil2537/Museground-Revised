@@ -15,7 +15,7 @@ export class CreatePackDTO {
   imageUrl?: string;
 
   @IsString()
-  author: string;
+  authorId: string;
 
   @IsOptional()
   rootFolder: Types.ObjectId;

@@ -6,22 +6,24 @@ import {
   Get,
   Param,
   Post,
+  Query,
   Res,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { MaterialService } from '../material.service';
-import { PackDocument } from 'src/schemas/pack.schema';
+import { Pack, PackDocument } from 'src/schemas/pack.schema';
 import { FileService } from 'src/files/file.service';
 import { CreatePackDTO } from '../DTO/createPack.dto';
 import { FolderService } from 'src/folder/folder.service';
-import { Types } from 'mongoose';
+import { FilterQuery, Types } from 'mongoose';
 import { PACK_FOLDER_ID } from '../constants';
 import { CreateFolderDTO } from 'src/folder/DTO/createFolder.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import { Stream } from 'stream';
 import archiver from 'archiver';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('packs')
 export class PackController {
@@ -30,6 +32,7 @@ export class PackController {
     private readonly materialService: MaterialService<PackDocument>,
     private readonly fileService: FileService,
     private readonly folderService: FolderService,
+    private readonly userService: UsersService,
   ) {
     //super(service);
   }
@@ -99,6 +102,65 @@ export class PackController {
   @Get(':id')
   async getPack(@Param('id') packId: string) {
     return this.materialService.findOne(packId);
+  }
+
+  @Get('find/query')
+  async findPacks(@Query() query: Record<string, string>) {
+    const filter: FilterQuery<Pack> = {};
+    console.log(query);
+    const value = query['name'];
+    if (value && value.trim() !== '') {
+      filter['name'] = { $regex: value.trim(), $options: 'i' } as unknown;
+    }
+    if (query['author'] && query['author'].trim() !== '') {
+      const authorName = query['author'].trim();
+      if (authorName) {
+        const searchedUser = await this.userService.findByName(authorName);
+        if (searchedUser) {
+          filter.authorId = searchedUser._id;
+        } else {
+          return [];
+        }
+      }
+    }
+    console.log(`pack filter: ${JSON.stringify(filter)}\n\n`);
+    const filterResult = await this.materialService.findByConditions(filter);
+    console.log(`pack filter results: ${JSON.stringify(filterResult)}\n\n`);
+    const packsWithAuthors = await Promise.all(
+      filterResult.map(async (packDoc) => {
+        const pack = packDoc.toObject() as Pack;
+        const author = await this.userService.findById(
+          pack.authorId.toString(),
+        );
+        return {
+          ...pack,
+          authorName: author ? author.username : 'Unknown',
+        };
+      }),
+    );
+
+    return packsWithAuthors;
+  }
+
+  @Get('file-urls/:id')
+  async getPackFileUrls(@Param('id') packId: string) {
+    const pack = await this.materialService.findOne(packId);
+    if (pack) {
+      const children = await this.folderService.findChildren(
+        pack.rootFolder._id,
+      );
+      console.log(`folders: ${JSON.stringify(children)}\n\n`);
+      children.unshift(
+        await this.folderService.getFolderById(pack.rootFolder._id),
+      );
+      const files = await Promise.all(
+        children.map((c) =>
+          this.fileService.getFilesByParent(c._id as Types.ObjectId),
+        ),
+      );
+      console.log(`files: ${JSON.stringify(files)}\n\n`);
+      return { fodlers: children, files: files };
+    } else throw new BadRequestException('Pack not found');
   }
 
   @Delete('delete-pack')
