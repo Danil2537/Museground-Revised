@@ -8,20 +8,22 @@ export class Preset {
   @IsString()
   name: string;
 
-  @Prop()
-  @IsOptional()
-  @IsString()
-  @IsUrl()
-  imageUrl?: string;
+  //   @Prop({ required: true })
+  //   @IsString()
+  //   author: string;
 
-  @Prop({ required: true })
-  @IsString()
-  author: string;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  authorId: Types.ObjectId;
 
   @Prop()
   @IsString()
   @IsUrl()
   fileUrl: string;
+
+  @Prop()
+  @IsString()
+  @IsUrl()
+  soundFileUrl: string;
 
   @Prop()
   @IsOptional()
@@ -40,6 +42,9 @@ export class Preset {
 
   @Prop({ type: Types.ObjectId, ref: 'File' })
   fileId: Types.ObjectId;
+
+  @Prop({ type: Types.ObjectId, ref: 'File' })
+  soundFileId: Types.ObjectId;
 }
 export type PresetDocument = Preset & Document;
 export const PresetSchema = SchemaFactory.createForClass(Preset);

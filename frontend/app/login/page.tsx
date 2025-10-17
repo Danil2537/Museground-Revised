@@ -48,16 +48,16 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-neutral-800 px-4">
+    <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white shadow-xl rounded-2xl p-6">
+        <div className="bg-zinc-800 shadow-xl rounded-2xl p-6">
           {error && (
             <div className="mb-4 text-sm text-red-500 bg-red-100 p-2 rounded">
               {error}
             </div>
           )}
 
-          <h1 className="text-2xl font-bold text-center mb-6 text-gray-700 font-suprapower">
+          <h1 className="text-2xl font-bold text-center mb-6 text-white-shadow font-suprapower">
             Login
           </h1>
 
@@ -71,11 +71,11 @@ export default function Login() {
                 value={formData.username}
                 placeholder=" "
                 onChange={handleFormDatachange}
-                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-white-shadow placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
                 htmlFor="username"
-                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+                className="absolute left-3 top-2 text-cyan-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-cyan-400"
               >
                 Username
               </label>
@@ -90,11 +90,11 @@ export default function Login() {
                 placeholder=" "
                 value={formData.password}
                 onChange={handleFormDatachange}
-                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-white-shadow placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
                 htmlFor="password"
-                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+                className="absolute left-3 top-2 text-cyan-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-cyan-400"
               >
                 Password
               </label>
@@ -102,7 +102,7 @@ export default function Login() {
 
             <button
               type="submit"
-              className="w-full py-2 rounded-lg bg-blue-600 text-white font-suprapower font-semibold hover:bg-blue-700 transition"
+              className="w-full py-2 rounded-lg bg-cyan-400 text-white font-suprapower font-semibold hover:bg-blue-500 transition"
             >
               Sign In
             </button>
@@ -111,7 +111,7 @@ export default function Login() {
           <div className="mt-4">
             <button
               onClick={handleGoogleLogin}
-              className="w-full py-2 rounded-lg bg-blue-600 text-white font-suprapower font-semibold hover:bg-blue-700 transition"
+              className="w-full py-2 rounded-lg bg-cyan-400 text-white font-suprapower font-semibold hover:bg-blue-500 transition"
             >
               Sign in with Google
             </button>
@@ -121,7 +121,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => (window.location.href = "/register")}
-              className="w-full py-2 rounded-lg bg-blue-600 text-white font-suprapower font-semibold hover:bg-blue-700 transition"
+              className="w-full py-2 rounded-lg bg-cyan-400 text-white font-suprapower font-semibold hover:bg-blue-500 transition"
             >
               Register
             </button>

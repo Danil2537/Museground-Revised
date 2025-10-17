@@ -8,17 +8,18 @@ import {
   Post,
   Query,
   Res,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { MaterialService } from '../material.service';
 import { Preset, PresetDocument } from 'src/schemas/preset.schema';
 import { FileService } from 'src/files/file.service';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { CreatePresetDTO } from '../DTO/createPreset.dto';
 import { FilterQuery, Types } from 'mongoose';
 import type { Response } from 'express';
 import { Stream } from 'stream';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('presets')
 export class PresetController {
@@ -26,41 +27,103 @@ export class PresetController {
   constructor(
     private readonly materialService: MaterialService<PresetDocument>,
     private readonly fileService: FileService,
+    private readonly userService: UsersService,
   ) {
     //super(service);
   }
 
   @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'presetFile', maxCount: 1 },
+      { name: 'soundFile', maxCount: 1 },
+    ]),
+  )
   async uploadPreset(
     @Body() createPresetDto: CreatePresetDTO,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles()
+    files: {
+      presetFile?: Express.Multer.File[];
+      soundFile?: Express.Multer.File[];
+    },
   ) {
-    console.log('starting upload preset in presetController\n');
+    console.log('Starting preset upload...');
+
     const newPreset = await this.materialService.create(createPresetDto);
-    const fileUpload = await this.fileService.uploadFile({
-      key: file.originalname,
-      buffer: file.buffer,
-      contentType: file.mimetype,
+
+    const preset = files.presetFile?.[0];
+    const sound = files.soundFile?.[0];
+
+    if (!preset || !sound) {
+      throw new Error('Both presetFile and soundFile are required.');
+    }
+
+    const presetUpload = await this.fileService.uploadFile({
+      key: preset.originalname,
+      buffer: preset.buffer,
+      contentType: preset.mimetype,
       type: 'preset',
     });
-    console.log('adding file url to preset model object\n');
-    newPreset.fileUrl = fileUpload.url;
-    newPreset.fileId = fileUpload._id as Types.ObjectId;
+
+    const soundUpload = await this.fileService.uploadFile({
+      key: sound.originalname,
+      buffer: sound.buffer,
+      contentType: sound.mimetype,
+      type: 'preset',
+    });
+
+    newPreset.fileUrl = presetUpload.url;
+    newPreset.fileId = presetUpload._id as Types.ObjectId;
+    newPreset.soundFileUrl = soundUpload.url;
+    newPreset.soundFileId = soundUpload._id as Types.ObjectId;
+
     return await newPreset.save();
   }
 
   @Get('filter/query')
-  async getFiltered(@Query() query: Record<string, any>) {
+  async getFiltered(@Query() query: Record<string, string>) {
     const filter: FilterQuery<Preset> = {};
 
-    // Convert each string into a case-insensitive regex
-    for (const [key, value] of Object.entries(query)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      filter[key] = { $regex: value, $options: 'i' };
+    const stringFields: (keyof Preset)[] = [
+      'name',
+      'authorId',
+      'vst',
+      'genres',
+      'types',
+    ];
+    for (const field of stringFields) {
+      const value = query[field];
+      if (value && value.trim() !== '') {
+        filter[field] = { $regex: value.trim(), $options: 'i' } as unknown;
+      }
     }
 
-    return this.materialService.findByConditions(filter);
+    const authorName = query.author?.trim();
+    if (authorName) {
+      const searchedUser = await this.userService.findByName(authorName);
+      if (searchedUser) {
+        filter.authorId = searchedUser._id;
+      } else {
+        return [];
+      }
+    }
+
+    const filterResult = await this.materialService.findByConditions(filter);
+
+    const presetsWithAuthors = await Promise.all(
+      filterResult.map(async (presetDoc) => {
+        const preset = presetDoc.toObject() as Preset;
+        const author = await this.userService.findById(
+          preset.authorId.toString(),
+        );
+        return {
+          ...preset,
+          authorName: author ? author.username : 'Unknown',
+        };
+      }),
+    );
+
+    return presetsWithAuthors;
   }
 
   @Get('get/:id')
@@ -69,7 +132,7 @@ export class PresetController {
   }
 
   @Get('download/:id')
-  async downloadSample(@Param('id') presetId: string, @Res() res: Response) {
+  async downloadPreset(@Param('id') presetId: string, @Res() res: Response) {
     const toBeDownloaded = await this.materialService.findOne(presetId);
     if (!toBeDownloaded) throw new BadRequestException('Preset not found');
 

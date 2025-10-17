@@ -2,7 +2,7 @@
 "use client";
 import SampleCard from "@/app/components/cards/sample";
 import Header from "@/app/components/header";
-import { useState, FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { BACKEND_URL } from "@/app/constants";
 
 export default function ExploreSamplesPage() {
@@ -18,6 +18,7 @@ export default function ExploreSamplesPage() {
 
   const [results, setResults] = useState<unknown[]>([]);
   const [error, setError] = useState("");
+  //const [initialLoad, setInitialLoad] = useState(true);
 
   const handleFormDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -28,8 +29,10 @@ export default function ExploreSamplesPage() {
     });
   };
 
-  const handleFilterQuery = async (e: FormEvent) => {
-    e.preventDefault(); // Prevent page reload
+  const handleFilterQuery = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    //(e: FormEvent)
+    //e.preventDefault(); // Prevent page reload
     alert(JSON.stringify(sampleFilterFormData));
     // Only include non-empty or meaningful fields
     const filteredData: Record<string, string> = {};
@@ -57,7 +60,13 @@ export default function ExploreSamplesPage() {
       setError("Error fetching filtered samples");
     }
   };
-
+  useEffect(() => {
+    //if (initialLoad) {
+    handleFilterQuery();
+    //setInitialLoad(false);
+    //}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <Header activeTop="Explore" activeBottom="Samples" />

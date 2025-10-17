@@ -53,18 +53,18 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-neutral-800 px-4">
+    <div className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md">
-        <div className="bg-white shadow-xl rounded-2xl p-6 text-red-500">
+        <div className="bg-zinc-800 shadow-xl rounded-2xl p-6">
           {errors.length > 0 && (
-            <ul>
+            <ul className="text-red-500">
               {errors.map((err, i) => (
                 <li key={i}>{err}</li>
               ))}
             </ul>
           )}
 
-          <h1 className="text-2xl font-bold font-suprapower text-center mb-6 text-gray-700">
+          <h1 className="text-2xl font-bold font-suprapower text-center mb-6 text-white-shadow">
             Register
           </h1>
 
@@ -78,11 +78,23 @@ export default function Register() {
                 placeholder=" "
                 value={formData.username}
                 onChange={handleFormDatachange}
-                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="peer 
+                w-full rounded-lg 
+                border border-gray-300 
+                px-3 pt-5 pb-2 
+                text-white-shadow 
+                placeholder-transparent 
+                focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
                 htmlFor="username"
-                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+                className="absolute left-3 top-2 
+                text-cyan-400 text-sm 
+                transition-all 
+                peer-placeholder-shown:top-4 
+                peer-placeholder-shown:text-gray-400 
+                peer-placeholder-shown:text-base 
+                peer-focus:top-2 peer-focus:text-sm peer-focus:text-cyan-400"
               >
                 Username
               </label>
@@ -97,11 +109,12 @@ export default function Register() {
                 placeholder=" "
                 value={formData.email}
                 onChange={handleFormDatachange}
-                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="peer 
+                w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-white-shadow placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
                 htmlFor="email"
-                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+                className="absolute left-3 top-2 text-cyan-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-cyan-400"
               >
                 Email Address
               </label>
@@ -116,11 +129,11 @@ export default function Register() {
                 placeholder=" "
                 value={formData.password}
                 onChange={handleFormDatachange}
-                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-white-shadow placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
                 htmlFor="password"
-                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+                className="absolute left-3 top-2 text-cyan-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-cyan-400"
               >
                 Password
               </label>
@@ -135,11 +148,11 @@ export default function Register() {
                 placeholder=" "
                 value={formData.confirmedPassword}
                 onChange={handleFormDatachange}
-                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-gray-900 placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
+                className="peer w-full rounded-lg border border-gray-300 px-3 pt-5 pb-2 text-white-shadow placeholder-transparent focus:border-blue-500 focus:ring focus:ring-blue-200"
               />
               <label
                 htmlFor="password2"
-                className="absolute left-3 top-2 text-gray-500 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-blue-600"
+                className="absolute left-3 top-2 text-cyan-400 text-sm transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base peer-focus:top-2 peer-focus:text-sm peer-focus:text-cyan-400"
               >
                 Confirm Password
               </label>
@@ -147,7 +160,7 @@ export default function Register() {
 
             <button
               type="submit"
-              className="w-full py-2 rounded-lg bg-blue-600 text-white font-suprapower  hover:bg-blue-700 transition"
+              className="w-full py-2 rounded-lg bg-cyan-400 text-white font-suprapower  hover:bg-blue-500 transition"
             >
               Register
             </button>
@@ -155,7 +168,7 @@ export default function Register() {
             <button
               type="button"
               onClick={() => (window.location.href = "/login")}
-              className="w-full py-2 rounded-lg bg-blue-600 text-white font-suprapower  hover:bg-blue-700 transition"
+              className="w-full py-2 rounded-lg bg-cyan-400 text-white font-suprapower  hover:bg-blue-500 transition"
             >
               Log In
             </button>

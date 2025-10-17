@@ -1,4 +1,5 @@
 import { IsOptional, IsString, IsUrl } from 'class-validator';
+import { Types } from 'mongoose';
 
 export class CreatePresetDTO {
   constructor() {
@@ -8,18 +9,18 @@ export class CreatePresetDTO {
   @IsString()
   name: string;
 
-  @IsOptional()
   @IsString()
-  @IsUrl()
-  imageUrl?: string;
-
-  @IsString()
-  author: string;
+  authorId: Types.ObjectId;
 
   @IsOptional()
   @IsString()
   @IsUrl()
   fileUrl: string;
+
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  soundFileUrl: string;
 
   @IsOptional()
   @IsString()
