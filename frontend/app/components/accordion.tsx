@@ -34,13 +34,21 @@ export function AccordionItem({
   children,
   value,
   className = "",
+  onDragOver,
+  onDrop,
 }: {
   children: ReactNode;
   value: string;
   className?: string;
+  onDragOver?: (e: React.DragEvent<HTMLDivElement>) => void;
+  onDrop?: (e: React.DragEvent<HTMLDivElement>) => void;
 }) {
   return (
-    <div className={`border border-zinc-800 rounded-lg ${className}`}>
+    <div
+      className={`border border-zinc-800 rounded-lg ${className}`}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
       {children}
     </div>
   );
@@ -65,7 +73,7 @@ export function AccordionTrigger({
     >
       <div className="flex-1">{children}</div>
       <span className="ml-2 text-cyan-400 hover:text-cyan-300 select-none">
-        {isOpen ? "−" : "+"}
+        {isOpen ? "-" : "+"}
       </span>
     </div>
   );

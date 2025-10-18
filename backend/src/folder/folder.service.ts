@@ -60,6 +60,14 @@ export class FolderService {
     throw new NotImplementedException();
   }
 
+  async updateParent(folderId: string, parentId: string) {
+    const folder = await this.folderModel.findById(folderId);
+    if (folder) {
+      folder.parent = parentId as unknown as Types.ObjectId;
+      return folder.save();
+    } else throw new BadRequestException('Folder not found');
+  }
+
   async deleteFolder(folderId: string) {
     const folder = await this.folderModel.findById(folderId);
     if (!folder) throw new BadRequestException(`Folder ${folderId} not found`);
@@ -68,7 +76,13 @@ export class FolderService {
 
     const files = await this.fileModel.find({ parent: folder._id });
     for (const file of files) {
-      await this.bucketService.deleteFileByKey(await this.buildFilePath(file));
+      try {
+        await this.bucketService.deleteFileByKey(
+          await this.buildFilePath(file),
+        );
+      } catch (err) {
+        console.error(`Failed to delete file ${file.name} from bucket`, err);
+      }
       await this.fileModel.deleteOne({ _id: file._id });
     }
 
@@ -117,6 +131,8 @@ export class FolderService {
   private async buildFilePath(file: FileDocument): Promise<string> {
     if (!file.parent) return file.name; // root files
     const parentFolder = await this.folderModel.findById(file.parent);
+    if (!parentFolder)
+      throw new Error(`Parent folder not found for file ${file._id as string}`);
     const folderPath = await this.getFullFolderPath(
       parentFolder as FolderDocument,
     );

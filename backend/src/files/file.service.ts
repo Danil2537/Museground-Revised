@@ -52,6 +52,14 @@ export class FileService {
     return this.bucketService.getFile(key);
   }
 
+  async updateParent(fileId: string, parentId: string) {
+    const file = await this.fileModel.findById(fileId);
+    if (file) {
+      file.parent = parentId as unknown as Types.ObjectId;
+      return file.save();
+    } else throw new BadRequestException('File not found');
+  }
+
   async deleteFile(fileId: string) {
     const file = await this.fileModel.findById(fileId);
     if (!file) throw new BadRequestException(`File ${fileId} not found`);

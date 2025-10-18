@@ -45,7 +45,6 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
   const router = useRouter();
   const [folderTree, setFolderTree] = useState<any | null>(null);
 
-  // Redirect if unauthenticated
   useEffect(() => {
     if (!loading && !user) router.push("/login");
   }, [loading, user, router]);

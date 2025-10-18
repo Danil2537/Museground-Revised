@@ -104,6 +104,24 @@ export class PackController {
     return this.materialService.findOne(packId);
   }
 
+  @Post('move-item')
+  async moveItem(
+    @Body()
+    body: {
+      itemId: string;
+      itemType: 'file' | 'folder';
+      newParentId: string;
+    },
+  ) {
+    const { itemId, itemType, newParentId } = body;
+    if (itemType === 'file') {
+      return await this.fileService.updateParent(itemId, newParentId);
+    } else if (itemType === 'folder') {
+      return await this.folderService.updateParent(itemId, newParentId);
+    }
+    throw new BadRequestException('Invalid item type');
+  }
+
   @Get('find/query')
   async findPacks(@Query() query: Record<string, string>) {
     const filter: FilterQuery<Pack> = {};
