@@ -24,7 +24,7 @@ export class FileService {
     } else if (dto.type === 'preset') {
       fullKey = `presets/${dto.key}`;
     } else if (dto.type === 'pack') {
-      fullKey = `packs/${dto.key}`; // dto.key includes nested path inside the pack
+      fullKey = `${dto.key}`; // dto.key includes nested path inside the pack
     }
     console.log(`full file key: ${fullKey}\n`);
 
@@ -92,7 +92,9 @@ export class FileService {
       throw new BadRequestException(`Parent folder not found\n`);
 
     const folderPath = await this.getFullFolderPath(parentFolder);
-    return `${folderPath}/${file.name.split('/').pop()}`;
+    const path = `${folderPath}/${file.name.split('/').pop()}`;
+    console.log(`build file path: ${path}`);
+    return path;
     // split in case file.name already contains some path
   }
 

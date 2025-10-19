@@ -20,12 +20,6 @@ interface FileItem {
   parent: string;
 }
 
-interface FolderItem {
-  _id: string;
-  name: string;
-  parent?: string;
-}
-
 interface Pack {
   _id: string;
   name: string;
@@ -44,6 +38,7 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [folderTree, setFolderTree] = useState<any | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -60,12 +55,12 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
 
         // Map backend folders/files into tree structure
         const folderMap = new Map<string, any>();
-        data.fodlers?.forEach((f: FolderItem) =>
+        data.fodlers?.forEach((f: any) =>
           folderMap.set(f._id, { ...f, files: [], children: [] }),
         );
 
         // Build folder hierarchy
-        data.fodlers?.forEach((f: FolderItem) => {
+        data.fodlers?.forEach((f: any) => {
           if (f.parent && folderMap.has(f.parent))
             folderMap.get(f.parent).children.push(folderMap.get(f._id));
         });
@@ -91,6 +86,32 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
 
     fetchFileStructure();
   }, [pack._id, pack.rootFolder]);
+
+  const handleSavePack = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/users/save-item`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: user._id,
+          itemType: "Pack",
+          itemId: pack._id,
+        }),
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Failed to save pack");
+
+      alert("Pack saved successfully!");
+    } catch (err) {
+      console.error("Save pack error:", err);
+      alert("Failed to save pack.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (loading) return <p>Loading...</p>;
   if (!user) return null;
@@ -118,6 +139,14 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
       ) : (
         <p className="text-gray-500 text-sm">No folders or files found.</p>
       )}
+
+      <button
+        onClick={handleSavePack}
+        disabled={saving}
+        className="mt-3 w-full py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-500 transition disabled:opacity-50"
+      >
+        {saving ? "Saving..." : "Save Pack"}
+      </button>
     </div>
   );
 }
@@ -136,7 +165,7 @@ function FolderAccordion({ folder }: { folder: any }) {
         {folder.name}
       </AccordionTrigger>
       <AccordionContent value={folder._id}>
-        <div className="space-y-3 ml-4">
+        <div className="space-y-3 ml-4 max-h-[300px] overflow-y-auto pr-2">
           {folder.files.map((file: any) => (
             <FileWave key={file._id} file={file} />
           ))}

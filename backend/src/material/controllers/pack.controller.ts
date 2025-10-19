@@ -83,6 +83,32 @@ export class PackController {
     return savedFile;
   }
 
+  @Get('user-created-packs-full/:userId')
+  async getUserCreatedPacksFull(@Param('userId') userId: string) {
+    const packs = await this.materialService.findByConditions({
+      authorId: userId,
+    });
+
+    const packsWithFolders = await Promise.all(
+      packs.map(async (pack: PackDocument) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const rootFolder =
+          await this.folderService.getFolderWithChildrenAndFiles(
+            pack.rootFolder,
+          );
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return {
+          ...pack.toObject(),
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          rootFolder,
+        };
+      }),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return packsWithFolders;
+  }
   @Delete('delete-folder')
   async deleteFolder(@Body('folderId') folderId: string) {
     return await this.folderService.deleteFolder(folderId);
@@ -201,7 +227,7 @@ export class PackController {
     if (!file) throw new BadRequestException('File not found');
 
     // Get full S3/R2 key using folder hierarchy
-    const key = await this.fileService['buildFilePath'](file);
+    const key = await this.fileService.buildFilePath(file);
 
     // Get file stream
     const stream = await this.fileService.downloadFile(key);

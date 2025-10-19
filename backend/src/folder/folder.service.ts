@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import {
   BadRequestException,
   Injectable,
@@ -58,6 +59,32 @@ export class FolderService {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addFile(addFileDto: any) {
     throw new NotImplementedException();
+  }
+
+  async getFolderWithChildrenAndFiles(folderId: Types.ObjectId) {
+    const folder = await this.folderModel.findById(folderId).lean();
+    if (!folder) throw new BadRequestException('Folder not found');
+
+    const children = await this.folderModel.find({ parent: folderId }).lean();
+
+    const files = await this.fileModel.find({ parent: folderId }).lean();
+
+    const childrenWithFiles = await Promise.all(
+       
+      children.map(
+        async (child) =>
+          await this.getFolderWithChildrenAndFiles(
+            child._id as unknown as Types.ObjectId,
+          ),
+      ),
+    );
+
+    return {
+      ...folder,
+      files,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      children: childrenWithFiles,
+    };
   }
 
   async updateParent(folderId: string, parentId: string) {
