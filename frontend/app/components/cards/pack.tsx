@@ -39,6 +39,9 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
   const router = useRouter();
   const [folderTree, setFolderTree] = useState<any | null>(null);
   const [saving, setSaving] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [showIsSaved, setShowIsSaved] = useState(false);
+  const [showIsCreated, setShowIsCreated] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -53,19 +56,16 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
         });
         const data = await res.json();
 
-        // Map backend folders/files into tree structure
         const folderMap = new Map<string, any>();
         data.fodlers?.forEach((f: any) =>
           folderMap.set(f._id, { ...f, files: [], children: [] }),
         );
 
-        // Build folder hierarchy
         data.fodlers?.forEach((f: any) => {
           if (f.parent && folderMap.has(f.parent))
             folderMap.get(f.parent).children.push(folderMap.get(f._id));
         });
 
-        // Attach files
         data.files?.forEach((fileArr: FileItem[]) => {
           fileArr.forEach((file) => {
             if (file.parent && folderMap.has(file.parent))
@@ -73,19 +73,27 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
           });
         });
 
-        // Find root
         const root = Array.from(folderMap.values()).find(
           (f) => f.parent === pack.rootFolder || f._id === pack.rootFolder,
         );
 
         setFolderTree(root ?? null);
+
+        const isSavedRes = await fetch(
+          `${BACKEND_URL}/saved-items/check-saved/${user?._id}/Pack/${pack._id}`,
+        );
+        const isSaved = await isSavedRes.json();
+        setShowIsSaved(isSaved);
+        if (pack.authorId == user?._id) {
+          setShowIsCreated(true);
+        }
       } catch (err) {
         console.error("Error fetching pack file structure:", err);
       }
     };
 
     fetchFileStructure();
-  }, [pack._id, pack.rootFolder]);
+  }, [pack._id, pack.authorId, pack.rootFolder, user?._id]);
 
   const handleSavePack = async () => {
     if (!user) return;
@@ -105,11 +113,72 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
       if (!res.ok) throw new Error("Failed to save pack");
 
       alert("Pack saved successfully!");
+      setShowIsSaved(true);
     } catch (err) {
       console.error("Save pack error:", err);
       alert("Failed to save pack.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDownloadPack = async () => {
+    if (!folderTree) return;
+    setDownloading(true);
+    try {
+      const res = await fetch(
+        `${BACKEND_URL}/packs/download-folder/${folderTree._id}`,
+        {
+          credentials: "include",
+        },
+      );
+      if (!res.ok) throw new Error("Failed to download pack");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${pack.name}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Failed to download pack.");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleDeleteSave = async () => {
+    if (!user) return;
+    const res = await fetch(`${BACKEND_URL}/users/delete-saved`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user._id,
+        itemType: "Pack",
+        itemId: pack._id,
+      }),
+    });
+    if (res.ok) {
+      alert("Un-saved succesfully!");
+      setShowIsSaved(false);
+    }
+  };
+  const handleDeletePack = async () => {
+    if (!confirm("Delete this pack and all its contents?")) return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/packs/delete-pack`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ packId: pack._id }),
+      });
+      setShowIsCreated(false);
+      if (!res.ok) throw new Error("Failed to delete pack");
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -140,13 +209,45 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
         <p className="text-gray-500 text-sm">No folders or files found.</p>
       )}
 
-      <button
-        onClick={handleSavePack}
-        disabled={saving}
-        className="mt-3 w-full py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-500 transition disabled:opacity-50"
-      >
-        {saving ? "Saving..." : "Save Pack"}
-      </button>
+      <div className="flex flex-col gap-2 mt-3">
+        {!showIsSaved && (
+          <button
+            onClick={handleSavePack}
+            disabled={saving}
+            className="w-full py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-500 transition disabled:opacity-50"
+          >
+            {saving ? "Saving..." : "Save Pack"}
+          </button>
+        )}
+        {showIsSaved && (
+          <button
+            onClick={handleDeleteSave}
+            className="w-full py-2 rounded-lg text-center  bg-cyan-400 text-white font-semibold hover:bg-cyan-500 transition disabled:opacity-50"
+          >
+            Saved
+          </button>
+        )}
+        {showIsCreated && (
+          <div className="flex">
+            <span className="w-1/2 py-2 rounded-lg text-center  bg-violet-400 text-white font-semibold  transition disabled:opacity-50">
+              Created By You
+            </span>
+            <button
+              onClick={handleDeletePack}
+              className="w-1/2 py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition disabled:opacity-50"
+            >
+              Delete
+            </button>
+          </div>
+        )}
+        <button
+          onClick={handleDownloadPack}
+          disabled={downloading}
+          className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition disabled:opacity-50"
+        >
+          {downloading ? "Downloading..." : "Download Pack"}
+        </button>
+      </div>
     </div>
   );
 }

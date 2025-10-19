@@ -109,6 +109,7 @@ export class PackController {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return packsWithFolders;
   }
+
   @Delete('delete-folder')
   async deleteFolder(@Body('folderId') folderId: string) {
     return await this.folderService.deleteFolder(folderId);

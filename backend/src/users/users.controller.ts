@@ -20,6 +20,7 @@ export class UsersController {
 
   @Post('delete-saved')
   async deleteSavedItem(@Body() saveItemDto: SaveItemDTO) {
+    console.log(`deleting saved: ${JSON.stringify(saveItemDto)}`);
     return await this.usersService.deleteSavedItem(saveItemDto);
   }
 

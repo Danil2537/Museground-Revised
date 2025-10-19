@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${suprapower.variable} ${programme.variable}`}>
       <head></head>
-      <body className="font-programme antialiased">
+      <body className="font-programme">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

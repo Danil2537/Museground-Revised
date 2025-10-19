@@ -70,7 +70,6 @@ export class FolderService {
     const files = await this.fileModel.find({ parent: folderId }).lean();
 
     const childrenWithFiles = await Promise.all(
-       
       children.map(
         async (child) =>
           await this.getFolderWithChildrenAndFiles(
