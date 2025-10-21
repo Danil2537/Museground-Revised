@@ -10,6 +10,11 @@ import { FileModule } from 'src/files/file.module';
 import { FolderModule } from 'src/folder/folder.module';
 import { Document, Model, Schema } from 'mongoose';
 import { UsersModule } from 'src/users/users.module';
+import {
+  SavedItem,
+  SavedItemDocument,
+  SavedItemSchema,
+} from 'src/schemas/savedItem.schema';
 
 @Module({})
 export class MaterialModule {
@@ -23,11 +28,13 @@ export class MaterialModule {
     };
 
     const modelToken = getModelToken(options.modelName);
+    const savedItemModelToken = getModelToken(SavedItem.name);
 
     const materialProvider: Provider = {
       provide: MaterialService,
-      useFactory: (model: Model<T>) => new MaterialService<T>(options, model),
-      inject: [modelToken],
+      useFactory: (model: Model<T>, savedItemModel: Model<SavedItemDocument>) =>
+        new MaterialService<T>(options, model, savedItemModel),
+      inject: [modelToken, savedItemModelToken],
     };
 
     return {
@@ -35,6 +42,7 @@ export class MaterialModule {
       imports: [
         MongooseModule.forFeature([
           { name: options.modelName, schema: options.schema as Schema },
+          { name: SavedItem.name, schema: SavedItemSchema },
         ]),
         FileModule,
         FolderModule,

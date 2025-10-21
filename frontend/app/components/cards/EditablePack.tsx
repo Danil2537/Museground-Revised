@@ -98,8 +98,6 @@ export default function EditablePack({
     return { ...folder, children: updatedChildren };
   };
 
-  // ---- API ACTIONS ----
-
   const handleAddFolder = async (parentId: string) => {
     const name = prompt("Enter folder name:");
     if (!name) return;
@@ -217,7 +215,6 @@ export default function EditablePack({
     }
   };
 
-  // ---- RENDER ----
   if (!rootFolder) return <p>Loading folder structure...</p>;
 
   return (

@@ -89,7 +89,7 @@ export class SavedItemService {
       itemType: itemType,
       itemId: itemId,
     });
-    if (saved) return true;
+    if (saved.length > 0) return true;
     else return false;
   }
 }

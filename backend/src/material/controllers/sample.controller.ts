@@ -10,6 +10,7 @@ import {
   Query,
   Param,
   Res,
+  Patch,
 } from '@nestjs/common';
 //import { BaseMaterialController } from './material.controller';
 import { MaterialService } from '../material.service';
@@ -157,5 +158,79 @@ export class SampleController {
       return { db: db, r2: r2 };
     } else
       throw new BadRequestException('Sample with specified id not found\n');
+  }
+
+  @Get('created-by-user/:userId')
+  async getSamplesCreatedByUser(@Param('userId') userId: string) {
+    const samples = await this.materialService.findByConditions({
+      authorId: userId,
+    });
+
+    const samplesWithFiles = await Promise.all(
+      samples.map(async (sample: SampleDocument) => {
+        const file = await this.fileService.getFileById(
+          sample.fileId as unknown as string,
+        );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return { ...sample.toObject(), file };
+      }),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return samplesWithFiles;
+  }
+
+  @Patch('update/:sampleId')
+  async updateSample(
+    @Param('sampleId') sampleId: string,
+    @Body()
+    updateData: Partial<
+      Pick<Sample, 'name' | 'BPM' | 'key' | 'genres' | 'instruments'>
+    >,
+  ) {
+    console.log(`hit update endpoint\n`);
+    const existing = await this.materialService.findOne(sampleId);
+    console.log(
+      `found specified sample. Update data is: ${JSON.stringify(updateData)}\n`,
+    );
+    if (!existing) throw new BadRequestException('Sample not found');
+    const updated = await this.materialService.update(sampleId, updateData);
+    console.log(`updated sample: ${JSON.stringify(updated)}`);
+    return updated;
+  }
+
+  @Post('replace-file')
+  @UseInterceptors(FileInterceptor('file'))
+  async replaceFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('sampleId') sampleId: string,
+  ) {
+    const sample = await this.materialService.findOne(sampleId);
+    if (!sample) throw new BadRequestException('Sample not found');
+
+    // Delete old file from R2
+    if (sample.fileId) {
+      try {
+        await this.fileService.deleteFile(sample.fileId.toString());
+      } catch (err) {
+        console.warn('Old file deletion failed:', err);
+      }
+    }
+
+    // Upload new file
+    const uploaded = await this.fileService.uploadFile({
+      key: file.originalname,
+      buffer: file.buffer,
+      contentType: file.mimetype,
+      type: 'sample',
+    });
+
+    // Update the sample’s file info
+    sample.fileUrl = uploaded.url;
+    sample.fileId = uploaded._id as Types.ObjectId;
+    console.log(sample);
+    await sample.save();
+
+    return { message: 'File replaced successfully', sample };
   }
 }

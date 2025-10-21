@@ -5,16 +5,21 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   Res,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { MaterialService } from '../material.service';
 import { Preset, PresetDocument } from 'src/schemas/preset.schema';
 import { FileService } from 'src/files/file.service';
-import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 import { CreatePresetDTO } from '../DTO/createPreset.dto';
 import { FilterQuery, Types } from 'mongoose';
 import type { Response } from 'express';
@@ -173,5 +178,90 @@ export class PresetController {
       return { db: db, r2: r2 };
     } else
       throw new BadRequestException('Preset with specified id not found\n');
+  }
+
+  @Get('created-by-user/:userId')
+  async getPresetsCreatedByUser(@Param('userId') userId: string) {
+    const presets = await this.materialService.findByConditions({
+      authorId: userId,
+    });
+
+    const presetsWithFiles = await Promise.all(
+      presets.map(async (preset: PresetDocument) => {
+        const soundFile = await this.fileService.getFileById(
+          preset.soundFileId as unknown as string,
+        );
+        const presetFile = await this.fileService.getFileById(
+          preset.fileId as unknown as string,
+        );
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return { ...preset.toObject(), soundFile, presetFile };
+      }),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return presetsWithFiles;
+  }
+
+  @Patch('update/:presetId')
+  async updatePreset(
+    @Param('presetId') presetId: string,
+    @Body()
+    updateData: Partial<Pick<Preset, 'name' | 'vst' | 'genres' | 'types'>>,
+  ) {
+    console.log(`hit update endpoint\n`);
+    const existing = await this.materialService.findOne(presetId);
+    console.log(
+      `found specified preset. Update data is: ${JSON.stringify(updateData)}\n`,
+    );
+    if (!existing) throw new BadRequestException('preset not found');
+    const updated = await this.materialService.update(presetId, updateData);
+    console.log(`updated preset: ${JSON.stringify(updated)}`);
+    return updated;
+  }
+
+  @Post('replace-preset-file')
+  @UseInterceptors(FileInterceptor('file'))
+  async replaceFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('presetId') presetId: string,
+    @Body('fileType') fileType: 'presetFile' | 'soundFile',
+  ) {
+    const preset = await this.materialService.findOne(presetId);
+    if (!preset) throw new BadRequestException('Preset not found');
+
+    // Map field names dynamically
+    const fieldMap = {
+      presetFile: { idKey: 'fileId', urlKey: 'fileUrl' },
+      soundFile: { idKey: 'soundFileId', urlKey: 'soundFileUrl' },
+    } as const;
+
+    const { idKey, urlKey } = fieldMap[fileType];
+
+    // Delete old file from R2 if exists
+    const oldFileId = preset[idKey];
+    if (oldFileId) {
+      try {
+        await this.fileService.deleteFile(oldFileId.toString());
+      } catch (err) {
+        console.warn(`Old ${fileType} deletion failed:`, err);
+      }
+    }
+
+    // Upload new file
+    const uploaded = await this.fileService.uploadFile({
+      key: file.originalname,
+      buffer: file.buffer,
+      contentType: file.mimetype,
+      type: 'preset',
+    });
+
+    // Update preset fields dynamically
+    preset[urlKey] = uploaded.url;
+    preset[idKey] = uploaded._id as Types.ObjectId;
+
+    await preset.save();
+
+    return { message: `File replaced successfully`, preset };
   }
 }

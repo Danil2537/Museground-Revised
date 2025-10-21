@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import EditablePack from "@/app/components/EditablePack";
+import EditablePack from "@/app/components/cards/EditablePack";
 import Header from "@/app/components/header";
 import { BACKEND_URL } from "@/app/constants";
 import { useAuth } from "@/app/context/AuthContext";

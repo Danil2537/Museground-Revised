@@ -150,6 +150,7 @@ export default function ExploreSamplesPage() {
                 <tr>
                   <th className="px-4 py-3">Play / Pause</th>
                   <th className="px-4 py-3">Waveform</th>
+                  <th className="px-4 py-3">Title</th>
                   <th className="px-4 py-3">Volume</th>
                   <th className="px-4 py-3">Pitch</th>
                   <th className="px-4 py-3">Key</th>

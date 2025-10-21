@@ -35,7 +35,6 @@ export default function FileUpLoad({
 }) {
   const [fileEnter, setFileEnter] = useState(false);
 
-  // --- helper to compute nested folder path ---
   const getFullFolderPath = (
     folder: Folder | null,
     targetId: string,

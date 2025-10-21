@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { FilterQuery, Model, Document } from 'mongoose';
+import { SavedItemDocument } from 'src/schemas/savedItem.schema';
 
 @Injectable()
 export class MaterialService<T extends Document> {
   constructor(
     private options: any,
     private model: Model<T>,
+    private readonly savedItemModel: Model<SavedItemDocument>,
   ) {
     console.log(`Creating MaterialService with model:`, model.modelName);
   }
@@ -29,7 +31,11 @@ export class MaterialService<T extends Document> {
   }
 
   async delete(id: string): Promise<T | null> {
-    return this.model.findByIdAndDelete(id).exec();
+    const deleted = await this.model.findByIdAndDelete(id);
+    if (deleted) {
+      await this.savedItemModel.deleteMany({ itemId: id });
+    }
+    return deleted;
   }
 
   async findByConditions(conditions: FilterQuery<T>): Promise<T[]> {

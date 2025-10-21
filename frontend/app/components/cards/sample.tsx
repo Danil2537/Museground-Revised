@@ -15,6 +15,7 @@ interface Sample {
   genres: string;
   instruments: string;
   authorName: string;
+  authorId: string;
 }
 
 export default function SampleCard({ sample }: { sample: Sample }) {
@@ -23,6 +24,8 @@ export default function SampleCard({ sample }: { sample: Sample }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [loudness, setLoudness] = useState(0.5);
   const [pitch, setPitch] = useState(1.0);
+  const [showIsSaved, setShowIsSaved] = useState(false);
+  const [showIsCreated, setShowIsCreated] = useState(false);
   const { user, loading } = useAuth();
   const router = useRouter();
 
@@ -58,6 +61,16 @@ export default function SampleCard({ sample }: { sample: Sample }) {
         ws.on("pause", () => setIsPlaying(false));
 
         setWave(ws);
+
+        const isSavedRes = await fetch(
+          `${BACKEND_URL}/saved-items/check-saved/${user?._id}/Sample/${sample._id}`,
+        );
+        const isSaved = await isSavedRes.json();
+        alert(isSaved);
+        setShowIsSaved(isSaved);
+        if (sample.authorId == user?._id) {
+          setShowIsCreated(true);
+        }
       } catch (err) {
         console.error("WaveSurfer init error:", err);
       }
@@ -75,7 +88,7 @@ export default function SampleCard({ sample }: { sample: Sample }) {
         }
       }
     };
-  }, [sample.fileUrl]);
+  }, [sample._id, sample.authorId, sample.fileUrl, user?._id]);
 
   const handlePlayPause = () => {
     wave?.playPause();
@@ -111,6 +124,76 @@ export default function SampleCard({ sample }: { sample: Sample }) {
     alert(JSON.stringify(data));
   };
 
+  const handleDeleteSave = async () => {
+    if (!user) return;
+    const res = await fetch(`${BACKEND_URL}/users/delete-saved`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: user._id,
+        itemType: "Sample",
+        itemId: sample._id,
+      }),
+    });
+    if (res.ok) {
+      alert("Un-saved succesfully!");
+      setShowIsSaved(false);
+    }
+  };
+  const handleDelete = async () => {
+    if (!user || sample.authorId !== user._id) {
+      alert("You can only delete your own samples.");
+      return;
+    }
+
+    try {
+      const url = `${BACKEND_URL}/samples/delete/${sample._id}`;
+      const res = await fetch(url, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Failed to delete the sample.");
+      }
+
+      const result = await res.json();
+      console.log("Delete result:", result);
+
+      alert(`Sample "${sample.name}" was successfully deleted.`);
+      // Option 1: refresh the page
+      router.refresh();
+      // Option 2 (alternative): remove from UI state if parent manages the list
+      // onDelete?.(sample._id);
+    } catch (err) {
+      console.error("Error deleting sample:", err);
+      alert("Failed to delete sample. See console for details.");
+    }
+  };
+
+  const handleDownloadSample = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/samples/download/${sample._id}`, {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to download sample");
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = sample.name;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Failed to download sample.");
+    }
+  };
   if (loading) return <p>Loading...</p>;
   if (!user) return null;
 
@@ -126,6 +209,9 @@ export default function SampleCard({ sample }: { sample: Sample }) {
             {isPlaying ? "pause" : "play_arrow"}
           </span>
         </button>
+      </td>
+      <td className="px-4 py-3">
+        <span>{sample.name}</span>
       </td>
       <td className="px-4 py-3 w-[250px]">
         <div ref={waveformRef} className="w-full"></div>
@@ -166,12 +252,49 @@ export default function SampleCard({ sample }: { sample: Sample }) {
       <td className="px-4 py-3">{sample.instruments}</td>
       <td className="px-4 py-3">{sample.authorName}</td>
       <td className="px-4 py-3">
-        <button
+        {!showIsSaved && (
+          <button
+            onClick={handleSave}
+            className="w-full py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-500 transition disabled:opacity-50"
+          >
+            Save
+          </button>
+        )}
+        {showIsSaved == true && (
+          <div>
+            <button
+              onClick={handleDeleteSave}
+              className="w-full py-2 rounded-lg text-center  bg-cyan-400 text-white font-semibold hover:bg-cyan-500 transition disabled:opacity-50"
+            >
+              Saved
+            </button>
+            <button
+              onClick={handleDownloadSample}
+              className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition disabled:opacity-50"
+            >
+              Download
+            </button>
+          </div>
+        )}
+        {showIsCreated && (
+          <div className="flex">
+            <span className="w-1/2 py-2 rounded-lg text-center  bg-violet-400 text-white font-semibold  transition disabled:opacity-50">
+              Created By You
+            </span>
+            <button
+              onClick={handleDelete}
+              className="w-1/2 py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition disabled:opacity-50"
+            >
+              Delete
+            </button>
+          </div>
+        )}
+        {/* <button
           onClick={handleSave}
           className="bg-cyan-400 text-shadow-white hover:bg-sky-500 hover:text-[#343a40] font-semibold rounded-lg px-3 py-1 transition"
         >
           Save
-        </button>
+        </button> */}
       </td>
     </tr>
   );
