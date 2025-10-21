@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "@/app/constants";
 
 export default function GoogleCallback() {
   const router = useRouter();
@@ -8,7 +9,7 @@ export default function GoogleCallback() {
   useEffect(() => {
     const fetchToken = async () => {
       try {
-        const res = await fetch("http://localhost:3001/auth/google/callback", {
+        const res = await fetch(`${BACKEND_URL}/auth/google/callback`, {
           credentials: "include",
         });
         const data = await res.json();
