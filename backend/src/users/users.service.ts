@@ -16,7 +16,7 @@ export class UsersService {
   ) {}
 
   async createUser(createUserDTO: CreateUserDTO): Promise<UserDocument> {
-    console.log('creating a new user\n');
+    //console.log('creating a new user\n');
     if (createUserDTO.password) {
       createUserDTO.password = await bcrypt.hash(createUserDTO.password, 10);
     }

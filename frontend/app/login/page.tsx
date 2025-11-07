@@ -18,7 +18,7 @@ export default function Login() {
     setError("");
 
     try {
-      alert(`${BACKEND_URL}/auth/login-jwt`);
+      //alert(`${BACKEND_URL}/auth/login-jwt`);
       //alert(JSON.stringify(formData));
       const res = await fetch(`${BACKEND_URL}/auth/login-jwt`, {
         method: "POST",
@@ -28,7 +28,7 @@ export default function Login() {
       });
 
       const data = await res.json();
-      alert(JSON.stringify(data));
+      //alert(JSON.stringify(data));
       if (res.ok) {
         if (res.ok) {
           await refetchUser(); // ensures AuthProvider has user info

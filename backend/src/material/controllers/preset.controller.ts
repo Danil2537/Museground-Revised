@@ -52,7 +52,7 @@ export class PresetController {
       soundFile?: Express.Multer.File[];
     },
   ) {
-    console.log('Starting preset upload...');
+    //console.log('Starting preset upload...');
 
     const newPreset = await this.materialService.create(createPresetDto);
 
@@ -168,7 +168,7 @@ export class PresetController {
 
   @Delete('delete/:id')
   async deletePreset(@Param('id') presetId: string) {
-    console.log(presetId);
+    //console.log(presetId);
     const toBeDeleted = await this.materialService.findOne(presetId);
     if (toBeDeleted) {
       const r2 = await this.fileService.deleteFile(
@@ -209,14 +209,12 @@ export class PresetController {
     @Body()
     updateData: Partial<Pick<Preset, 'name' | 'vst' | 'genres' | 'types'>>,
   ) {
-    console.log(`hit update endpoint\n`);
+    //console.log(`hit update endpoint\n`);
     const existing = await this.materialService.findOne(presetId);
-    console.log(
-      `found specified preset. Update data is: ${JSON.stringify(updateData)}\n`,
-    );
+    //console.log(`found specified preset. Update data is: ${JSON.stringify(updateData)}\n`,);
     if (!existing) throw new BadRequestException('preset not found');
     const updated = await this.materialService.update(presetId, updateData);
-    console.log(`updated preset: ${JSON.stringify(updated)}`);
+    //console.log(`updated preset: ${JSON.stringify(updated)}`);
     return updated;
   }
 

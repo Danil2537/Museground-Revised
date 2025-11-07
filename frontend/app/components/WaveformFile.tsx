@@ -108,7 +108,7 @@ export default function WaveformFile({
         const writable = await fileHandle.createWritable();
         await writable.write(blob);
         await writable.close();
-        console.log(`Saved ${filename} to persistent folder`);
+        //console.log(`Saved ${filename} to persistent folder`);
       } else {
         // Fallback: browser download
         const url = URL.createObjectURL(blob);

@@ -27,8 +27,8 @@ export default function Register() {
     setErrors([]);
 
     try {
-      alert(`${BACKEND_URL}/auth/register-jwt`);
-      alert(JSON.stringify(formData));
+      //alert(`${BACKEND_URL}/auth/register-jwt`);
+      //alert(JSON.stringify(formData));
       const res = await fetch(`${BACKEND_URL}/auth/register-jwt`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

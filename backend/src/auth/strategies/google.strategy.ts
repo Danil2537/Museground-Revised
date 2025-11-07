@@ -45,7 +45,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       password: null,
     };
 
-    console.log(`\n\nGoogle validate user: ${JSON.stringify(user, null, 2)}`);
+    //console.log(`\n\nGoogle validate user: ${JSON.stringify(user, null, 2)}`);
 
     done(null, user);
   }

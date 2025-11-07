@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 export class CreatePresetDTO {
   constructor() {
-    console.log('creating preset upload dto');
+    //console.log('creating preset upload dto');
   }
 
   @IsString()

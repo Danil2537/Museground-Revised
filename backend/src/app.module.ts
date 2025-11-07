@@ -12,6 +12,7 @@ import { PresetSchema } from './schemas/preset.schema';
 import { PackSchema } from './schemas/pack.schema';
 import { BucketModule } from './r2bucket/bucket.module';
 import { SavedItemModule } from './savedItems/savedItem.module';
+//import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 @Module({
   imports: [

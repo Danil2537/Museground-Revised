@@ -8,19 +8,19 @@ export class FileController {
 
   @Post('upload')
   uploadFile(@Body() createFileDTO: CreateFileDTO) {
-    console.log(JSON.stringify(createFileDTO));
+    //console.log(JSON.stringify(createFileDTO));
     return this.fileService.uploadFile(createFileDTO);
   }
 
   @Post('download')
   downloadFile(@Body() fileKey: string) {
-    console.log(JSON.stringify(fileKey));
+    //console.log(JSON.stringify(fileKey));
     return this.fileService.downloadFile(fileKey);
   }
 
   @Post('delete')
   deleteFile(@Body() createFileDTO: CreateFileDTO) {
-    console.log(JSON.stringify(createFileDTO));
+    //console.log(JSON.stringify(createFileDTO));
     return this.fileService.uploadFile(createFileDTO);
   }
 }

@@ -2,7 +2,7 @@ import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateUserDTO {
   constructor() {
-    console.log('Creating a createUserDTO\n');
+    //console.log('Creating a createUserDTO\n');
   }
 
   @IsNotEmpty()

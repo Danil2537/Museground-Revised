@@ -59,14 +59,25 @@ export default function Header({ activeTop, activeBottom }: HeaderProps) {
           <ul className="flex justify-center space-x-2 mt-1">
             {bottomLinks.map((link) => (
               <li key={link} className="flex-1 min-w-[140px]">
-                <Link
-                  href={`/${activeTop.toLowerCase()}/${link.toLowerCase()}`}
-                  className={`${baseLinkClasses} ${
-                    activeBottom === link ? activeLinkClasses : ""
-                  }`}
-                >
-                  {link}
-                </Link>
+                {activeTop === "Upload" && activeBottom === "Packs" ? (
+                  <Link
+                    href={`/${activeTop.toLowerCase()}/pack`}
+                    className={`${baseLinkClasses} ${
+                      activeBottom === link ? activeLinkClasses : ""
+                    }`}
+                  >
+                    {link}
+                  </Link>
+                ) : (
+                  <Link
+                    href={`/${activeTop.toLowerCase()}/${link.toLowerCase()}`}
+                    className={`${baseLinkClasses} ${
+                      activeBottom === link ? activeLinkClasses : ""
+                    }`}
+                  >
+                    {link}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

@@ -28,7 +28,7 @@ export default function ExplorePacksPage() {
     if (e) e.preventDefault();
     //(e: FormEvent)
     //e.preventDefault(); // Prevent page reload
-    alert(JSON.stringify(packFilterFormData));
+    //alert(JSON.stringify(packFilterFormData));
     // Only include non-empty or meaningful fields
     const filteredData: Record<string, string> = {};
     Object.entries(packFilterFormData).forEach(([key, value]) => {
@@ -42,12 +42,12 @@ export default function ExplorePacksPage() {
 
     const queryString = new URLSearchParams(filteredData).toString();
     const url = `${BACKEND_URL}/packs/find/query?${queryString}`;
-    alert(url);
+    //alert(url);
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch packs");
       const data = await res.json();
-      alert(JSON.stringify(data));
+      //alert(JSON.stringify(data));
 
       setResults(Array.isArray(data) ? data : (data.filterResult ?? []));
     } catch (err) {

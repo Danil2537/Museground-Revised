@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 export class CreatePackDTO {
   constructor() {
-    console.log('creating preset pack dto');
+    //console.log('creating preset pack dto');
   }
 
   @IsString()

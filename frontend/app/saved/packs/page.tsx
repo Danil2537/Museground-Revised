@@ -20,7 +20,7 @@ export default function SavedPacksPage() {
           const url = `${BACKEND_URL}/saved-items/get-saved/${user._id}/Pack`;
           const res = await fetch(url);
           const savedPacksData = await res.json();
-          alert(JSON.stringify(savedPacksData));
+          //alert(JSON.stringify(savedPacksData));
           if (!res.ok) throw new Error("Failed to fetch saved packs");
           setSavedPacks(savedPacksData || []);
         } catch (err) {

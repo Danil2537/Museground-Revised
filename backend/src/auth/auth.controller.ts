@@ -42,7 +42,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login-jwt')
   async loginJwt(@Body() loginData: JwtLoginDto, @Res() res: Response) {
-    console.log(`starting jwt login, data is: ${JSON.stringify(loginData)}\n`);
+    //console.log(`starting jwt login, data is: ${JSON.stringify(loginData)}\n`);
     const tokenObj = await this.authService.loginJwt(loginData);
 
     res.cookie('access_token', tokenObj?.access_token, {
@@ -64,18 +64,18 @@ export class AuthController {
 
   @Post('register-jwt')
   registerJwt(@Body() registerData: CreateUserDTO) {
-    console.log('registerJwt controller data: \n', registerData);
+    //console.log('registerJwt controller data: \n', registerData);
     return this.authService.registerJwt(registerData);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
   async getProfile(@CurrentUser() user: ProfileRequestDto) {
-    //console.log(`profile request: ${JSON.stringify(req)}`);
+    ////console.log(`profile request: ${JSON.stringify(req)}`);
     //const user = await this.authService.getUserById(req.user.id);
-    console.log('Opening user profile route\n');
+    //console.log('Opening user profile route\n');
     const dbUser = await this.authService.getUserById(user.id);
-    console.log('\n\n', JSON.stringify(user));
+    //console.log('\n\n', JSON.stringify(user));
     if (dbUser) {
       return dbUser;
       //   return {
@@ -89,26 +89,6 @@ export class AuthController {
   @UseGuards(GoogleOauthGuard)
   async auth() {}
 
-  //   @Get('google/callback')
-  //   @UseGuards(GoogleOauthGuard)
-  //   async googleAuthCallback(@Req() req: Request, @Res() res: Response) {
-  //     // req.user is now typed from  global.d.ts declaration
-  //     if (req.user) {
-  //       const tokenObj = await this.authService.signInGoogle(req.user);
-  //       if (tokenObj) {
-  //         res.cookie('access_token', tokenObj.access_token, {
-  //           httpOnly: true,
-  //           maxAge: 2592000000,
-  //           sameSite: 'none',
-  //           secure: this.configService.get<boolean>('SECURE_COOKIES'),
-  //         });
-  //       }
-  //     }
-  //     return res.redirect(
-  //       `${this.configService.get<string>('FRONTEND_ORIGIN')}/profile`,
-  //     );
-  //   }
-
   @Get('google/callback')
   @UseGuards(GoogleOauthGuard)
   async googleAuthCallback(
@@ -119,7 +99,7 @@ export class AuthController {
     if (tokenObj) {
       res.cookie('access_token', tokenObj.access_token, {
         httpOnly: true,
-        maxAge: 2592000000,
+        maxAge: 25920000,
         sameSite: 'none',
         secure: this.configService.get<boolean>('SECURE_COOKIES'),
       });

@@ -20,7 +20,7 @@ export class FolderService {
   ) {}
 
   async createFolder(createFolderDto: CreateFolderDTO) {
-    console.log('Creating folder:', createFolderDto.name);
+    //console.log('Creating folder:', createFolderDto.name);
 
     const newFolderDb = new this.folderModel({
       name: createFolderDto.name,
@@ -47,7 +47,7 @@ export class FolderService {
       folderPath = nameChain.join('/'); // e.g., "packs/2025/synths/basslines"
     }
 
-    console.log(`Full folder path resolved: ${folderPath}`);
+    //console.log(`Full folder path resolved: ${folderPath}`);
 
     // --- Create empty folder in R2 bucket ---
     await this.bucketService.createFolder(folderPath);

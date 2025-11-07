@@ -86,7 +86,7 @@ export default function EditableSampleCard({ sample }: { sample: Sample }) {
       );
 
       if (!res.ok) throw new Error("Failed to delete sample.");
-      alert(`Sample "${editableSample.name}" was deleted.`);
+      //alert(`Sample "${editableSample.name}" was deleted.`);
       router.refresh();
     } catch (err) {
       console.error("Error deleting sample:", err);
@@ -222,7 +222,7 @@ export default function EditableSampleCard({ sample }: { sample: Sample }) {
       }
 
       const updatedSample = await res.json();
-      console.log(" Sample updated:", updatedSample);
+      //console.log(" Sample updated:", updatedSample);
       return updatedSample;
     } catch (err) {
       console.error(" Error updating sample:", err);

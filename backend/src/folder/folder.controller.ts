@@ -8,10 +8,8 @@ export class FolderController {
 
   @Post('create')
   async createFolder(@Body() createFolderDto: CreateFolderDTO) {
-    console.log('hit create folder cotroller\n');
-    console.log(
-      `create folder dto inside controller is: ${JSON.stringify(createFolderDto)}\n`,
-    );
+    //console.log('hit create folder cotroller\n');
+    //console.log(`create folder dto inside controller is: ${JSON.stringify(createFolderDto)}\n`);
     return await this.folderService.createFolder(createFolderDto);
   }
 }

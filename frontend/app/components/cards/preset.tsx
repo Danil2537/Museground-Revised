@@ -121,7 +121,7 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
     });
 
     if (res.ok) {
-      alert(`Preset "${preset.name}" saved!`);
+      //alert(`Preset "${preset.name}" saved!`);
       setShowIsSaved(true);
     } else {
       alert("Failed to save preset.");
@@ -143,7 +143,7 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
     });
 
     if (res.ok) {
-      alert("Preset removed from saved!");
+      //alert("Preset removed from saved!");
       setShowIsSaved(false);
     } else {
       alert("Failed to remove saved preset.");
@@ -166,7 +166,7 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
 
       if (!res.ok) throw new Error("Failed to delete preset.");
 
-      alert(`Preset "${preset.name}" was successfully deleted.`);
+      //alert(`Preset "${preset.name}" was successfully deleted.`);
       router.refresh();
     } catch (err) {
       console.error("Error deleting preset:", err);

@@ -15,7 +15,7 @@ export class FileService {
   ) {}
 
   async uploadFile(dto: CreateFileDTO) {
-    console.log('uploading a file in file service\n');
+    //console.log('uploading a file in file service\n');
     // Determine folder
     let fullKey = '';
 
@@ -26,7 +26,7 @@ export class FileService {
     } else if (dto.type === 'pack') {
       fullKey = `${dto.key}`; // dto.key includes nested path inside the pack
     }
-    console.log(`full file key: ${fullKey}\n`);
+    //console.log(`full file key: ${fullKey}\n`);
 
     // Upload to R2
     const { key, url } = await this.bucketService.uploadFile(
@@ -36,7 +36,7 @@ export class FileService {
     );
 
     // Save file metadata to Mongo
-    console.log('saving file data to mongo\n');
+    //console.log('saving file data to mongo\n');
     const fileDoc = new this.fileModel({
       name: key,
       url: url,
@@ -77,7 +77,7 @@ export class FileService {
   }
 
   async getFileById(fileId: string) {
-    console.log(`file id: ${fileId}\n`);
+    //console.log(`file id: ${fileId}\n`);
     return this.fileModel.findById(fileId);
   }
 
@@ -93,7 +93,7 @@ export class FileService {
 
     const folderPath = await this.getFullFolderPath(parentFolder);
     const path = `${folderPath}/${file.name.split('/').pop()}`;
-    console.log(`build file path: ${path}`);
+    //console.log(`build file path: ${path}`);
     return path;
     // split in case file.name already contains some path
   }

@@ -19,13 +19,11 @@ export class SavedItemService {
   ) {}
 
   async getSavedItems(userId: string, itemType: 'Pack' | 'Sample' | 'Preset') {
-    console.log(
-      `user id for saved items: ${userId}, and item type is: ${itemType}\n\n`,
-    );
+    //console.log(`user id for saved items: ${userId}, and item type is: ${itemType}\n\n`);
     const saved = await this.savedItemModel.find({ userId: userId, itemType });
 
     const ids = saved.map((s) => s.itemId);
-    console.log(ids);
+    //console.log(ids);
 
     if (itemType === 'Pack') {
       const found = await this.packModel.find({ _id: { $in: ids } });
@@ -40,7 +38,7 @@ export class SavedItemService {
         }),
       );
 
-      console.log('found saved packs', JSON.stringify(found));
+      //console.log('found saved packs', JSON.stringify(found));
       return foundWithAuthors;
     }
     if (itemType === 'Sample') {
@@ -56,7 +54,7 @@ export class SavedItemService {
         }),
       );
 
-      console.log('found saved packs', JSON.stringify(found));
+      //console.log('found saved packs', JSON.stringify(found));
       return foundWithAuthors;
     }
     if (itemType === 'Preset') {
@@ -72,7 +70,7 @@ export class SavedItemService {
         }),
       );
 
-      console.log('found saved packs', JSON.stringify(found));
+      //console.log('found saved packs', JSON.stringify(found));
       return foundWithAuthors;
     }
 

@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 export class CreateSampleDTO {
   constructor() {
-    console.log('creating sample upload dto');
+    //console.log('creating sample upload dto');
   }
 
   @IsString()

@@ -1,0 +1,1506 @@
+<svg version="1.1" baseProfile="full" width="18387.0" height="573.0" viewBox="0 0 18387 573" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+<desc >#.interface: fill=lightblue
+#.enumeration: fill=lightgreen
+#.type: fill=lightgray
+
+[AppController|-appService: AppService|+getHello(): string]
+[AppModule||]
+[AppService||+getHello(): string]
+[AuthController|-authService: AuthService;-configService: ConfigService&lt;Record&lt;string \| symbol, unknown&gt;, false&gt;|+loginJwt(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;;+registerJwt(): Promise&lt;UserDocument&gt;;+getProfile(): Promise&lt;UserDocument&gt;;+auth(): Promise&lt;void&gt;;+googleAuthCallback(): Promise&lt;void&gt;]
+[AuthModule||]
+[AuthService|-usersService: UsersService;-jwtService: JwtService|+loginJwt(): Promise&lt;{ access_token: string; }&gt;;+registerJwt(): Promise&lt;UserDocument&gt;;+getUserById(): Promise&lt;UserDocument&gt;;+registerGoogle(): Promise&lt;UserDocument&gt;;+signInGoogle(): Promise&lt;{ access_token: string; }&gt;;+issueToken(): Promise&lt;{ access_token: string; }&gt;]
+[&lt;interface&gt;JwtPayload|+sub: string;+username: string|]
+[FileController|-fileService: FileService|+uploadFile(): Promise&lt;any&gt;;+downloadFile(): Promise&lt;any&gt;;+deleteFile(): Promise&lt;any&gt;]
+[FileModule||]
+[FileService|-fileModel: Model&lt;FileDocument, {}, {}, {}, any, any&gt;;-folderModel: Model&lt;FolderDocument, {}, {}, {}, any, any&gt;;-bucketService: BucketService|+uploadFile(): Promise&lt;any&gt;;+downloadFile(): Promise&lt;any&gt;;+updateParent(): Promise&lt;any&gt;;+deleteFile(): Promise&lt;{ deleted: boolean; key: string; }&gt;;+getFileById(): Promise&lt;any&gt;;+buildFilePath(): Promise&lt;string&gt;;-getFullFolderPath(): Promise&lt;string&gt;;+getFilesByParent(): Promise&lt;FileDocument\[\]&gt;]
+[FolderController|-folderService: FolderService|+createFolder(): Promise&lt;any&gt;]
+[FolderModule||]
+[FolderService|-folderModel: Model&lt;FolderDocument, {}, {}, {}, any, any&gt;;-fileModel: Model&lt;FileDocument, {}, {}, {}, any, any&gt;;-bucketService: BucketService|+createFolder(): Promise&lt;any&gt;;+addFile(): void;+getFolderWithChildrenAndFiles(): any;+updateParent(): Promise&lt;any&gt;;+deleteFolder(): Promise&lt;{ deleted: boolean; path: string; }&gt;;+findChildren(): Promise&lt;FolderDocument\[\]&gt;;+findChildrenPaths(): Promise&lt;string\[\]&gt;;-getFullFolderPath(): Promise&lt;string&gt;;-buildFilePath(): Promise&lt;string&gt;;+getFolderById(): Promise&lt;FolderDocument&gt;;+getSubfolders(): Promise&lt;FolderDocument\[\]&gt;]
+[&lt;interface&gt;MaterialModuleOptions|+modelName: string;+schema: any|]
+[MaterialModule||+static register(): DynamicModule]
+[MaterialService&lt;T&gt;|-options: any;-model: Model&lt;T, {}, {}, {}, IfAny&lt;T, any, Document&lt;unknown, {}, T, {}, {}&gt; &amp; (Require_id&lt;T&gt; extends { __v?: infer U; } ? { __v?: U; } &amp; Require_id&lt;T&gt; : Require_id&lt;...&gt; &amp; { ...; })&gt;, any&gt;;-savedItemModel: Model&lt;SavedItemDocument, {}, {}, {}, any, any&gt;|+create(): Promise&lt;T&gt;;+findAll(): Promise&lt;T\[\]&gt;;+findOne(): Promise&lt;T&gt;;+update(): Promise&lt;T&gt;;+delete(): Promise&lt;T&gt;;+findByConditions(): Promise&lt;T\[\]&gt;]
+[BucketController|-bucketService: BucketService|+uploadFile(): Promise&lt;{ key: string; url: string; }&gt;;+getFile(): Promise&lt;void&gt;;+getSignedUrl(): Promise&lt;{ url: string; }&gt;]
+[BucketModule||]
+[BucketService|-s3: S3Client;-bucket: string;-configService: ConfigService&lt;Record&lt;string \| symbol, unknown&gt;, false&gt;|+uploadFile(): Promise&lt;{ key: string; url: string; }&gt;;+deleteFileByKey(): Promise&lt;{ deleted: boolean; key: string; }&gt;;+createFolder(): Promise&lt;{ key: string; url: string; }&gt;;+deleteFile(): Promise&lt;{ deleted: boolean; key: string; commandResult: DeleteObjectCommandOutput; }&gt;;+deleteFolder(): Promise&lt;{ deleted: boolean; prefix: string; }&gt;;+getFile(): Promise&lt;Readable&gt;;+getPublicUrl(): string]
+[SavedItemController|-savedItemService: SavedItemService|+getUserSavedItems(): Promise&lt;any\[\]&gt;;+checkIfItemIsSaved(): Promise&lt;boolean&gt;]
+[SavedItemModule||]
+[SavedItemService|-savedItemModel: Model&lt;SavedItemDocument, {}, {}, {}, any, any&gt;;-packModel: Model&lt;Pack, {}, {}, {}, any, any&gt;;-sampleModel: Model&lt;Sample, {}, {}, {}, any, any&gt;;-presetModel: Model&lt;Preset, {}, {}, {}, any, any&gt;;-userModel: Model&lt;User, {}, {}, {}, any, any&gt;|+getSavedItems(): Promise&lt;any\[\]&gt;;+checkIsSaved(): Promise&lt;boolean&gt;]
+[File|+name: string;+size: number;+url: string;+parent?: ObjectId|]
+[Folder|+name: string;+parent?: ObjectId|]
+[Pack|+name: string;+imageUrl?: string;+authorId: string;+rootFolder: ObjectId|]
+[Preset|+name: string;+authorId: ObjectId;+fileUrl: string;+soundFileUrl: string;+vst?: string;+genres?: string;+types?: string;+fileId: ObjectId;+soundFileId: ObjectId|]
+[Sample|+name: string;+fileUrl?: string;+authorId: ObjectId;+BPM?: number;+instruments?: string;+genres?: string;+key?: string;+fileId: ObjectId|]
+[SavedItem|+userId: ObjectId;+itemType: &quot;Pack&quot; \| &quot;Sample&quot; \| &quot;Preset&quot;;+itemId: ObjectId;+savedAt: Date|]
+[User|+username: string;+email: string;+password?: string;+provider: &quot;local&quot; \| &quot;google&quot;;+totalDownloads: number;+totalUploads: number|]
+[UsersController|-usersService: UsersService|+createUser(): Promise&lt;UserDocument&gt;;+saveItem(): Promise&lt;Document&lt;unknown, {}, UserDocument, {}, {}&gt; &amp; User &amp; Document&lt;unknown, any, any, Record&lt;string, any&gt;, {}&gt; &amp; Required&lt;{ _id: unknown; }&gt; &amp; { ...; }&gt;;+deleteSavedItem(): Promise&lt;DeleteResult&gt;;+getSavedSamples(): Promise&lt;any\[\]&gt;;+getSavedPresets(): Promise&lt;any\[\]&gt;;+getSavedPacks(): Promise&lt;any\[\]&gt;]
+[UsersModule||]
+[UsersService|-userModel: Model&lt;UserDocument, {}, {}, {}, Document&lt;unknown, {}, UserDocument, {}, {}&gt; &amp; User &amp; Document&lt;unknown, any, any, Record&lt;string, any&gt;, {}&gt; &amp; Required&lt;...&gt; &amp; { ...; }, any&gt;;-savedItemModel: Model&lt;SavedItemDocument, {}, {}, {}, any, any&gt;|+createUser(): Promise&lt;UserDocument&gt;;+findOne(): Promise&lt;UserDocument&gt;;+findById(): Promise&lt;UserDocument&gt;;+findByName(): Promise&lt;UserDocument&gt;;+findByEmail(): Promise&lt;UserDocument&gt;;+saveItem(): Promise&lt;Document&lt;unknown, {}, UserDocument, {}, {}&gt; &amp; User &amp; Document&lt;unknown, any, any, Record&lt;string, any&gt;, {}&gt; &amp; Required&lt;{ _id: unknown; }&gt; &amp; { ...; }&gt;;+getSavedItems(): Promise&lt;any\[\]&gt;;+deleteSavedItem(): Promise&lt;DeleteResult&gt;]
+[&lt;interface&gt;AuthenticatedRequest|+user: ProfileRequestDto|]
+[Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;]&lt;:--[AuthenticatedRequest]
+[JwtLoginDto|+username: string;+password: string|]
+[ProfileRequestDto|+id: string;+username: string;+email: string|]
+[GoogleOauthGuard||]
+[JwtAuthGuard||]
+[GoogleStrategy|-configService: ConfigService&lt;Record&lt;string \| symbol, unknown&gt;, false&gt;|+validate(): void]
+[&lt;interface&gt;GoogleUser|+provider: &quot;google&quot;;+providerId: string;+email: string;+username: string;+picture: string;+password: null|]
+[JwtStrategy|-configService: ConfigService&lt;Record&lt;string \| symbol, unknown&gt;, false&gt;;-usersService: UsersService|+validate(): Promise&lt;{ id: string; username: string; }&gt;]
+[&lt;type&gt;JwtPayload|+sub: string;+username: string|]
+[CreateFileDTO|+key: string;+buffer: Buffer;+contentType: string;+type: &quot;sample&quot; \| &quot;preset&quot; \| &quot;pack&quot;|]
+[CreateFolderDTO|+name: string;+parent?: ObjectId|]
+[PackController|-materialService: MaterialService&lt;PackDocument&gt;;-fileService: FileService;-folderService: FolderService;-userService: UsersService|+createPack(): Promise&lt;any&gt;;+addFolder(): Promise&lt;any&gt;;+addFile(): Promise&lt;any&gt;;+getUserCreatedPacksFull(): Promise&lt;any\[\]&gt;;+deleteFolder(): Promise&lt;any&gt;;+deleteFile(): Promise&lt;any&gt;;+getPack(): Promise&lt;PackDocument&gt;;+moveItem(): Promise&lt;any&gt;;+findPacks(): Promise&lt;any\[\]&gt;;+getPackFileUrls(): Promise&lt;{ fodlers: any; files: any; }&gt;;+deletePack(): Promise&lt;{ db: PackDocument; bucket: any; }&gt;;+downloadFile(): Promise&lt;void&gt;;+downloadFolder(): Promise&lt;void&gt;]
+[PresetController|-materialService: MaterialService&lt;PresetDocument&gt;;-fileService: FileService;-userService: UsersService|+uploadPreset(): Promise&lt;any&gt;;+getFiltered(): Promise&lt;any\[\]&gt;;+getPreset(): Promise&lt;PresetDocument&gt;;+downloadPreset(): Promise&lt;void&gt;;+deletePreset(): Promise&lt;{ db: PresetDocument; r2: any; }&gt;;+getPresetsCreatedByUser(): Promise&lt;any\[\]&gt;;+updatePreset(): Promise&lt;PresetDocument&gt;;+replaceFile(): Promise&lt;{ message: string; preset: PresetDocument; }&gt;]
+[SampleController|-materialService: MaterialService&lt;SampleDocument&gt;;-fileService: FileService;-userService: UsersService|+uploadSample(): Promise&lt;any&gt;;+getSample(): Promise&lt;SampleDocument&gt;;+getFiltered(): Promise&lt;any\[\]&gt;;+downloadSample(): Promise&lt;void&gt;;+deleteSample(): Promise&lt;{ db: SampleDocument; r2: any; }&gt;;+getSamplesCreatedByUser(): Promise&lt;any\[\]&gt;;+updateSample(): Promise&lt;SampleDocument&gt;;+replaceFile(): Promise&lt;{ message: string; sample: SampleDocument; }&gt;]
+[CreatePackDTO|+name: string;+imageUrl?: string;+authorId: string;+rootFolder: ObjectId|]
+[CreatePresetDTO|+name: string;+authorId: ObjectId;+fileUrl: string;+soundFileUrl: string;+vst?: string;+genres?: string;+types?: string|]
+[CreateSampleDTO|+name: string;+fileUrl?: string;+authorId: ObjectId;+BPM?: number;+instruments?: string;+genres?: string;+key?: string;+fileId: ObjectId|]
+[CreateUserDTO|+username: string;+email: string;+password?: string;+provider?: &quot;local&quot; \| &quot;google&quot;|]
+[SaveItemDTO|+userId: string;+itemType: &quot;Pack&quot; \| &quot;Sample&quot; \| &quot;Preset&quot;;+itemId?: string|]</desc>
+<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="normal" font-style="normal">
+<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+<g stroke="transparent" fill="transparent">
+<rect x="0.0" y="0.0" height="573.0" width="18387.0" stroke="none"></rect>
+</g>
+<g transform="translate(8, 8)" fill="#33322E">
+<g transform="translate(20, 20)" fill="#eee8d5" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+<g stroke-dasharray="6 6">
+<path d="M12656.0 231.8 L12656 425 L12656 445 L12656.0 445.0 " fill="none"></path>
+</g>
+<path d="M12661.3 231.8 L12656.0 231.8 L12650.7 231.8 L12656.0 218.5 Z"></path>
+<g data-name="AppController">
+<g fill="#eee8d5" stroke="#33322E" data-name="AppController">
+<rect x="0.0" y="154.5" height="96.0" width="211.0" data-name="AppController"></rect>
+<path d="M0.0 186.5 L211.0 186.5" fill="none" data-name="AppController"></path>
+<path d="M0.0 218.5 L211.0 218.5" fill="none" data-name="AppController"></path>
+</g>
+<g transform="translate(0, 154.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AppController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AppController" data-compartment="0">
+<a id="src\app.controller.ts.AppController" xlink:href="src\app.controller.ts"><text x="97.5" y="14.1" stroke="none" text-anchor="middle" data-name="AppController" data-compartment="0">AppController</text></a>
+
+</g>
+</g>
+<g transform="translate(0, 186.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AppController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="AppController" data-compartment="1">-appService: AppService</text>
+
+</g>
+</g>
+<g transform="translate(0, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AppController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AppController" data-compartment="2">+getHello(): string</text>
+
+</g>
+</g>
+</g>
+<g data-name="AppModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="AppModule">
+<rect x="251.0" y="178.5" height="48.0" width="105.0" data-name="AppModule"></rect>
+<path d="M251.0 210.5 L356.0 210.5" fill="none" data-name="AppModule"></path>
+<path d="M251.0 218.5 L356.0 218.5" fill="none" data-name="AppModule"></path>
+</g>
+<g transform="translate(251, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AppModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AppModule" data-compartment="0">
+<a id="src\app.module.ts.AppModule" xlink:href="src\app.module.ts"><text x="44.5" y="14.1" stroke="none" text-anchor="middle" data-name="AppModule" data-compartment="0">AppModule</text></a>
+
+</g>
+</g>
+<g transform="translate(251, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AppModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(251, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AppModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="AppService">
+<g fill="#eee8d5" stroke="#33322E" data-name="AppService">
+<rect x="396.0" y="166.5" height="72.0" width="157.0" data-name="AppService"></rect>
+<path d="M396.0 198.5 L553.0 198.5" fill="none" data-name="AppService"></path>
+<path d="M396.0 206.5 L553.0 206.5" fill="none" data-name="AppService"></path>
+</g>
+<g transform="translate(396, 166.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AppService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AppService" data-compartment="0">
+<a id="src\app.service.ts.AppService" xlink:href="src\app.service.ts"><text x="70.5" y="14.1" stroke="none" text-anchor="middle" data-name="AppService" data-compartment="0">AppService</text></a>
+
+</g>
+</g>
+<g transform="translate(396, 198.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AppService" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(396, 206.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AppService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AppService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AppService" data-compartment="2">+getHello(): string</text>
+
+</g>
+</g>
+</g>
+<g data-name="AuthController">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthController">
+<rect x="593.0" y="114.0" height="177.0" width="590.0" data-name="AuthController"></rect>
+<path d="M593.0 146.0 L1183.0 146.0" fill="none" data-name="AuthController"></path>
+<path d="M593.0 194.0 L1183.0 194.0" fill="none" data-name="AuthController"></path>
+</g>
+<g transform="translate(593, 114)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthController" data-compartment="0">
+<a id="src\auth\auth.controller.ts.AuthController" xlink:href="src\auth\auth.controller.ts"><text x="287.0" y="14.1" stroke="none" text-anchor="middle" data-name="AuthController" data-compartment="0">AuthController</text></a>
+
+</g>
+</g>
+<g transform="translate(593, 146)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthController" data-compartment="1">-authService: AuthService</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthController" data-compartment="1">-configService: ConfigService&lt;Record&lt;string | symbol, unknown&gt;, false&gt;</text>
+
+</g>
+</g>
+<g transform="translate(593, 194)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthController" data-compartment="2">+loginJwt(): Promise&lt;Response&lt;any, Record&lt;string, any&gt;&gt;&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthController" data-compartment="2">+registerJwt(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="AuthController" data-compartment="2">+getProfile(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="AuthController" data-compartment="2">+auth(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="AuthController" data-compartment="2">+googleAuthCallback(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="AuthModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthModule">
+<rect x="1223.0" y="178.5" height="48.0" width="110.0" data-name="AuthModule"></rect>
+<path d="M1223.0 210.5 L1333.0 210.5" fill="none" data-name="AuthModule"></path>
+<path d="M1223.0 218.5 L1333.0 218.5" fill="none" data-name="AuthModule"></path>
+</g>
+<g transform="translate(1223, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthModule" data-compartment="0">
+<a id="src\auth\auth.module.ts.AuthModule" xlink:href="src\auth\auth.module.ts"><text x="47.0" y="14.1" stroke="none" text-anchor="middle" data-name="AuthModule" data-compartment="0">AuthModule</text></a>
+
+</g>
+</g>
+<g transform="translate(1223, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(1223, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="AuthService">
+<g fill="#eee8d5" stroke="#33322E" data-name="AuthService">
+<rect x="1373.0" y="81.5" height="242.0" width="402.0" data-name="AuthService"></rect>
+<path d="M1373.0 113.5 L1775.0 113.5" fill="none" data-name="AuthService"></path>
+<path d="M1373.0 161.5 L1775.0 161.5" fill="none" data-name="AuthService"></path>
+</g>
+<g transform="translate(1373, 81.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="AuthService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthService" data-compartment="0">
+<a id="src\auth\auth.service.ts.AuthService" xlink:href="src\auth\auth.service.ts"><text x="193.0" y="14.1" stroke="none" text-anchor="middle" data-name="AuthService" data-compartment="0">AuthService</text></a>
+
+</g>
+</g>
+<g transform="translate(1373, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthService" data-compartment="1">-usersService: UsersService</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthService" data-compartment="1">-jwtService: JwtService</text>
+
+</g>
+</g>
+<g transform="translate(1373, 161.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthService" data-compartment="2">+loginJwt(): Promise&lt;{ access_token: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="AuthService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="AuthService" data-compartment="2">+registerJwt(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="AuthService" data-compartment="2">+getUserById(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="AuthService" data-compartment="2">+registerGoogle(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="AuthService" data-compartment="2">+signInGoogle(): Promise&lt;{ access_token: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="AuthService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="AuthService" data-compartment="2">+issueToken(): Promise&lt;{ access_token: string</text>
+<text x="0.0" y="143.7" stroke="none" data-name="AuthService" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="JwtPayload">
+<g fill="lightblue" stroke="#33322E" data-name="JwtPayload">
+<rect x="1815.0" y="158.5" height="88.0" width="159.0" data-name="JwtPayload"></rect>
+<path d="M1815.0 190.5 L1974.0 190.5" fill="none" data-name="JwtPayload"></path>
+<path d="M1815.0 238.5 L1974.0 238.5" fill="none" data-name="JwtPayload"></path>
+</g>
+<g transform="translate(1815, 158.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtPayload" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JwtPayload" data-compartment="0">
+<a id="src\auth\auth.service.ts.JwtPayload" xlink:href="src\auth\auth.service.ts"><text x="71.5" y="14.1" stroke="none" text-anchor="middle" data-name="JwtPayload" data-compartment="0">JwtPayload</text></a>
+
+</g>
+</g>
+<g transform="translate(1815, 190.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtPayload" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JwtPayload" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="JwtPayload" data-compartment="1">+sub: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="JwtPayload" data-compartment="1">+username: string</text>
+
+</g>
+</g>
+<g transform="translate(1815, 238.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtPayload" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtPayload" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="FileController">
+<g fill="#eee8d5" stroke="#33322E" data-name="FileController">
+<rect x="2014.0" y="138.0" height="129.0" width="265.0" data-name="FileController"></rect>
+<path d="M2014.0 170.0 L2279.0 170.0" fill="none" data-name="FileController"></path>
+<path d="M2014.0 202.0 L2279.0 202.0" fill="none" data-name="FileController"></path>
+</g>
+<g transform="translate(2014, 138)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FileController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FileController" data-compartment="0">
+<a id="src\files\file.controller.ts.FileController" xlink:href="src\files\file.controller.ts"><text x="124.5" y="14.1" stroke="none" text-anchor="middle" data-name="FileController" data-compartment="0">FileController</text></a>
+
+</g>
+</g>
+<g transform="translate(2014, 170)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FileController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FileController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="FileController" data-compartment="1">-fileService: FileService</text>
+
+</g>
+</g>
+<g transform="translate(2014, 202)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FileController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FileController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="FileController" data-compartment="2">+uploadFile(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="FileController" data-compartment="2">+downloadFile(): Promise&lt;any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="FileController" data-compartment="2">+deleteFile(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="FileModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="FileModule">
+<rect x="2319.0" y="178.5" height="48.0" width="102.0" data-name="FileModule"></rect>
+<path d="M2319.0 210.5 L2421.0 210.5" fill="none" data-name="FileModule"></path>
+<path d="M2319.0 218.5 L2421.0 218.5" fill="none" data-name="FileModule"></path>
+</g>
+<g transform="translate(2319, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FileModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FileModule" data-compartment="0">
+<a id="src\files\file.module.ts.FileModule" xlink:href="src\files\file.module.ts"><text x="43.0" y="14.1" stroke="none" text-anchor="middle" data-name="FileModule" data-compartment="0">FileModule</text></a>
+
+</g>
+</g>
+<g transform="translate(2319, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FileModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FileModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(2319, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FileModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FileModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="FileService">
+<g fill="#eee8d5" stroke="#33322E" data-name="FileService">
+<rect x="2461.0" y="65.0" height="275.0" width="467.0" data-name="FileService"></rect>
+<path d="M2461.0 97.0 L2928.0 97.0" fill="none" data-name="FileService"></path>
+<path d="M2461.0 162.0 L2928.0 162.0" fill="none" data-name="FileService"></path>
+</g>
+<g transform="translate(2461, 65)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FileService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FileService" data-compartment="0">
+<a id="src\files\file.service.ts.FileService" xlink:href="src\files\file.service.ts"><text x="225.5" y="14.1" stroke="none" text-anchor="middle" data-name="FileService" data-compartment="0">FileService</text></a>
+
+</g>
+</g>
+<g transform="translate(2461, 97)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FileService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FileService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="FileService" data-compartment="1">-fileModel: Model&lt;FileDocument, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="FileService" data-compartment="1">-folderModel: Model&lt;FolderDocument, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="FileService" data-compartment="1">-bucketService: BucketService</text>
+
+</g>
+</g>
+<g transform="translate(2461, 162)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FileService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FileService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="FileService" data-compartment="2">+uploadFile(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="FileService" data-compartment="2">+downloadFile(): Promise&lt;any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="FileService" data-compartment="2">+updateParent(): Promise&lt;any&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="FileService" data-compartment="2">+deleteFile(): Promise&lt;{ deleted: boolean</text>
+<text x="0.0" y="78.9" stroke="none" data-name="FileService" data-compartment="2">key: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="FileService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="FileService" data-compartment="2">+getFileById(): Promise&lt;any&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="FileService" data-compartment="2">+buildFilePath(): Promise&lt;string&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="FileService" data-compartment="2">-getFullFolderPath(): Promise&lt;string&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="FileService" data-compartment="2">+getFilesByParent(): Promise&lt;FileDocument[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="FolderController">
+<g fill="#eee8d5" stroke="#33322E" data-name="FolderController">
+<rect x="2968.0" y="154.5" height="96.0" width="261.0" data-name="FolderController"></rect>
+<path d="M2968.0 186.5 L3229.0 186.5" fill="none" data-name="FolderController"></path>
+<path d="M2968.0 218.5 L3229.0 218.5" fill="none" data-name="FolderController"></path>
+</g>
+<g transform="translate(2968, 154.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FolderController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FolderController" data-compartment="0">
+<a id="src\folder\folder.controller.ts.FolderController" xlink:href="src\folder\folder.controller.ts"><text x="122.5" y="14.1" stroke="none" text-anchor="middle" data-name="FolderController" data-compartment="0">FolderController</text></a>
+
+</g>
+</g>
+<g transform="translate(2968, 186.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FolderController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FolderController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="FolderController" data-compartment="1">-folderService: FolderService</text>
+
+</g>
+</g>
+<g transform="translate(2968, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FolderController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FolderController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="FolderController" data-compartment="2">+createFolder(): Promise&lt;any&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="FolderModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="FolderModule">
+<rect x="3269.0" y="178.5" height="48.0" width="124.0" data-name="FolderModule"></rect>
+<path d="M3269.0 210.5 L3393.0 210.5" fill="none" data-name="FolderModule"></path>
+<path d="M3269.0 218.5 L3393.0 218.5" fill="none" data-name="FolderModule"></path>
+</g>
+<g transform="translate(3269, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FolderModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FolderModule" data-compartment="0">
+<a id="src\folder\folder.module.ts.FolderModule" xlink:href="src\folder\folder.module.ts"><text x="54.0" y="14.1" stroke="none" text-anchor="middle" data-name="FolderModule" data-compartment="0">FolderModule</text></a>
+
+</g>
+</g>
+<g transform="translate(3269, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FolderModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FolderModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(3269, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FolderModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FolderModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="FolderService">
+<g fill="#eee8d5" stroke="#33322E" data-name="FolderService">
+<rect x="3433.0" y="40.5" height="324.0" width="467.0" data-name="FolderService"></rect>
+<path d="M3433.0 72.5 L3900.0 72.5" fill="none" data-name="FolderService"></path>
+<path d="M3433.0 137.5 L3900.0 137.5" fill="none" data-name="FolderService"></path>
+</g>
+<g transform="translate(3433, 40.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="FolderService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FolderService" data-compartment="0">
+<a id="src\folder\folder.service.ts.FolderService" xlink:href="src\folder\folder.service.ts"><text x="225.5" y="14.1" stroke="none" text-anchor="middle" data-name="FolderService" data-compartment="0">FolderService</text></a>
+
+</g>
+</g>
+<g transform="translate(3433, 72.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FolderService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FolderService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="FolderService" data-compartment="1">-folderModel: Model&lt;FolderDocument, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="FolderService" data-compartment="1">-fileModel: Model&lt;FileDocument, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="FolderService" data-compartment="1">-bucketService: BucketService</text>
+
+</g>
+</g>
+<g transform="translate(3433, 137.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FolderService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FolderService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="FolderService" data-compartment="2">+createFolder(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="FolderService" data-compartment="2">+addFile(): void</text>
+<text x="0.0" y="46.5" stroke="none" data-name="FolderService" data-compartment="2">+getFolderWithChildrenAndFiles(): any</text>
+<text x="0.0" y="62.7" stroke="none" data-name="FolderService" data-compartment="2">+updateParent(): Promise&lt;any&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="FolderService" data-compartment="2">+deleteFolder(): Promise&lt;{ deleted: boolean</text>
+<text x="0.0" y="95.1" stroke="none" data-name="FolderService" data-compartment="2">path: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="FolderService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="FolderService" data-compartment="2">+findChildren(): Promise&lt;FolderDocument[]&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="FolderService" data-compartment="2">+findChildrenPaths(): Promise&lt;string[]&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="FolderService" data-compartment="2">-getFullFolderPath(): Promise&lt;string&gt;</text>
+<text x="0.0" y="176.1" stroke="none" data-name="FolderService" data-compartment="2">-buildFilePath(): Promise&lt;string&gt;</text>
+<text x="0.0" y="192.3" stroke="none" data-name="FolderService" data-compartment="2">+getFolderById(): Promise&lt;FolderDocument&gt;</text>
+<text x="0.0" y="208.5" stroke="none" data-name="FolderService" data-compartment="2">+getSubfolders(): Promise&lt;FolderDocument[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="MaterialModuleOptions">
+<g fill="lightblue" stroke="#33322E" data-name="MaterialModuleOptions">
+<rect x="3940.0" y="158.5" height="88.0" width="198.0" data-name="MaterialModuleOptions"></rect>
+<path d="M3940.0 190.5 L4138.0 190.5" fill="none" data-name="MaterialModuleOptions"></path>
+<path d="M3940.0 238.5 L4138.0 238.5" fill="none" data-name="MaterialModuleOptions"></path>
+</g>
+<g transform="translate(3940, 158.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MaterialModuleOptions" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MaterialModuleOptions" data-compartment="0">
+<a id="src\material\interfaces.ts.MaterialModuleOptions" xlink:href="src\material\interfaces.ts"><text x="91.0" y="14.1" stroke="none" text-anchor="middle" data-name="MaterialModuleOptions" data-compartment="0">MaterialModuleOptions</text></a>
+
+</g>
+</g>
+<g transform="translate(3940, 190.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MaterialModuleOptions" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MaterialModuleOptions" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="MaterialModuleOptions" data-compartment="1">+modelName: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="MaterialModuleOptions" data-compartment="1">+schema: any</text>
+
+</g>
+</g>
+<g transform="translate(3940, 238.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MaterialModuleOptions" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MaterialModuleOptions" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="MaterialModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="MaterialModule">
+<rect x="4178.0" y="166.5" height="72.0" width="281.0" data-name="MaterialModule"></rect>
+<path d="M4178.0 198.5 L4459.0 198.5" fill="none" data-name="MaterialModule"></path>
+<path d="M4178.0 206.5 L4459.0 206.5" fill="none" data-name="MaterialModule"></path>
+</g>
+<g transform="translate(4178, 166.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="MaterialModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MaterialModule" data-compartment="0">
+<a id="src\material\material.module.ts.MaterialModule" xlink:href="src\material\material.module.ts"><text x="132.5" y="14.1" stroke="none" text-anchor="middle" data-name="MaterialModule" data-compartment="0">MaterialModule</text></a>
+
+</g>
+</g>
+<g transform="translate(4178, 198.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MaterialModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MaterialModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(4178, 206.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MaterialModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MaterialModule" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="MaterialModule" data-compartment="2">+static register(): DynamicModule</text>
+
+</g>
+</g>
+</g>
+<g data-name="MaterialService&lt;T&gt;">
+<g fill="#eee8d5" stroke="#33322E" data-name="MaterialService&lt;T&gt;">
+<rect x="4499.0" y="73.5" height="258.0" width="918.0" data-name="MaterialService&lt;T&gt;"></rect>
+<path d="M4499.0 105.5 L5417.0 105.5" fill="none" data-name="MaterialService&lt;T&gt;"></path>
+<path d="M4499.0 218.5 L5417.0 218.5" fill="none" data-name="MaterialService&lt;T&gt;"></path>
+</g>
+<g transform="translate(4499, 73.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="MaterialService&lt;T&gt;" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MaterialService&lt;T&gt;" data-compartment="0">
+<a id="src\material\material.service.ts.MaterialService&lt;T&gt;" xlink:href="src\material\material.service.ts"><text x="451.0" y="14.1" stroke="none" text-anchor="middle" data-name="MaterialService&lt;T&gt;" data-compartment="0">MaterialService&lt;T&gt;</text></a>
+
+</g>
+</g>
+<g transform="translate(4499, 105.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MaterialService&lt;T&gt;" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MaterialService&lt;T&gt;" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="1">-options: any</text>
+<text x="0.0" y="30.3" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="1">-model: Model&lt;T, {}, {}, {}, IfAny&lt;T, any, Document&lt;unknown, {}, T, {}, {}&gt; &amp; (Require_id&lt;T&gt; extends { __v?: infer U</text>
+<text x="0.0" y="46.5" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="1">} ? { __v?: U</text>
+<text x="0.0" y="62.7" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="1">} &amp; Require_id&lt;T&gt; : Require_id&lt;...&gt; &amp; { ...</text>
+<text x="0.0" y="78.9" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="1">})&gt;, any&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="1">-savedItemModel: Model&lt;SavedItemDocument, {}, {}, {}, any, any&gt;</text>
+
+</g>
+</g>
+<g transform="translate(4499, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MaterialService&lt;T&gt;" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MaterialService&lt;T&gt;" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="2">+create(): Promise&lt;T&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="2">+findAll(): Promise&lt;T[]&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="2">+findOne(): Promise&lt;T&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="2">+update(): Promise&lt;T&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="2">+delete(): Promise&lt;T&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="MaterialService&lt;T&gt;" data-compartment="2">+findByConditions(): Promise&lt;T[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="BucketController">
+<g fill="#eee8d5" stroke="#33322E" data-name="BucketController">
+<rect x="5457.0" y="114.0" height="177.0" width="309.0" data-name="BucketController"></rect>
+<path d="M5457.0 146.0 L5766.0 146.0" fill="none" data-name="BucketController"></path>
+<path d="M5457.0 178.0 L5766.0 178.0" fill="none" data-name="BucketController"></path>
+</g>
+<g transform="translate(5457, 114)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="BucketController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BucketController" data-compartment="0">
+<a id="src\r2bucket\bucket.controller.ts.BucketController" xlink:href="src\r2bucket\bucket.controller.ts"><text x="146.5" y="14.1" stroke="none" text-anchor="middle" data-name="BucketController" data-compartment="0">BucketController</text></a>
+
+</g>
+</g>
+<g transform="translate(5457, 146)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BucketController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BucketController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="BucketController" data-compartment="1">-bucketService: BucketService</text>
+
+</g>
+</g>
+<g transform="translate(5457, 178)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BucketController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BucketController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="BucketController" data-compartment="2">+uploadFile(): Promise&lt;{ key: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="BucketController" data-compartment="2">url: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="BucketController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="BucketController" data-compartment="2">+getFile(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="BucketController" data-compartment="2">+getSignedUrl(): Promise&lt;{ url: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="BucketController" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="BucketModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="BucketModule">
+<rect x="5806.0" y="178.5" height="48.0" width="128.0" data-name="BucketModule"></rect>
+<path d="M5806.0 210.5 L5934.0 210.5" fill="none" data-name="BucketModule"></path>
+<path d="M5806.0 218.5 L5934.0 218.5" fill="none" data-name="BucketModule"></path>
+</g>
+<g transform="translate(5806, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="BucketModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BucketModule" data-compartment="0">
+<a id="src\r2bucket\bucket.module.ts.BucketModule" xlink:href="src\r2bucket\bucket.module.ts"><text x="56.0" y="14.1" stroke="none" text-anchor="middle" data-name="BucketModule" data-compartment="0">BucketModule</text></a>
+
+</g>
+</g>
+<g transform="translate(5806, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BucketModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BucketModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(5806, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BucketModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BucketModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="BucketService">
+<g fill="#eee8d5" stroke="#33322E" data-name="BucketService">
+<rect x="5974.0" y="0.0" height="405.0" width="590.0" data-name="BucketService"></rect>
+<path d="M5974.0 32.0 L6564.0 32.0" fill="none" data-name="BucketService"></path>
+<path d="M5974.0 97.0 L6564.0 97.0" fill="none" data-name="BucketService"></path>
+</g>
+<g transform="translate(5974, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="BucketService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BucketService" data-compartment="0">
+<a id="src\r2bucket\bucket.service.ts.BucketService" xlink:href="src\r2bucket\bucket.service.ts"><text x="287.0" y="14.1" stroke="none" text-anchor="middle" data-name="BucketService" data-compartment="0">BucketService</text></a>
+
+</g>
+</g>
+<g transform="translate(5974, 32)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BucketService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BucketService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="BucketService" data-compartment="1">-s3: S3Client</text>
+<text x="0.0" y="30.3" stroke="none" data-name="BucketService" data-compartment="1">-bucket: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="BucketService" data-compartment="1">-configService: ConfigService&lt;Record&lt;string | symbol, unknown&gt;, false&gt;</text>
+
+</g>
+</g>
+<g transform="translate(5974, 97)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BucketService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BucketService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="BucketService" data-compartment="2">+uploadFile(): Promise&lt;{ key: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="BucketService" data-compartment="2">url: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="BucketService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="BucketService" data-compartment="2">+deleteFileByKey(): Promise&lt;{ deleted: boolean</text>
+<text x="0.0" y="78.9" stroke="none" data-name="BucketService" data-compartment="2">key: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="BucketService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="BucketService" data-compartment="2">+createFolder(): Promise&lt;{ key: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="BucketService" data-compartment="2">url: string</text>
+<text x="0.0" y="143.7" stroke="none" data-name="BucketService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="BucketService" data-compartment="2">+deleteFile(): Promise&lt;{ deleted: boolean</text>
+<text x="0.0" y="176.1" stroke="none" data-name="BucketService" data-compartment="2">key: string</text>
+<text x="0.0" y="192.3" stroke="none" data-name="BucketService" data-compartment="2">commandResult: DeleteObjectCommandOutput</text>
+<text x="0.0" y="208.5" stroke="none" data-name="BucketService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="224.7" stroke="none" data-name="BucketService" data-compartment="2">+deleteFolder(): Promise&lt;{ deleted: boolean</text>
+<text x="0.0" y="240.9" stroke="none" data-name="BucketService" data-compartment="2">prefix: string</text>
+<text x="0.0" y="257.1" stroke="none" data-name="BucketService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="273.3" stroke="none" data-name="BucketService" data-compartment="2">+getFile(): Promise&lt;Readable&gt;</text>
+<text x="0.0" y="289.5" stroke="none" data-name="BucketService" data-compartment="2">+getPublicUrl(): string</text>
+
+</g>
+</g>
+</g>
+<g data-name="SavedItemController">
+<g fill="#eee8d5" stroke="#33322E" data-name="SavedItemController">
+<rect x="6604.0" y="146.5" height="112.0" width="351.0" data-name="SavedItemController"></rect>
+<path d="M6604.0 178.5 L6955.0 178.5" fill="none" data-name="SavedItemController"></path>
+<path d="M6604.0 210.5 L6955.0 210.5" fill="none" data-name="SavedItemController"></path>
+</g>
+<g transform="translate(6604, 146.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SavedItemController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SavedItemController" data-compartment="0">
+<a id="src\savedItems\savedItem.controller.ts.SavedItemController" xlink:href="src\savedItems\savedItem.controller.ts"><text x="167.5" y="14.1" stroke="none" text-anchor="middle" data-name="SavedItemController" data-compartment="0">SavedItemController</text></a>
+
+</g>
+</g>
+<g transform="translate(6604, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItemController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SavedItemController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="SavedItemController" data-compartment="1">-savedItemService: SavedItemService</text>
+
+</g>
+</g>
+<g transform="translate(6604, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItemController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SavedItemController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="SavedItemController" data-compartment="2">+getUserSavedItems(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="SavedItemController" data-compartment="2">+checkIfItemIsSaved(): Promise&lt;boolean&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="SavedItemModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="SavedItemModule">
+<rect x="6995.0" y="178.5" height="48.0" width="158.0" data-name="SavedItemModule"></rect>
+<path d="M6995.0 210.5 L7153.0 210.5" fill="none" data-name="SavedItemModule"></path>
+<path d="M6995.0 218.5 L7153.0 218.5" fill="none" data-name="SavedItemModule"></path>
+</g>
+<g transform="translate(6995, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SavedItemModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SavedItemModule" data-compartment="0">
+<a id="src\savedItems\savedItem.module.ts.SavedItemModule" xlink:href="src\savedItems\savedItem.module.ts"><text x="71.0" y="14.1" stroke="none" text-anchor="middle" data-name="SavedItemModule" data-compartment="0">SavedItemModule</text></a>
+
+</g>
+</g>
+<g transform="translate(6995, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItemModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SavedItemModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(6995, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItemModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SavedItemModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="SavedItemService">
+<g fill="#eee8d5" stroke="#33322E" data-name="SavedItemService">
+<rect x="7193.0" y="114.0" height="177.0" width="538.0" data-name="SavedItemService"></rect>
+<path d="M7193.0 146.0 L7731.0 146.0" fill="none" data-name="SavedItemService"></path>
+<path d="M7193.0 243.0 L7731.0 243.0" fill="none" data-name="SavedItemService"></path>
+</g>
+<g transform="translate(7193, 114)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SavedItemService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SavedItemService" data-compartment="0">
+<a id="src\savedItems\savedItem.service.ts.SavedItemService" xlink:href="src\savedItems\savedItem.service.ts"><text x="261.0" y="14.1" stroke="none" text-anchor="middle" data-name="SavedItemService" data-compartment="0">SavedItemService</text></a>
+
+</g>
+</g>
+<g transform="translate(7193, 146)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItemService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SavedItemService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="SavedItemService" data-compartment="1">-savedItemModel: Model&lt;SavedItemDocument, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="SavedItemService" data-compartment="1">-packModel: Model&lt;Pack, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="SavedItemService" data-compartment="1">-sampleModel: Model&lt;Sample, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="SavedItemService" data-compartment="1">-presetModel: Model&lt;Preset, {}, {}, {}, any, any&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="SavedItemService" data-compartment="1">-userModel: Model&lt;User, {}, {}, {}, any, any&gt;</text>
+
+</g>
+</g>
+<g transform="translate(7193, 243)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItemService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SavedItemService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="SavedItemService" data-compartment="2">+getSavedItems(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="SavedItemService" data-compartment="2">+checkIsSaved(): Promise&lt;boolean&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="File">
+<g fill="#eee8d5" stroke="#33322E" data-name="File">
+<rect x="7771.0" y="142.0" height="121.0" width="163.0" data-name="File"></rect>
+<path d="M7771.0 174.0 L7934.0 174.0" fill="none" data-name="File"></path>
+<path d="M7771.0 255.0 L7934.0 255.0" fill="none" data-name="File"></path>
+</g>
+<g transform="translate(7771, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="File" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="File" data-compartment="0">
+<a id="src\schemas\file.schema.ts.File" xlink:href="src\schemas\file.schema.ts"><text x="73.5" y="14.1" stroke="none" text-anchor="middle" data-name="File" data-compartment="0">File</text></a>
+
+</g>
+</g>
+<g transform="translate(7771, 174)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="File" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="File" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="File" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="File" data-compartment="1">+size: number</text>
+<text x="0.0" y="46.5" stroke="none" data-name="File" data-compartment="1">+url: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="File" data-compartment="1">+parent?: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(7771, 255)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="File" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="File" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Folder">
+<g fill="#eee8d5" stroke="#33322E" data-name="Folder">
+<rect x="7974.0" y="158.5" height="88.0" width="163.0" data-name="Folder"></rect>
+<path d="M7974.0 190.5 L8137.0 190.5" fill="none" data-name="Folder"></path>
+<path d="M7974.0 238.5 L8137.0 238.5" fill="none" data-name="Folder"></path>
+</g>
+<g transform="translate(7974, 158.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Folder" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Folder" data-compartment="0">
+<a id="src\schemas\folder.schema.ts.Folder" xlink:href="src\schemas\folder.schema.ts"><text x="73.5" y="14.1" stroke="none" text-anchor="middle" data-name="Folder" data-compartment="0">Folder</text></a>
+
+</g>
+</g>
+<g transform="translate(7974, 190.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Folder" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Folder" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Folder" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Folder" data-compartment="1">+parent?: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(7974, 238.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Folder" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Folder" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Pack">
+<g fill="#eee8d5" stroke="#33322E" data-name="Pack">
+<rect x="8177.0" y="142.0" height="121.0" width="183.0" data-name="Pack"></rect>
+<path d="M8177.0 174.0 L8360.0 174.0" fill="none" data-name="Pack"></path>
+<path d="M8177.0 255.0 L8360.0 255.0" fill="none" data-name="Pack"></path>
+</g>
+<g transform="translate(8177, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Pack" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Pack" data-compartment="0">
+<a id="src\schemas\pack.schema.ts.Pack" xlink:href="src\schemas\pack.schema.ts"><text x="83.5" y="14.1" stroke="none" text-anchor="middle" data-name="Pack" data-compartment="0">Pack</text></a>
+
+</g>
+</g>
+<g transform="translate(8177, 174)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Pack" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Pack" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Pack" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Pack" data-compartment="1">+imageUrl?: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Pack" data-compartment="1">+authorId: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Pack" data-compartment="1">+rootFolder: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(8177, 255)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Pack" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Pack" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Preset">
+<g fill="#eee8d5" stroke="#33322E" data-name="Preset">
+<rect x="8400.0" y="101.5" height="202.0" width="194.0" data-name="Preset"></rect>
+<path d="M8400.0 133.5 L8594.0 133.5" fill="none" data-name="Preset"></path>
+<path d="M8400.0 295.5 L8594.0 295.5" fill="none" data-name="Preset"></path>
+</g>
+<g transform="translate(8400, 101.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Preset" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Preset" data-compartment="0">
+<a id="src\schemas\preset.schema.ts.Preset" xlink:href="src\schemas\preset.schema.ts"><text x="89.0" y="14.1" stroke="none" text-anchor="middle" data-name="Preset" data-compartment="0">Preset</text></a>
+
+</g>
+</g>
+<g transform="translate(8400, 133.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Preset" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Preset" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Preset" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Preset" data-compartment="1">+authorId: ObjectId</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Preset" data-compartment="1">+fileUrl: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Preset" data-compartment="1">+soundFileUrl: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="Preset" data-compartment="1">+vst?: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="Preset" data-compartment="1">+genres?: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="Preset" data-compartment="1">+types?: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="Preset" data-compartment="1">+fileId: ObjectId</text>
+<text x="0.0" y="143.7" stroke="none" data-name="Preset" data-compartment="1">+soundFileId: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(8400, 295.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Preset" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Preset" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Sample">
+<g fill="#eee8d5" stroke="#33322E" data-name="Sample">
+<rect x="8634.0" y="109.5" height="186.0" width="182.0" data-name="Sample"></rect>
+<path d="M8634.0 141.5 L8816.0 141.5" fill="none" data-name="Sample"></path>
+<path d="M8634.0 287.5 L8816.0 287.5" fill="none" data-name="Sample"></path>
+</g>
+<g transform="translate(8634, 109.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Sample" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Sample" data-compartment="0">
+<a id="src\schemas\sample.schema.ts.Sample" xlink:href="src\schemas\sample.schema.ts"><text x="83.0" y="14.1" stroke="none" text-anchor="middle" data-name="Sample" data-compartment="0">Sample</text></a>
+
+</g>
+</g>
+<g transform="translate(8634, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Sample" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Sample" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="Sample" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="Sample" data-compartment="1">+fileUrl?: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="Sample" data-compartment="1">+authorId: ObjectId</text>
+<text x="0.0" y="62.7" stroke="none" data-name="Sample" data-compartment="1">+BPM?: number</text>
+<text x="0.0" y="78.9" stroke="none" data-name="Sample" data-compartment="1">+instruments?: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="Sample" data-compartment="1">+genres?: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="Sample" data-compartment="1">+key?: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="Sample" data-compartment="1">+fileId: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(8634, 287.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Sample" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Sample" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="SavedItem">
+<g fill="#eee8d5" stroke="#33322E" data-name="SavedItem">
+<rect x="8856.0" y="142.0" height="121.0" width="323.0" data-name="SavedItem"></rect>
+<path d="M8856.0 174.0 L9179.0 174.0" fill="none" data-name="SavedItem"></path>
+<path d="M8856.0 255.0 L9179.0 255.0" fill="none" data-name="SavedItem"></path>
+</g>
+<g transform="translate(8856, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SavedItem" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SavedItem" data-compartment="0">
+<a id="src\schemas\savedItem.schema.ts.SavedItem" xlink:href="src\schemas\savedItem.schema.ts"><text x="153.5" y="14.1" stroke="none" text-anchor="middle" data-name="SavedItem" data-compartment="0">SavedItem</text></a>
+
+</g>
+</g>
+<g transform="translate(8856, 174)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItem" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SavedItem" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="SavedItem" data-compartment="1">+userId: ObjectId</text>
+<text x="0.0" y="30.3" stroke="none" data-name="SavedItem" data-compartment="1">+itemType: &quot;Pack&quot; | &quot;Sample&quot; | &quot;Preset&quot;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="SavedItem" data-compartment="1">+itemId: ObjectId</text>
+<text x="0.0" y="62.7" stroke="none" data-name="SavedItem" data-compartment="1">+savedAt: Date</text>
+
+</g>
+</g>
+<g transform="translate(8856, 255)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SavedItem" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SavedItem" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="User">
+<g fill="#eee8d5" stroke="#33322E" data-name="User">
+<rect x="9219.0" y="126.0" height="153.0" width="231.0" data-name="User"></rect>
+<path d="M9219.0 158.0 L9450.0 158.0" fill="none" data-name="User"></path>
+<path d="M9219.0 271.0 L9450.0 271.0" fill="none" data-name="User"></path>
+</g>
+<g transform="translate(9219, 126)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="User" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="User" data-compartment="0">
+<a id="src\schemas\user.schema.ts.User" xlink:href="src\schemas\user.schema.ts"><text x="107.5" y="14.1" stroke="none" text-anchor="middle" data-name="User" data-compartment="0">User</text></a>
+
+</g>
+</g>
+<g transform="translate(9219, 158)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="User" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="User" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="User" data-compartment="1">+username: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="User" data-compartment="1">+email: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="User" data-compartment="1">+password?: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="User" data-compartment="1">+provider: &quot;local&quot; | &quot;google&quot;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="User" data-compartment="1">+totalDownloads: number</text>
+<text x="0.0" y="95.1" stroke="none" data-name="User" data-compartment="1">+totalUploads: number</text>
+
+</g>
+</g>
+<g transform="translate(9219, 271)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="User" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="User" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UsersController">
+<g fill="#eee8d5" stroke="#33322E" data-name="UsersController">
+<rect x="9490.0" y="97.5" height="210.0" width="1297.0" data-name="UsersController"></rect>
+<path d="M9490.0 129.5 L10787.0 129.5" fill="none" data-name="UsersController"></path>
+<path d="M9490.0 161.5 L10787.0 161.5" fill="none" data-name="UsersController"></path>
+</g>
+<g transform="translate(9490, 97.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UsersController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UsersController" data-compartment="0">
+<a id="src\users\users.controller.ts.UsersController" xlink:href="src\users\users.controller.ts"><text x="640.5" y="14.1" stroke="none" text-anchor="middle" data-name="UsersController" data-compartment="0">UsersController</text></a>
+
+</g>
+</g>
+<g transform="translate(9490, 129.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UsersController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UsersController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="UsersController" data-compartment="1">-usersService: UsersService</text>
+
+</g>
+</g>
+<g transform="translate(9490, 161.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UsersController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UsersController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="UsersController" data-compartment="2">+createUser(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UsersController" data-compartment="2">+saveItem(): Promise&lt;Document&lt;unknown, {}, UserDocument, {}, {}&gt; &amp; User &amp; Document&lt;unknown, any, any, Record&lt;string, any&gt;, {}&gt; &amp; Required&lt;{ _id: unknown</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UsersController" data-compartment="2">}&gt; &amp; { ...</text>
+<text x="0.0" y="62.7" stroke="none" data-name="UsersController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="UsersController" data-compartment="2">+deleteSavedItem(): Promise&lt;DeleteResult&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="UsersController" data-compartment="2">+getSavedSamples(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="UsersController" data-compartment="2">+getSavedPresets(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="UsersController" data-compartment="2">+getSavedPacks(): Promise&lt;any[]&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="UsersModule">
+<g fill="#eee8d5" stroke="#33322E" data-name="UsersModule">
+<rect x="10827.0" y="178.5" height="48.0" width="120.0" data-name="UsersModule"></rect>
+<path d="M10827.0 210.5 L10947.0 210.5" fill="none" data-name="UsersModule"></path>
+<path d="M10827.0 218.5 L10947.0 218.5" fill="none" data-name="UsersModule"></path>
+</g>
+<g transform="translate(10827, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UsersModule" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UsersModule" data-compartment="0">
+<a id="src\users\users.module.ts.UsersModule" xlink:href="src\users\users.module.ts"><text x="52.0" y="14.1" stroke="none" text-anchor="middle" data-name="UsersModule" data-compartment="0">UsersModule</text></a>
+
+</g>
+</g>
+<g transform="translate(10827, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UsersModule" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UsersModule" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(10827, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UsersModule" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="UsersModule" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="UsersService">
+<g fill="#eee8d5" stroke="#33322E" data-name="UsersService">
+<rect x="10987.0" y="65.0" height="275.0" width="1425.0" data-name="UsersService"></rect>
+<path d="M10987.0 97.0 L12412.0 97.0" fill="none" data-name="UsersService"></path>
+<path d="M10987.0 162.0 L12412.0 162.0" fill="none" data-name="UsersService"></path>
+</g>
+<g transform="translate(10987, 65)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="UsersService" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="UsersService" data-compartment="0">
+<a id="src\users\users.service.ts.UsersService" xlink:href="src\users\users.service.ts"><text x="704.5" y="14.1" stroke="none" text-anchor="middle" data-name="UsersService" data-compartment="0">UsersService</text></a>
+
+</g>
+</g>
+<g transform="translate(10987, 97)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UsersService" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UsersService" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="UsersService" data-compartment="1">-userModel: Model&lt;UserDocument, {}, {}, {}, Document&lt;unknown, {}, UserDocument, {}, {}&gt; &amp; User &amp; Document&lt;unknown, any, any, Record&lt;string, any&gt;, {}&gt; &amp; Required&lt;...&gt; &amp; { ...</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UsersService" data-compartment="1">}, any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UsersService" data-compartment="1">-savedItemModel: Model&lt;SavedItemDocument, {}, {}, {}, any, any&gt;</text>
+
+</g>
+</g>
+<g transform="translate(10987, 162)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="UsersService" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="UsersService" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="UsersService" data-compartment="2">+createUser(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="UsersService" data-compartment="2">+findOne(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="UsersService" data-compartment="2">+findById(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="UsersService" data-compartment="2">+findByName(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="UsersService" data-compartment="2">+findByEmail(): Promise&lt;UserDocument&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="UsersService" data-compartment="2">+saveItem(): Promise&lt;Document&lt;unknown, {}, UserDocument, {}, {}&gt; &amp; User &amp; Document&lt;unknown, any, any, Record&lt;string, any&gt;, {}&gt; &amp; Required&lt;{ _id: unknown</text>
+<text x="0.0" y="111.3" stroke="none" data-name="UsersService" data-compartment="2">}&gt; &amp; { ...</text>
+<text x="0.0" y="127.5" stroke="none" data-name="UsersService" data-compartment="2">}&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="UsersService" data-compartment="2">+getSavedItems(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="UsersService" data-compartment="2">+deleteSavedItem(): Promise&lt;DeleteResult&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="AuthenticatedRequest">
+<g fill="lightblue" stroke="#33322E" data-name="AuthenticatedRequest">
+<rect x="12549.0" y="445.0" height="72.0" width="214.0" data-name="AuthenticatedRequest"></rect>
+<path d="M12549.0 477.0 L12763.0 477.0" fill="none" data-name="AuthenticatedRequest"></path>
+<path d="M12549.0 509.0 L12763.0 509.0" fill="none" data-name="AuthenticatedRequest"></path>
+</g>
+<g transform="translate(12549, 445)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthenticatedRequest" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AuthenticatedRequest" data-compartment="0">
+<a id="src\auth\decorators\user.decorator.ts.AuthenticatedRequest" xlink:href="src\auth\decorators\user.decorator.ts"><text x="99.0" y="14.1" stroke="none" text-anchor="middle" data-name="AuthenticatedRequest" data-compartment="0">AuthenticatedRequest</text></a>
+
+</g>
+</g>
+<g transform="translate(12549, 477)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthenticatedRequest" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AuthenticatedRequest" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="AuthenticatedRequest" data-compartment="1">+user: ProfileRequestDto</text>
+
+</g>
+</g>
+<g transform="translate(12549, 509)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AuthenticatedRequest" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AuthenticatedRequest" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;">
+<g fill="#eee8d5" stroke="#33322E" data-name="Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;">
+<rect x="12452.0" y="186.5" height="32.0" width="408.0" data-name="Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;"></rect>
+</g>
+<g transform="translate(12452, 186.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;" data-compartment="0">
+<text x="196.0" y="14.1" stroke="none" text-anchor="middle" data-name="Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;" data-compartment="0">Request&lt;P,ResBody,ReqBody,ReqQuery,Locals&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="JwtLoginDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="JwtLoginDto">
+<rect x="12900.0" y="158.5" height="88.0" width="159.0" data-name="JwtLoginDto"></rect>
+<path d="M12900.0 190.5 L13059.0 190.5" fill="none" data-name="JwtLoginDto"></path>
+<path d="M12900.0 238.5 L13059.0 238.5" fill="none" data-name="JwtLoginDto"></path>
+</g>
+<g transform="translate(12900, 158.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="JwtLoginDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JwtLoginDto" data-compartment="0">
+<a id="src\auth\DTO\jwtLoginDto.ts.JwtLoginDto" xlink:href="src\auth\DTO\jwtLoginDto.ts"><text x="71.5" y="14.1" stroke="none" text-anchor="middle" data-name="JwtLoginDto" data-compartment="0">JwtLoginDto</text></a>
+
+</g>
+</g>
+<g transform="translate(12900, 190.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtLoginDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JwtLoginDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="JwtLoginDto" data-compartment="1">+username: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="JwtLoginDto" data-compartment="1">+password: string</text>
+
+</g>
+</g>
+<g transform="translate(12900, 238.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtLoginDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtLoginDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="ProfileRequestDto">
+<g fill="#eee8d5" stroke="#33322E" data-name="ProfileRequestDto">
+<rect x="13099.0" y="150.0" height="105.0" width="159.0" data-name="ProfileRequestDto"></rect>
+<path d="M13099.0 182.0 L13258.0 182.0" fill="none" data-name="ProfileRequestDto"></path>
+<path d="M13099.0 247.0 L13258.0 247.0" fill="none" data-name="ProfileRequestDto"></path>
+</g>
+<g transform="translate(13099, 150)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="ProfileRequestDto" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ProfileRequestDto" data-compartment="0">
+<a id="src\auth\DTO\profileRequestDto.ts.ProfileRequestDto" xlink:href="src\auth\DTO\profileRequestDto.ts"><text x="71.5" y="14.1" stroke="none" text-anchor="middle" data-name="ProfileRequestDto" data-compartment="0">ProfileRequestDto</text></a>
+
+</g>
+</g>
+<g transform="translate(13099, 182)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ProfileRequestDto" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ProfileRequestDto" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="ProfileRequestDto" data-compartment="1">+id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="ProfileRequestDto" data-compartment="1">+username: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="ProfileRequestDto" data-compartment="1">+email: string</text>
+
+</g>
+</g>
+<g transform="translate(13099, 247)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ProfileRequestDto" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ProfileRequestDto" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="GoogleOauthGuard">
+<g fill="#eee8d5" stroke="#33322E" data-name="GoogleOauthGuard">
+<rect x="13298.0" y="178.5" height="48.0" width="170.0" data-name="GoogleOauthGuard"></rect>
+<path d="M13298.0 210.5 L13468.0 210.5" fill="none" data-name="GoogleOauthGuard"></path>
+<path d="M13298.0 218.5 L13468.0 218.5" fill="none" data-name="GoogleOauthGuard"></path>
+</g>
+<g transform="translate(13298, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="GoogleOauthGuard" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GoogleOauthGuard" data-compartment="0">
+<a id="src\auth\guards\google-oauth.guard.ts.GoogleOauthGuard" xlink:href="src\auth\guards\google-oauth.guard.ts"><text x="77.0" y="14.1" stroke="none" text-anchor="middle" data-name="GoogleOauthGuard" data-compartment="0">GoogleOauthGuard</text></a>
+
+</g>
+</g>
+<g transform="translate(13298, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleOauthGuard" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GoogleOauthGuard" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(13298, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleOauthGuard" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GoogleOauthGuard" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="JwtAuthGuard">
+<g fill="#eee8d5" stroke="#33322E" data-name="JwtAuthGuard">
+<rect x="13508.0" y="178.5" height="48.0" width="127.0" data-name="JwtAuthGuard"></rect>
+<path d="M13508.0 210.5 L13635.0 210.5" fill="none" data-name="JwtAuthGuard"></path>
+<path d="M13508.0 218.5 L13635.0 218.5" fill="none" data-name="JwtAuthGuard"></path>
+</g>
+<g transform="translate(13508, 178.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="JwtAuthGuard" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JwtAuthGuard" data-compartment="0">
+<a id="src\auth\guards\jwtauth.guard.ts.JwtAuthGuard" xlink:href="src\auth\guards\jwtauth.guard.ts"><text x="55.5" y="14.1" stroke="none" text-anchor="middle" data-name="JwtAuthGuard" data-compartment="0">JwtAuthGuard</text></a>
+
+</g>
+</g>
+<g transform="translate(13508, 210.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtAuthGuard" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtAuthGuard" data-compartment="1">
+
+</g>
+</g>
+<g transform="translate(13508, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtAuthGuard" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JwtAuthGuard" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="GoogleStrategy">
+<g fill="#eee8d5" stroke="#33322E" data-name="GoogleStrategy">
+<rect x="13675.0" y="154.5" height="96.0" width="590.0" data-name="GoogleStrategy"></rect>
+<path d="M13675.0 186.5 L14265.0 186.5" fill="none" data-name="GoogleStrategy"></path>
+<path d="M13675.0 218.5 L14265.0 218.5" fill="none" data-name="GoogleStrategy"></path>
+</g>
+<g transform="translate(13675, 154.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="GoogleStrategy" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GoogleStrategy" data-compartment="0">
+<a id="src\auth\strategies\google.strategy.ts.GoogleStrategy" xlink:href="src\auth\strategies\google.strategy.ts"><text x="287.0" y="14.1" stroke="none" text-anchor="middle" data-name="GoogleStrategy" data-compartment="0">GoogleStrategy</text></a>
+
+</g>
+</g>
+<g transform="translate(13675, 186.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleStrategy" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GoogleStrategy" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="GoogleStrategy" data-compartment="1">-configService: ConfigService&lt;Record&lt;string | symbol, unknown&gt;, false&gt;</text>
+
+</g>
+</g>
+<g transform="translate(13675, 218.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleStrategy" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GoogleStrategy" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="GoogleStrategy" data-compartment="2">+validate(): void</text>
+
+</g>
+</g>
+</g>
+<g data-name="GoogleUser">
+<g fill="lightblue" stroke="#33322E" data-name="GoogleUser">
+<rect x="14305.0" y="126.0" height="153.0" width="167.0" data-name="GoogleUser"></rect>
+<path d="M14305.0 158.0 L14472.0 158.0" fill="none" data-name="GoogleUser"></path>
+<path d="M14305.0 271.0 L14472.0 271.0" fill="none" data-name="GoogleUser"></path>
+</g>
+<g transform="translate(14305, 126)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleUser" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GoogleUser" data-compartment="0">
+<a id="src\auth\strategies\google.strategy.ts.GoogleUser" xlink:href="src\auth\strategies\google.strategy.ts"><text x="75.5" y="14.1" stroke="none" text-anchor="middle" data-name="GoogleUser" data-compartment="0">GoogleUser</text></a>
+
+</g>
+</g>
+<g transform="translate(14305, 158)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleUser" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GoogleUser" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="GoogleUser" data-compartment="1">+provider: &quot;google&quot;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="GoogleUser" data-compartment="1">+providerId: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="GoogleUser" data-compartment="1">+email: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="GoogleUser" data-compartment="1">+username: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="GoogleUser" data-compartment="1">+picture: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="GoogleUser" data-compartment="1">+password: null</text>
+
+</g>
+</g>
+<g transform="translate(14305, 271)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GoogleUser" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GoogleUser" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="JwtStrategy">
+<g fill="#eee8d5" stroke="#33322E" data-name="JwtStrategy">
+<rect x="14512.0" y="130.0" height="145.0" width="590.0" data-name="JwtStrategy"></rect>
+<path d="M14512.0 162.0 L15102.0 162.0" fill="none" data-name="JwtStrategy"></path>
+<path d="M14512.0 210.0 L15102.0 210.0" fill="none" data-name="JwtStrategy"></path>
+</g>
+<g transform="translate(14512, 130)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="JwtStrategy" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JwtStrategy" data-compartment="0">
+<a id="src\auth\strategies\jwt.strategy.ts.JwtStrategy" xlink:href="src\auth\strategies\jwt.strategy.ts"><text x="287.0" y="14.1" stroke="none" text-anchor="middle" data-name="JwtStrategy" data-compartment="0">JwtStrategy</text></a>
+
+</g>
+</g>
+<g transform="translate(14512, 162)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtStrategy" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JwtStrategy" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="JwtStrategy" data-compartment="1">-configService: ConfigService&lt;Record&lt;string | symbol, unknown&gt;, false&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="JwtStrategy" data-compartment="1">-usersService: UsersService</text>
+
+</g>
+</g>
+<g transform="translate(14512, 210)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JwtStrategy" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JwtStrategy" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="JwtStrategy" data-compartment="2">+validate(): Promise&lt;{ id: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="JwtStrategy" data-compartment="2">username: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="JwtStrategy" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CreateFileDTO">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateFileDTO">
+<rect x="15142.0" y="142.0" height="121.0" width="281.0" data-name="CreateFileDTO"></rect>
+<path d="M15142.0 174.0 L15423.0 174.0" fill="none" data-name="CreateFileDTO"></path>
+<path d="M15142.0 255.0 L15423.0 255.0" fill="none" data-name="CreateFileDTO"></path>
+</g>
+<g transform="translate(15142, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateFileDTO" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateFileDTO" data-compartment="0">
+<a id="src\files\DTO\createFile.dto.ts.CreateFileDTO" xlink:href="src\files\DTO\createFile.dto.ts"><text x="132.5" y="14.1" stroke="none" text-anchor="middle" data-name="CreateFileDTO" data-compartment="0">CreateFileDTO</text></a>
+
+</g>
+</g>
+<g transform="translate(15142, 174)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateFileDTO" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateFileDTO" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateFileDTO" data-compartment="1">+key: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateFileDTO" data-compartment="1">+buffer: Buffer</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreateFileDTO" data-compartment="1">+contentType: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CreateFileDTO" data-compartment="1">+type: &quot;sample&quot; | &quot;preset&quot; | &quot;pack&quot;</text>
+
+</g>
+</g>
+<g transform="translate(15142, 255)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateFileDTO" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateFileDTO" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="CreateFolderDTO">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateFolderDTO">
+<rect x="15463.0" y="158.5" height="88.0" width="163.0" data-name="CreateFolderDTO"></rect>
+<path d="M15463.0 190.5 L15626.0 190.5" fill="none" data-name="CreateFolderDTO"></path>
+<path d="M15463.0 238.5 L15626.0 238.5" fill="none" data-name="CreateFolderDTO"></path>
+</g>
+<g transform="translate(15463, 158.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateFolderDTO" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateFolderDTO" data-compartment="0">
+<a id="src\folder\DTO\createFolder.dto.ts.CreateFolderDTO" xlink:href="src\folder\DTO\createFolder.dto.ts"><text x="73.5" y="14.1" stroke="none" text-anchor="middle" data-name="CreateFolderDTO" data-compartment="0">CreateFolderDTO</text></a>
+
+</g>
+</g>
+<g transform="translate(15463, 190.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateFolderDTO" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateFolderDTO" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateFolderDTO" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateFolderDTO" data-compartment="1">+parent?: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(15463, 238.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateFolderDTO" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateFolderDTO" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="PackController">
+<g fill="#eee8d5" stroke="#33322E" data-name="PackController">
+<rect x="15666.0" y="0.5" height="404.0" width="415.0" data-name="PackController"></rect>
+<path d="M15666.0 32.5 L16081.0 32.5" fill="none" data-name="PackController"></path>
+<path d="M15666.0 113.5 L16081.0 113.5" fill="none" data-name="PackController"></path>
+</g>
+<g transform="translate(15666, 0.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PackController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PackController" data-compartment="0">
+<a id="src\material\controllers\pack.controller.ts.PackController" xlink:href="src\material\controllers\pack.controller.ts"><text x="199.5" y="14.1" stroke="none" text-anchor="middle" data-name="PackController" data-compartment="0">PackController</text></a>
+
+</g>
+</g>
+<g transform="translate(15666, 32.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PackController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PackController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="PackController" data-compartment="1">-materialService: MaterialService&lt;PackDocument&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="PackController" data-compartment="1">-fileService: FileService</text>
+<text x="0.0" y="46.5" stroke="none" data-name="PackController" data-compartment="1">-folderService: FolderService</text>
+<text x="0.0" y="62.7" stroke="none" data-name="PackController" data-compartment="1">-userService: UsersService</text>
+
+</g>
+</g>
+<g transform="translate(15666, 113.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PackController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PackController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="PackController" data-compartment="2">+createPack(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="PackController" data-compartment="2">+addFolder(): Promise&lt;any&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="PackController" data-compartment="2">+addFile(): Promise&lt;any&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="PackController" data-compartment="2">+getUserCreatedPacksFull(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="PackController" data-compartment="2">+deleteFolder(): Promise&lt;any&gt;</text>
+<text x="0.0" y="95.1" stroke="none" data-name="PackController" data-compartment="2">+deleteFile(): Promise&lt;any&gt;</text>
+<text x="0.0" y="111.3" stroke="none" data-name="PackController" data-compartment="2">+getPack(): Promise&lt;PackDocument&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="PackController" data-compartment="2">+moveItem(): Promise&lt;any&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="PackController" data-compartment="2">+findPacks(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="PackController" data-compartment="2">+getPackFileUrls(): Promise&lt;{ fodlers: any</text>
+<text x="0.0" y="176.1" stroke="none" data-name="PackController" data-compartment="2">files: any</text>
+<text x="0.0" y="192.3" stroke="none" data-name="PackController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="208.5" stroke="none" data-name="PackController" data-compartment="2">+deletePack(): Promise&lt;{ db: PackDocument</text>
+<text x="0.0" y="224.7" stroke="none" data-name="PackController" data-compartment="2">bucket: any</text>
+<text x="0.0" y="240.9" stroke="none" data-name="PackController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="257.1" stroke="none" data-name="PackController" data-compartment="2">+downloadFile(): Promise&lt;void&gt;</text>
+<text x="0.0" y="273.3" stroke="none" data-name="PackController" data-compartment="2">+downloadFolder(): Promise&lt;void&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="PresetController">
+<g fill="#eee8d5" stroke="#33322E" data-name="PresetController">
+<rect x="16121.0" y="49.0" height="307.0" width="427.0" data-name="PresetController"></rect>
+<path d="M16121.0 81.0 L16548.0 81.0" fill="none" data-name="PresetController"></path>
+<path d="M16121.0 146.0 L16548.0 146.0" fill="none" data-name="PresetController"></path>
+</g>
+<g transform="translate(16121, 49)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="PresetController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PresetController" data-compartment="0">
+<a id="src\material\controllers\preset.controller.ts.PresetController" xlink:href="src\material\controllers\preset.controller.ts"><text x="205.5" y="14.1" stroke="none" text-anchor="middle" data-name="PresetController" data-compartment="0">PresetController</text></a>
+
+</g>
+</g>
+<g transform="translate(16121, 81)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PresetController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PresetController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="PresetController" data-compartment="1">-materialService: MaterialService&lt;PresetDocument&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="PresetController" data-compartment="1">-fileService: FileService</text>
+<text x="0.0" y="46.5" stroke="none" data-name="PresetController" data-compartment="1">-userService: UsersService</text>
+
+</g>
+</g>
+<g transform="translate(16121, 146)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PresetController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PresetController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="PresetController" data-compartment="2">+uploadPreset(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="PresetController" data-compartment="2">+getFiltered(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="PresetController" data-compartment="2">+getPreset(): Promise&lt;PresetDocument&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="PresetController" data-compartment="2">+downloadPreset(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="PresetController" data-compartment="2">+deletePreset(): Promise&lt;{ db: PresetDocument</text>
+<text x="0.0" y="95.1" stroke="none" data-name="PresetController" data-compartment="2">r2: any</text>
+<text x="0.0" y="111.3" stroke="none" data-name="PresetController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="PresetController" data-compartment="2">+getPresetsCreatedByUser(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="PresetController" data-compartment="2">+updatePreset(): Promise&lt;PresetDocument&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="PresetController" data-compartment="2">+replaceFile(): Promise&lt;{ message: string</text>
+<text x="0.0" y="176.1" stroke="none" data-name="PresetController" data-compartment="2">preset: PresetDocument</text>
+<text x="0.0" y="192.3" stroke="none" data-name="PresetController" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="SampleController">
+<g fill="#eee8d5" stroke="#33322E" data-name="SampleController">
+<rect x="16588.0" y="49.0" height="307.0" width="435.0" data-name="SampleController"></rect>
+<path d="M16588.0 81.0 L17023.0 81.0" fill="none" data-name="SampleController"></path>
+<path d="M16588.0 146.0 L17023.0 146.0" fill="none" data-name="SampleController"></path>
+</g>
+<g transform="translate(16588, 49)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SampleController" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SampleController" data-compartment="0">
+<a id="src\material\controllers\sample.controller.ts.SampleController" xlink:href="src\material\controllers\sample.controller.ts"><text x="209.5" y="14.1" stroke="none" text-anchor="middle" data-name="SampleController" data-compartment="0">SampleController</text></a>
+
+</g>
+</g>
+<g transform="translate(16588, 81)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SampleController" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SampleController" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="SampleController" data-compartment="1">-materialService: MaterialService&lt;SampleDocument&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="SampleController" data-compartment="1">-fileService: FileService</text>
+<text x="0.0" y="46.5" stroke="none" data-name="SampleController" data-compartment="1">-userService: UsersService</text>
+
+</g>
+</g>
+<g transform="translate(16588, 146)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SampleController" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SampleController" data-compartment="2">
+<text x="0.0" y="14.1" stroke="none" data-name="SampleController" data-compartment="2">+uploadSample(): Promise&lt;any&gt;</text>
+<text x="0.0" y="30.3" stroke="none" data-name="SampleController" data-compartment="2">+getSample(): Promise&lt;SampleDocument&gt;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="SampleController" data-compartment="2">+getFiltered(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="62.7" stroke="none" data-name="SampleController" data-compartment="2">+downloadSample(): Promise&lt;void&gt;</text>
+<text x="0.0" y="78.9" stroke="none" data-name="SampleController" data-compartment="2">+deleteSample(): Promise&lt;{ db: SampleDocument</text>
+<text x="0.0" y="95.1" stroke="none" data-name="SampleController" data-compartment="2">r2: any</text>
+<text x="0.0" y="111.3" stroke="none" data-name="SampleController" data-compartment="2">}&gt;</text>
+<text x="0.0" y="127.5" stroke="none" data-name="SampleController" data-compartment="2">+getSamplesCreatedByUser(): Promise&lt;any[]&gt;</text>
+<text x="0.0" y="143.7" stroke="none" data-name="SampleController" data-compartment="2">+updateSample(): Promise&lt;SampleDocument&gt;</text>
+<text x="0.0" y="159.9" stroke="none" data-name="SampleController" data-compartment="2">+replaceFile(): Promise&lt;{ message: string</text>
+<text x="0.0" y="176.1" stroke="none" data-name="SampleController" data-compartment="2">sample: SampleDocument</text>
+<text x="0.0" y="192.3" stroke="none" data-name="SampleController" data-compartment="2">}&gt;</text>
+
+</g>
+</g>
+</g>
+<g data-name="CreatePackDTO">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreatePackDTO">
+<rect x="17063.0" y="142.0" height="121.0" width="183.0" data-name="CreatePackDTO"></rect>
+<path d="M17063.0 174.0 L17246.0 174.0" fill="none" data-name="CreatePackDTO"></path>
+<path d="M17063.0 255.0 L17246.0 255.0" fill="none" data-name="CreatePackDTO"></path>
+</g>
+<g transform="translate(17063, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreatePackDTO" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreatePackDTO" data-compartment="0">
+<a id="src\material\DTO\createPack.dto.ts.CreatePackDTO" xlink:href="src\material\DTO\createPack.dto.ts"><text x="83.5" y="14.1" stroke="none" text-anchor="middle" data-name="CreatePackDTO" data-compartment="0">CreatePackDTO</text></a>
+
+</g>
+</g>
+<g transform="translate(17063, 174)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreatePackDTO" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreatePackDTO" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreatePackDTO" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreatePackDTO" data-compartment="1">+imageUrl?: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreatePackDTO" data-compartment="1">+authorId: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CreatePackDTO" data-compartment="1">+rootFolder: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(17063, 255)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreatePackDTO" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreatePackDTO" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="CreatePresetDTO">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreatePresetDTO">
+<rect x="17286.0" y="118.0" height="169.0" width="179.0" data-name="CreatePresetDTO"></rect>
+<path d="M17286.0 150.0 L17465.0 150.0" fill="none" data-name="CreatePresetDTO"></path>
+<path d="M17286.0 279.0 L17465.0 279.0" fill="none" data-name="CreatePresetDTO"></path>
+</g>
+<g transform="translate(17286, 118)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreatePresetDTO" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreatePresetDTO" data-compartment="0">
+<a id="src\material\DTO\createPreset.dto.ts.CreatePresetDTO" xlink:href="src\material\DTO\createPreset.dto.ts"><text x="81.5" y="14.1" stroke="none" text-anchor="middle" data-name="CreatePresetDTO" data-compartment="0">CreatePresetDTO</text></a>
+
+</g>
+</g>
+<g transform="translate(17286, 150)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreatePresetDTO" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreatePresetDTO" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreatePresetDTO" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreatePresetDTO" data-compartment="1">+authorId: ObjectId</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreatePresetDTO" data-compartment="1">+fileUrl: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CreatePresetDTO" data-compartment="1">+soundFileUrl: string</text>
+<text x="0.0" y="78.9" stroke="none" data-name="CreatePresetDTO" data-compartment="1">+vst?: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="CreatePresetDTO" data-compartment="1">+genres?: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="CreatePresetDTO" data-compartment="1">+types?: string</text>
+
+</g>
+</g>
+<g transform="translate(17286, 279)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreatePresetDTO" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreatePresetDTO" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="CreateSampleDTO">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateSampleDTO">
+<rect x="17505.0" y="109.5" height="186.0" width="182.0" data-name="CreateSampleDTO"></rect>
+<path d="M17505.0 141.5 L17687.0 141.5" fill="none" data-name="CreateSampleDTO"></path>
+<path d="M17505.0 287.5 L17687.0 287.5" fill="none" data-name="CreateSampleDTO"></path>
+</g>
+<g transform="translate(17505, 109.5)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateSampleDTO" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateSampleDTO" data-compartment="0">
+<a id="src\material\DTO\createSample.dto.ts.CreateSampleDTO" xlink:href="src\material\DTO\createSample.dto.ts"><text x="83.0" y="14.1" stroke="none" text-anchor="middle" data-name="CreateSampleDTO" data-compartment="0">CreateSampleDTO</text></a>
+
+</g>
+</g>
+<g transform="translate(17505, 141.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateSampleDTO" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateSampleDTO" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+name: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+fileUrl?: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+authorId: ObjectId</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+BPM?: number</text>
+<text x="0.0" y="78.9" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+instruments?: string</text>
+<text x="0.0" y="95.1" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+genres?: string</text>
+<text x="0.0" y="111.3" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+key?: string</text>
+<text x="0.0" y="127.5" stroke="none" data-name="CreateSampleDTO" data-compartment="1">+fileId: ObjectId</text>
+
+</g>
+</g>
+<g transform="translate(17505, 287.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateSampleDTO" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateSampleDTO" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="CreateUserDTO">
+<g fill="#eee8d5" stroke="#33322E" data-name="CreateUserDTO">
+<rect x="17727.0" y="142.0" height="121.0" width="241.0" data-name="CreateUserDTO"></rect>
+<path d="M17727.0 174.0 L17968.0 174.0" fill="none" data-name="CreateUserDTO"></path>
+<path d="M17727.0 255.0 L17968.0 255.0" fill="none" data-name="CreateUserDTO"></path>
+</g>
+<g transform="translate(17727, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="CreateUserDTO" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateUserDTO" data-compartment="0">
+<a id="src\users\DTO\createUser.dto.ts.CreateUserDTO" xlink:href="src\users\DTO\createUser.dto.ts"><text x="112.5" y="14.1" stroke="none" text-anchor="middle" data-name="CreateUserDTO" data-compartment="0">CreateUserDTO</text></a>
+
+</g>
+</g>
+<g transform="translate(17727, 174)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateUserDTO" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateUserDTO" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="CreateUserDTO" data-compartment="1">+username: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="CreateUserDTO" data-compartment="1">+email: string</text>
+<text x="0.0" y="46.5" stroke="none" data-name="CreateUserDTO" data-compartment="1">+password?: string</text>
+<text x="0.0" y="62.7" stroke="none" data-name="CreateUserDTO" data-compartment="1">+provider?: &quot;local&quot; | &quot;google&quot;</text>
+
+</g>
+</g>
+<g transform="translate(17727, 255)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateUserDTO" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateUserDTO" data-compartment="2">
+
+</g>
+</g>
+</g>
+<g data-name="SaveItemDTO">
+<g fill="#eee8d5" stroke="#33322E" data-name="SaveItemDTO">
+<rect x="18008.0" y="150.0" height="105.0" width="323.0" data-name="SaveItemDTO"></rect>
+<path d="M18008.0 182.0 L18331.0 182.0" fill="none" data-name="SaveItemDTO"></path>
+<path d="M18008.0 247.0 L18331.0 247.0" fill="none" data-name="SaveItemDTO"></path>
+</g>
+<g transform="translate(18008, 150)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="SaveItemDTO" data-compartment="0">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SaveItemDTO" data-compartment="0">
+<a id="src\users\DTO\saveItem.dto.ts.SaveItemDTO" xlink:href="src\users\DTO\saveItem.dto.ts"><text x="153.5" y="14.1" stroke="none" text-anchor="middle" data-name="SaveItemDTO" data-compartment="0">SaveItemDTO</text></a>
+
+</g>
+</g>
+<g transform="translate(18008, 182)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SaveItemDTO" data-compartment="1">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SaveItemDTO" data-compartment="1">
+<text x="0.0" y="14.1" stroke="none" data-name="SaveItemDTO" data-compartment="1">+userId: string</text>
+<text x="0.0" y="30.3" stroke="none" data-name="SaveItemDTO" data-compartment="1">+itemType: &quot;Pack&quot; | &quot;Sample&quot; | &quot;Preset&quot;</text>
+<text x="0.0" y="46.5" stroke="none" data-name="SaveItemDTO" data-compartment="1">+itemId?: string</text>
+
+</g>
+</g>
+<g transform="translate(18008, 247)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SaveItemDTO" data-compartment="2">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SaveItemDTO" data-compartment="2">
+
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

@@ -9,11 +9,11 @@ export class MaterialService<T extends Document> {
     private model: Model<T>,
     private readonly savedItemModel: Model<SavedItemDocument>,
   ) {
-    console.log(`Creating MaterialService with model:`, model.modelName);
+    //console.log(`Creating MaterialService with model:`, model.modelName);
   }
 
   async create(createDto: Record<string, any>): Promise<T> {
-    console.log('creating mongoose model in material service\n');
+    //console.log('creating mongoose model in material service\n');
     const doc = new this.model(createDto);
     return await doc.save();
   }

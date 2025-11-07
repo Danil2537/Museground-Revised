@@ -40,7 +40,7 @@ export class SampleController {
     @Body() createSampleDto: CreateSampleDTO,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    console.log('starting upload sample in sampleController\n');
+    //console.log('starting upload sample in sampleController\n');
     // if (createSampleDto.authorId) {
     //   createSampleDto.authorId = new Types.ObjectId(createSampleDto.authorId);
     // }
@@ -51,7 +51,7 @@ export class SampleController {
       contentType: file.mimetype,
       type: 'sample',
     });
-    console.log('adding file url to sample model object\n');
+    //console.log('adding file url to sample model object\n');
     newSample.fileUrl = fileUpload.url;
     newSample.fileId = fileUpload._id as Types.ObjectId;
     return await newSample.save();
@@ -188,14 +188,12 @@ export class SampleController {
       Pick<Sample, 'name' | 'BPM' | 'key' | 'genres' | 'instruments'>
     >,
   ) {
-    console.log(`hit update endpoint\n`);
+    //console.log(`hit update endpoint\n`);
     const existing = await this.materialService.findOne(sampleId);
-    console.log(
-      `found specified sample. Update data is: ${JSON.stringify(updateData)}\n`,
-    );
+    //console.log(`found specified sample. Update data is: ${JSON.stringify(updateData)}\n`,);
     if (!existing) throw new BadRequestException('Sample not found');
     const updated = await this.materialService.update(sampleId, updateData);
-    console.log(`updated sample: ${JSON.stringify(updated)}`);
+    //console.log(`updated sample: ${JSON.stringify(updated)}`);
     return updated;
   }
 
@@ -228,7 +226,7 @@ export class SampleController {
     // Update the sample’s file info
     sample.fileUrl = uploaded.url;
     sample.fileId = uploaded._id as Types.ObjectId;
-    console.log(sample);
+    //console.log(sample);
     await sample.save();
 
     return { message: 'File replaced successfully', sample };

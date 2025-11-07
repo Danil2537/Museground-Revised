@@ -68,8 +68,7 @@ export default function UploadSamplePage() {
 
       if (!res.ok) throw new Error("Failed to upload sample");
 
-      alert("Sample uploaded successfully!");
-      router.push("/explore/samples"); // redirect after upload
+      router.push("/explore/samples");
     } catch (err) {
       console.error("Sample upload error:", err);
       alert("Failed to upload sample.");
@@ -79,8 +78,10 @@ export default function UploadSamplePage() {
   return (
     <>
       <Header activeTop="Upload" activeBottom="Samples" />
-      <main className="bg-[#333333] py-20 px-3">
-        <h1 className="py-5 text-3xl">Upload New Sample</h1>
+      <main className="bg-[#333333] py-20 px-3"> 
+        <span className="flex justify-center">
+        <h1 className="py-5 pb-8 text-3xl">Upload New Sample</h1>
+        </span>
         <form
           onSubmit={handleSampleUpload}
           className="relative space-y-6 max-w-4xl mx-auto"

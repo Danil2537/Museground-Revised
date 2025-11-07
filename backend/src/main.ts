@@ -2,6 +2,29 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import {
+    Injectable,
+    CallHandler,
+    ExecutionContext,
+    NestInterceptor,
+  } from '@nestjs/common';
+  import { Observable, tap } from 'rxjs';
+  
+  @Injectable()
+  export class TraceInterceptor implements NestInterceptor {
+    intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+      const handler = context.getHandler().name;
+      const className = context.getClass().name;
+  
+      console.log(`--> Entering: ${className}.${handler}()`);
+  
+      return next.handle().pipe(
+        tap(() => {
+          console.log(`<-- Exiting: ${className}.${handler}()`);
+        }),
+      );
+    }
+  }
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +39,7 @@ async function bootstrap(): Promise<void> {
       transform: true,
     }),
   );
+  app.useGlobalInterceptors(new TraceInterceptor());
   //   app.enableCors({
   //     origin: process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
   //     credentials: true,

@@ -79,7 +79,7 @@ export class BucketService {
   }
 
   async deleteFile(key: string) {
-    console.log(`hit bucket service file deletion, key is: ${key}\n`);
+    //console.log(`hit bucket service file deletion, key is: ${key}\n`);
     const deleteCommand = new DeleteObjectCommand({
       Bucket: this.bucket,
       Key: key,
@@ -113,7 +113,7 @@ export class BucketService {
   }
 
   async getFile(key: string): Promise<Readable> {
-    console.log(key, '\n\n');
+    //console.log(key, '\n\n');
     const result = await this.s3.send(
       new GetObjectCommand({
         Bucket: this.bucket,
@@ -125,7 +125,7 @@ export class BucketService {
 
   getPublicUrl(key: string): string {
     const endpoint = this.configService.get<string>('R2_ENDPOINT')!;
-    console.log(`r2 endpoint: ${endpoint}\n, key: ${key}\n\n`);
+    //console.log(`r2 endpoint: ${endpoint}\n, key: ${key}\n\n`);
     return `${endpoint.replace(/\/+$/, '')}/${key}`;
   }
 }

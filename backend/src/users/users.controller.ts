@@ -9,7 +9,7 @@ export class UsersController {
 
   @Post('register')
   createUser(@Body() createUserDTO: CreateUserDTO) {
-    console.log(JSON.stringify(createUserDTO));
+    //console.log(JSON.stringify(createUserDTO));
     return this.usersService.createUser(createUserDTO);
   }
 
@@ -20,7 +20,7 @@ export class UsersController {
 
   @Post('delete-saved')
   async deleteSavedItem(@Body() saveItemDto: SaveItemDTO) {
-    console.log(`deleting saved: ${JSON.stringify(saveItemDto)}`);
+    //console.log(`deleting saved: ${JSON.stringify(saveItemDto)}`);
     return await this.usersService.deleteSavedItem(saveItemDto);
   }
 

@@ -68,7 +68,7 @@ export default function UploadPresetPage() {
       if (!res.ok) throw new Error("Failed to upload preset");
 
       const result = await res.json();
-      console.log("Upload result:", result);
+      //console.log("Upload result:", result);
       setUploadSuccess(true);
       setFormData({ name: "", vst: "", genres: "", types: "" });
       setPresetFile(null);

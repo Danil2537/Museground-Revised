@@ -2,7 +2,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateFileDTO {
   constructor() {
-    console.log('Creating a createFileDTO\n');
+    //console.log('Creating a createFileDTO\n');
   }
 
   @IsString()

@@ -112,7 +112,7 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
 
       if (!res.ok) throw new Error("Failed to save pack");
 
-      alert("Pack saved successfully!");
+      //alert("Pack saved successfully!");
       setShowIsSaved(true);
     } catch (err) {
       console.error("Save pack error:", err);
@@ -163,7 +163,7 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
       }),
     });
     if (res.ok) {
-      alert("Un-saved succesfully!");
+      //alert("Un-saved succesfully!");
       setShowIsSaved(false);
     }
   };

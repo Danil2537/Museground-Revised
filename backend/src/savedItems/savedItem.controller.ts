@@ -10,7 +10,7 @@ export class SavedItemController {
     @Param('userId') userId: string,
     @Param('type') type: 'Pack' | 'Sample' | 'Preset',
   ) {
-    console.log(`saved item controller user id: ${userId}`);
+    //console.log(`saved item controller user id: ${userId}`);
     return await this.savedItemService.getSavedItems(userId, type);
   }
 

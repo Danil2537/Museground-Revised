@@ -54,7 +54,7 @@ export default function EditablePresetCard({ preset }: { preset: Preset }) {
         if (!res.ok) throw new Error(await res.text());
         const updated = await res.json();
         setEditablePreset(updated.preset);
-        alert(`${type} file replaced successfully!`);
+        //alert(`${type} file replaced successfully!`);
       } catch (err) {
         console.error("File replace error:", err);
         alert(`Failed to replace ${type} file.`);
@@ -80,7 +80,7 @@ export default function EditablePresetCard({ preset }: { preset: Preset }) {
         },
       );
       if (!res.ok) throw new Error("Failed to delete preset.");
-      alert(`Preset "${editablePreset.name}" deleted.`);
+      //alert(`Preset "${editablePreset.name}" deleted.`);
       router.refresh();
     } catch (err) {
       console.error("Delete error:", err);
@@ -102,7 +102,7 @@ export default function EditablePresetCard({ preset }: { preset: Preset }) {
       if (!res.ok) throw new Error("Failed to update preset.");
       const updated = await res.json();
       setEditablePreset(updated);
-      alert("Preset updated!");
+      //alert("Preset updated!");
     } catch (err) {
       console.error("Update error:", err);
     }

@@ -6,9 +6,6 @@ export class Pack {
   @Prop({ required: true })
   name: string;
 
-  @Prop()
-  imageUrl?: string;
-
   @Prop({ required: true })
   authorId: string;
 

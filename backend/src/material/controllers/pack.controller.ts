@@ -67,7 +67,7 @@ export class PackController {
     @Body('type') type: 'sample' | 'preset' | 'pack',
     @Body('parent') parent?: string,
   ) {
-    console.log(`key ${key}\n`);
+    //console.log(`key ${key}\n`);
     const savedFile = await this.fileService.uploadFile({
       key,
       buffer: file.buffer,
@@ -121,7 +121,7 @@ export class PackController {
       throw new BadRequestException('Missing fileId in request body');
     }
 
-    console.log(`Deleting file with id: ${body.fileId}`);
+    //console.log(`Deleting file with id: ${body.fileId}`);
     const result = await this.fileService.deleteFile(body.fileId);
     return result;
   }
@@ -152,7 +152,7 @@ export class PackController {
   @Get('find/query')
   async findPacks(@Query() query: Record<string, string>) {
     const filter: FilterQuery<Pack> = {};
-    console.log(query);
+    //console.log(query);
     const value = query['name'];
     if (value && value.trim() !== '') {
       filter['name'] = { $regex: value.trim(), $options: 'i' } as unknown;
@@ -168,9 +168,9 @@ export class PackController {
         }
       }
     }
-    console.log(`pack filter: ${JSON.stringify(filter)}\n\n`);
+    //console.log(`pack filter: ${JSON.stringify(filter)}\n\n`);
     const filterResult = await this.materialService.findByConditions(filter);
-    console.log(`pack filter results: ${JSON.stringify(filterResult)}\n\n`);
+    //console.log(`pack filter results: ${JSON.stringify(filterResult)}\n\n`);
     const packsWithAuthors = await Promise.all(
       filterResult.map(async (packDoc) => {
         const pack = packDoc.toObject() as Pack;
@@ -194,7 +194,7 @@ export class PackController {
       const children = await this.folderService.findChildren(
         pack.rootFolder._id,
       );
-      console.log(`folders: ${JSON.stringify(children)}\n\n`);
+      //console.log(`folders: ${JSON.stringify(children)}\n\n`);
       children.unshift(
         await this.folderService.getFolderById(pack.rootFolder._id),
       );
@@ -203,7 +203,7 @@ export class PackController {
           this.fileService.getFilesByParent(c._id as Types.ObjectId),
         ),
       );
-      console.log(`files: ${JSON.stringify(files)}\n\n`);
+      //console.log(`files: ${JSON.stringify(files)}\n\n`);
       return { fodlers: children, files: files };
     } else throw new BadRequestException('Pack not found');
   }
@@ -252,11 +252,9 @@ export class PackController {
     if (!folder) throw new BadRequestException('Folder not found');
 
     // Resolve full folder path in bucket
-    const folderPath = await this.folderService['getFullFolderPath'](folder);
+    await this.folderService['getFullFolderPath'](folder);
 
-    console.log(
-      `folder id ${folderId},\n folder data: ${JSON.stringify(folder)},\n folderPath: ${folderPath}\n`,
-    );
+    //console.log(`folder id ${folderId},\n folder data: ${JSON.stringify(folder)},\n folderPath: ${folderPath}\n`,);
 
     // Set ZIP headers
     res.setHeader(
@@ -279,7 +277,7 @@ export class PackController {
       for (const file of files) {
         //const key = await this.fileService.buildFilePath(file);
         const key = file.name;
-        console.log(`key: ${key},\n filename: ${file.name.split('/').pop()}\n`);
+        //console.log(`key: ${key},\n filename: ${file.name.split('/').pop()}\n`);
         const fileStream = await this.fileService.downloadFile(key);
         archive.append(fileStream, {
           name: file.name.split('/').pop() ?? 'unknown',

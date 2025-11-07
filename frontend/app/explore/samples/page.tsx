@@ -18,6 +18,7 @@ export default function ExploreSamplesPage() {
 
   const [results, setResults] = useState<unknown[]>([]);
   const [error, setError] = useState("");
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
   //const [initialLoad, setInitialLoad] = useState(true);
 
   const handleFormDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,11 +30,47 @@ export default function ExploreSamplesPage() {
     });
   };
 
+  const sortedResults = sortConfig ?  [...results].sort((a: any, b: any) => {
+    if (!sortConfig) return 0;
+  
+    const { key, direction } = sortConfig;
+    const aValue = a[key];
+    const bValue = b[key];
+  
+    // Handle missing values safely
+    if (aValue == null) return 1;
+    if (bValue == null) return -1;
+  
+    // Handle numeric sort
+    if (typeof aValue === "number" && typeof bValue === "number") {
+      return direction === "asc" ? aValue - bValue : bValue - aValue;
+    }
+  
+    // Fallback to string comparison
+    const aStr = String(aValue).toLowerCase();
+    const bStr = String(bValue).toLowerCase();
+  
+    if (aStr < bStr) return direction === "asc" ? -1 : 1;
+    if (aStr > bStr) return direction === "asc" ? 1 : -1;
+    return 0;
+  }) : results;
+  
+  const handleSort = (key: string) => {
+    setSortConfig((prev) => {
+      if (prev && prev.key === key) {
+        // toggle asc/desc
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+  
+
   const handleFilterQuery = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     //(e: FormEvent)
     //e.preventDefault(); // Prevent page reload
-    alert(JSON.stringify(sampleFilterFormData));
+    //alert(JSON.stringify(sampleFilterFormData));
     // Only include non-empty or meaningful fields
     const filteredData: Record<string, string> = {};
     Object.entries(sampleFilterFormData).forEach(([key, value]) => {
@@ -47,12 +84,12 @@ export default function ExploreSamplesPage() {
 
     const queryString = new URLSearchParams(filteredData).toString();
     const url = `${BACKEND_URL}/samples/filter/query?${queryString}`;
-    alert(url);
+    //alert(url);
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error("Failed to fetch samples");
       const data = await res.json();
-      alert(JSON.stringify(data));
+      //alert(JSON.stringify(data));
 
       setResults(Array.isArray(data) ? data : (data.filterResult ?? []));
     } catch (err) {
@@ -123,8 +160,8 @@ export default function ExploreSamplesPage() {
                 />
                 <label
                   htmlFor={field.name}
-                  className="absolute left-3 top-2 text-cyan-400 text-xl transition-all
-      peer-placeholder-shown:top-5.5   peer-placeholder-shown:text-gray-200
+                  className="absolute left-3 top-2 text-cyan-400 border-[#3b82f6] text-xl transition-all
+      peer-placeholder-shown:top-5.5 peer-placeholder-shown:text-gray-200
       peer-placeholder-shown:text-xl peer-focus:top-1 peer-focus:text-xl
       peer-focus:text-blue-600"
                 >
@@ -143,26 +180,39 @@ export default function ExploreSamplesPage() {
 
         {error && <p className="mt-4 text-red-600">{error}</p>}
 
-        {results.length > 0 && (
+        {sortedResults.length > 0 && (
           <div className="mt-10 overflow-x-auto rounded-xl border border-gray-700 bg-zinc-900 shadow-lg">
             <table className="w-full text-left text-gray-200">
-              <thead className="bg-zinc-800 text-cyan-400 uppercase text-sm tracking-wide">
-                <tr>
-                  <th className="px-4 py-3">Play / Pause</th>
-                  <th className="px-4 py-3">Waveform</th>
-                  <th className="px-4 py-3">Title</th>
-                  <th className="px-4 py-3">Volume</th>
-                  <th className="px-4 py-3">Pitch</th>
-                  <th className="px-4 py-3">Key</th>
-                  <th className="px-4 py-3">BPM</th>
-                  <th className="px-4 py-3">Genres</th>
-                  <th className="px-4 py-3">Instruments</th>
-                  <th className="px-4 py-3">Author</th>
-                  <th className="px-4 py-3">Save</th>
-                </tr>
-              </thead>
+            <thead className="bg-zinc-800 text-cyan-400 uppercase text-sm tracking-wide">
+            <tr>
+                <th className="px-4 py-3">Play / Pause</th>
+                <th className="px-4 py-3">Waveform</th>
+                <th className="px-4 py-3">Volume</th>
+                <th className="px-4 py-3">Pitch</th>
+                {[
+                { label: "Title", key: "name" },
+                { label: "Key", key: "key" },
+                { label: "BPM", key: "BPM" },
+                { label: "Genres", key: "genres" },
+                { label: "Instruments", key: "instruments" },
+                { label: "Author", key: "authorName" },
+                ].map(({ label, key }) => (
+                <th
+                    key={key}
+                    onClick={() => handleSort(key)}
+                    className="px-4 py-3 cursor-pointer select-none hover:text-white"
+                >
+                    {label}
+                    {sortConfig?.key === key && (
+                    <span className="ml-1">{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
+                    )}
+                </th>
+                ))}
+                <th className="px-4 py-3">Save</th>
+            </tr>
+            </thead>
               <tbody className="divide-y divide-gray-700">
-                {results.map((sample: any) => (
+                {sortedResults.map((sample: any) => (
                   <SampleCard key={sample._id} sample={sample} />
                 ))}
               </tbody>

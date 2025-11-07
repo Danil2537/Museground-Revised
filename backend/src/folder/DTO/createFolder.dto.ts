@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 
 export class CreateFolderDTO {
   constructor() {
-    console.log('Creating a createFolderDTO\n');
+    //console.log('Creating a createFolderDTO\n');
   }
 
   @IsString()

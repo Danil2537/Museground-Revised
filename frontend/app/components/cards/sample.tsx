@@ -66,7 +66,7 @@ export default function SampleCard({ sample }: { sample: Sample }) {
           `${BACKEND_URL}/saved-items/check-saved/${user?._id}/Sample/${sample._id}`,
         );
         const isSaved = await isSavedRes.json();
-        alert(isSaved);
+        //alert(isSaved);
         setShowIsSaved(isSaved);
         if (sample.authorId == user?._id) {
           setShowIsCreated(true);
@@ -120,8 +120,8 @@ export default function SampleCard({ sample }: { sample: Sample }) {
       body: JSON.stringify(saveSampleDto),
     });
 
-    const data = await res.json();
-    alert(JSON.stringify(data));
+    await res.json();
+    //alert(JSON.stringify(data));
   };
 
   const handleDeleteSave = async () => {
@@ -136,7 +136,7 @@ export default function SampleCard({ sample }: { sample: Sample }) {
       }),
     });
     if (res.ok) {
-      alert("Un-saved succesfully!");
+      //alert("Un-saved succesfully!");
       setShowIsSaved(false);
     }
   };
@@ -159,10 +159,10 @@ export default function SampleCard({ sample }: { sample: Sample }) {
         throw new Error(errorText || "Failed to delete the sample.");
       }
 
-      const result = await res.json();
-      console.log("Delete result:", result);
+      await res.json();
+      //console.log("Delete result:", result);
 
-      alert(`Sample "${sample.name}" was successfully deleted.`);
+      //alert(`Sample "${sample.name}" was successfully deleted.`);
       // Option 1: refresh the page
       router.refresh();
       // Option 2 (alternative): remove from UI state if parent manages the list
@@ -210,9 +210,6 @@ export default function SampleCard({ sample }: { sample: Sample }) {
           </span>
         </button>
       </td>
-      <td className="px-4 py-3">
-        <span>{sample.name}</span>
-      </td>
       <td className="px-4 py-3 w-[250px]">
         <div ref={waveformRef} className="w-full"></div>
       </td>
@@ -246,6 +243,10 @@ export default function SampleCard({ sample }: { sample: Sample }) {
           className="w-full accent-cyan-400"
         />
       </td>
+      <td className="px-4 py-3">
+        <span>{sample.name}</span>
+      </td>
+      
       <td className="px-4 py-3">{sample.key}</td>
       <td className="px-4 py-3">{sample.BPM}</td>
       <td className="px-4 py-3">{sample.genres}</td>
