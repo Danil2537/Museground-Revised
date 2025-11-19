@@ -1,43 +1,27 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { IsOptional, IsString, IsUrl } from 'class-validator';
 import { Document, Types } from 'mongoose';
 
 @Schema()
 export class Preset {
   @Prop({ required: true })
-  @IsString()
   name: string;
-
-  //   @Prop({ required: true })
-  //   @IsString()
-  //   author: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   authorId: Types.ObjectId;
 
   @Prop()
-  @IsString()
-  @IsUrl()
   fileUrl: string;
 
   @Prop()
-  @IsString()
-  @IsUrl()
   soundFileUrl: string;
 
   @Prop()
-  @IsOptional()
-  @IsString()
   vst?: string;
 
   @Prop()
-  @IsOptional()
-  @IsString()
   genres?: string;
 
   @Prop()
-  @IsOptional()
-  @IsString()
   types?: string;
 
   @Prop({ type: Types.ObjectId, ref: 'File' })

@@ -3,8 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Folder, FolderSchema } from '../schemas/folder.schema';
 import { FolderService } from './folder.service';
 import { FolderController } from './folder.controller';
-import { BucketModule } from 'src/r2bucket/bucket.module';
-import { File, FileSchema } from 'src/schemas/file.schema';
+import { BucketModule } from '../r2bucket/bucket.module';
+import { File, FileSchema } from '../schemas/file.schema';
 
 @Module({
   imports: [

@@ -14,8 +14,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { MaterialService } from '../material.service';
-import { Preset, PresetDocument } from 'src/schemas/preset.schema';
-import { FileService } from 'src/files/file.service';
+import { Preset, PresetDocument } from '../../schemas/preset.schema';
+import { FileService } from '../../files/file.service';
 import {
   FileFieldsInterceptor,
   FileInterceptor,
@@ -24,7 +24,7 @@ import { CreatePresetDTO } from '../DTO/createPreset.dto';
 import { FilterQuery, Types } from 'mongoose';
 import type { Response } from 'express';
 import { Stream } from 'stream';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../../users/users.service';
 
 @Controller('presets')
 export class PresetController {

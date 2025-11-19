@@ -18,7 +18,10 @@ export default function ExploreSamplesPage() {
 
   const [results, setResults] = useState<unknown[]>([]);
   const [error, setError] = useState("");
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(null);
+  const [sortConfig, setSortConfig] = useState<{
+    key: string;
+    direction: "asc" | "desc";
+  } | null>(null);
   //const [initialLoad, setInitialLoad] = useState(true);
 
   const handleFormDataChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,31 +33,34 @@ export default function ExploreSamplesPage() {
     });
   };
 
-  const sortedResults = sortConfig ?  [...results].sort((a: any, b: any) => {
-    if (!sortConfig) return 0;
-  
-    const { key, direction } = sortConfig;
-    const aValue = a[key];
-    const bValue = b[key];
-  
-    // Handle missing values safely
-    if (aValue == null) return 1;
-    if (bValue == null) return -1;
-  
-    // Handle numeric sort
-    if (typeof aValue === "number" && typeof bValue === "number") {
-      return direction === "asc" ? aValue - bValue : bValue - aValue;
-    }
-  
-    // Fallback to string comparison
-    const aStr = String(aValue).toLowerCase();
-    const bStr = String(bValue).toLowerCase();
-  
-    if (aStr < bStr) return direction === "asc" ? -1 : 1;
-    if (aStr > bStr) return direction === "asc" ? 1 : -1;
-    return 0;
-  }) : results;
-  
+  //const sortedResults = 
+  setResults(sortConfig
+    ? [...results].sort((a: any, b: any) => {
+        if (!sortConfig) return 0;
+
+        const { key, direction } = sortConfig;
+        const aValue = a[key];
+        const bValue = b[key];
+
+        // Handle missing values safely
+        if (aValue == null) return 1;
+        if (bValue == null) return -1;
+
+        // Handle numeric sort
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return direction === "asc" ? aValue - bValue : bValue - aValue;
+        }
+
+        // Fallback to string comparison
+        const aStr = String(aValue).toLowerCase();
+        const bStr = String(bValue).toLowerCase();
+
+        if (aStr < bStr) return direction === "asc" ? -1 : 1;
+        if (aStr > bStr) return direction === "asc" ? 1 : -1;
+        return 0;
+      })
+    : results);
+
   const handleSort = (key: string) => {
     setSortConfig((prev) => {
       if (prev && prev.key === key) {
@@ -64,7 +70,6 @@ export default function ExploreSamplesPage() {
       return { key, direction: "asc" };
     });
   };
-  
 
   const handleFilterQuery = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -96,6 +101,9 @@ export default function ExploreSamplesPage() {
       console.error(err);
       setError("Error fetching filtered samples");
     }
+  };
+  const handleDeleteSampleFromList = (id: string) => {
+    setResults((prev) => prev.filter((sample: any) => sample._id !== id));
   };
   useEffect(() => {
     //if (initialLoad) {
@@ -180,40 +188,46 @@ export default function ExploreSamplesPage() {
 
         {error && <p className="mt-4 text-red-600">{error}</p>}
 
-        {sortedResults.length > 0 && (
+        {results.length > 0 && (
           <div className="mt-10 overflow-x-auto rounded-xl border border-gray-700 bg-zinc-900 shadow-lg">
             <table className="w-full text-left text-gray-200">
-            <thead className="bg-zinc-800 text-cyan-400 uppercase text-sm tracking-wide">
-            <tr>
-                <th className="px-4 py-3">Play / Pause</th>
-                <th className="px-4 py-3">Waveform</th>
-                <th className="px-4 py-3">Volume</th>
-                <th className="px-4 py-3">Pitch</th>
-                {[
-                { label: "Title", key: "name" },
-                { label: "Key", key: "key" },
-                { label: "BPM", key: "BPM" },
-                { label: "Genres", key: "genres" },
-                { label: "Instruments", key: "instruments" },
-                { label: "Author", key: "authorName" },
-                ].map(({ label, key }) => (
-                <th
-                    key={key}
-                    onClick={() => handleSort(key)}
-                    className="px-4 py-3 cursor-pointer select-none hover:text-white"
-                >
-                    {label}
-                    {sortConfig?.key === key && (
-                    <span className="ml-1">{sortConfig.direction === "asc" ? "▲" : "▼"}</span>
-                    )}
-                </th>
-                ))}
-                <th className="px-4 py-3">Save</th>
-            </tr>
-            </thead>
+              <thead className="bg-zinc-800 text-cyan-400 uppercase text-sm tracking-wide">
+                <tr>
+                  <th className="px-4 py-3">Play / Pause</th>
+                  <th className="px-4 py-3">Waveform</th>
+                  <th className="px-4 py-3">Volume</th>
+                  <th className="px-4 py-3">Pitch</th>
+                  {[
+                    { label: "Title", key: "name" },
+                    { label: "Key", key: "key" },
+                    { label: "BPM", key: "BPM" },
+                    { label: "Genres", key: "genres" },
+                    { label: "Instruments", key: "instruments" },
+                    { label: "Author", key: "authorName" },
+                  ].map(({ label, key }) => (
+                    <th
+                      key={key}
+                      onClick={() => handleSort(key)}
+                      className="px-4 py-3 cursor-pointer select-none hover:text-white"
+                    >
+                      {label}
+                      {sortConfig?.key === key && (
+                        <span className="ml-1">
+                          {sortConfig.direction === "asc" ? "▲" : "▼"}
+                        </span>
+                      )}
+                    </th>
+                  ))}
+                  <th className="px-4 py-3">Save</th>
+                </tr>
+              </thead>
               <tbody className="divide-y divide-gray-700">
-                {sortedResults.map((sample: any) => (
-                  <SampleCard key={sample._id} sample={sample} />
+                {results.map((sample: any) => (
+                  <SampleCard
+                    key={sample._id}
+                    sample={sample}
+                    onDelete={handleDeleteSampleFromList}
+                  />
                 ))}
               </tbody>
             </table>

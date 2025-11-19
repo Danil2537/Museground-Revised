@@ -6,9 +6,9 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { BucketService } from 'src/r2bucket/bucket.service';
-import { Folder, FolderDocument } from 'src/schemas/folder.schema';
-import { File, FileDocument } from 'src/schemas/file.schema';
+import { BucketService } from '../r2bucket/bucket.service';
+import { Folder, FolderDocument } from '../schemas/folder.schema';
+import { File, FileDocument } from '../schemas/file.schema';
 import { CreateFolderDTO } from './DTO/createFolder.dto';
 
 @Injectable()
@@ -142,7 +142,7 @@ export class FolderService {
     return await Promise.all(children.map((c) => this.getFullFolderPath(c)));
   }
 
-  private async getFullFolderPath(folder: FolderDocument): Promise<string> {
+  async getFullFolderPath(folder: FolderDocument): Promise<string> {
     const nameChain = [folder.name];
     let currentParent = folder.parent as Types.ObjectId;
     while (currentParent) {

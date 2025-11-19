@@ -6,15 +6,15 @@ import { MaterialModuleOptions } from './interfaces';
 import { PresetController } from './controllers/preset.controller';
 import { SampleController } from './controllers/sample.controller';
 import { PackController } from './controllers/pack.controller';
-import { FileModule } from 'src/files/file.module';
-import { FolderModule } from 'src/folder/folder.module';
+import { FileModule } from '../files/file.module';
+import { FolderModule } from '../folder/folder.module';
 import { Document, Model, Schema } from 'mongoose';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import {
   SavedItem,
   SavedItemDocument,
   SavedItemSchema,
-} from 'src/schemas/savedItem.schema';
+} from '../schemas/savedItem.schema';
 
 @Module({})
 export class MaterialModule {

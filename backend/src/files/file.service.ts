@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { BucketService } from 'src/r2bucket/bucket.service';
-import { File, FileDocument } from 'src/schemas/file.schema';
-import { Folder, FolderDocument } from 'src/schemas/folder.schema';
+import { BucketService } from '../r2bucket/bucket.service';
+import { File, FileDocument } from '../schemas/file.schema';
+import { Folder, FolderDocument } from '../schemas/folder.schema';
 import { CreateFileDTO } from './DTO/createFile.dto';
 
 @Injectable()

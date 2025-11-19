@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SavedItem, SavedItemSchema } from 'src/schemas/savedItem.schema';
-import { Pack, PackSchema } from 'src/schemas/pack.schema';
-import { Sample, SampleSchema } from 'src/schemas/sample.schema';
-import { Preset, PresetSchema } from 'src/schemas/preset.schema';
+import { SavedItem, SavedItemSchema } from '../schemas/savedItem.schema';
+import { Pack, PackSchema } from '../schemas/pack.schema';
+import { Sample, SampleSchema } from '../schemas/sample.schema';
+import { Preset, PresetSchema } from '../schemas/preset.schema';
 import { SavedItemService } from './savedItem.service';
 import { SavedItemController } from './savedItem.controller';
-import { User, UserSchema } from 'src/schemas/user.schema';
+import { User, UserSchema } from '../schemas/user.schema';
 
 @Module({
   imports: [

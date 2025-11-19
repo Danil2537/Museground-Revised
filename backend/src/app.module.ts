@@ -26,7 +26,7 @@ import { SavedItemModule } from './savedItems/savedItem.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '120s' },
+        signOptions: { expiresIn: '120000s' },
       }),
       global: true,
     }),

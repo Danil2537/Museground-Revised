@@ -13,4 +13,3 @@ export class Folder {
 }
 export type FolderDocument = Folder & Document;
 export const FolderSchema = SchemaFactory.createForClass(Folder);
-    

@@ -16,12 +16,12 @@ import {
 import { MaterialService } from '../material.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateSampleDTO } from '../DTO/createSample.dto';
-import { FileService } from 'src/files/file.service';
-import { Sample, SampleDocument } from 'src/schemas/sample.schema';
+import { FileService } from '../../files/file.service';
+import { Sample, SampleDocument } from '../../schemas/sample.schema';
 import { type FilterQuery, Types } from 'mongoose';
 import type { Response } from 'express';
 import { Stream } from 'stream';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../../users/users.service';
 
 @Controller('samples')
 export class SampleController {

@@ -3,8 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../schemas/user.schema';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { SavedItemModule } from 'src/savedItems/savedItem.module';
-import { SavedItem, SavedItemSchema } from 'src/schemas/savedItem.schema';
+import { SavedItemModule } from '../savedItems/savedItem.module';
+import { SavedItem, SavedItemSchema } from '../schemas/savedItem.schema';
 
 @Module({
   imports: [

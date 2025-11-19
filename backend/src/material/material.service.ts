@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { FilterQuery, Model, Document } from 'mongoose';
-import { SavedItemDocument } from 'src/schemas/savedItem.schema';
+import { SavedItemDocument } from '../schemas/savedItem.schema';
 
 @Injectable()
 export class MaterialService<T extends Document> {

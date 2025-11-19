@@ -18,7 +18,13 @@ interface Sample {
   authorId: string;
 }
 
-export default function SampleCard({ sample }: { sample: Sample }) {
+export default function SampleCard({
+  sample,
+  onDelete,
+}: {
+  sample: Sample;
+  onDelete?: (id: string) => void;
+}) {
   const waveformRef = useRef<HTMLDivElement | null>(null);
   const [wave, setWave] = useState<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -121,6 +127,10 @@ export default function SampleCard({ sample }: { sample: Sample }) {
     });
 
     await res.json();
+    if (res.ok) {
+      //alert("Un-saved succesfully!");
+      setShowIsSaved(true);
+    }
     //alert(JSON.stringify(data));
   };
 
@@ -166,7 +176,7 @@ export default function SampleCard({ sample }: { sample: Sample }) {
       // Option 1: refresh the page
       router.refresh();
       // Option 2 (alternative): remove from UI state if parent manages the list
-      // onDelete?.(sample._id);
+      onDelete?.(sample._id);
     } catch (err) {
       console.error("Error deleting sample:", err);
       alert("Failed to delete sample. See console for details.");
@@ -246,7 +256,7 @@ export default function SampleCard({ sample }: { sample: Sample }) {
       <td className="px-4 py-3">
         <span>{sample.name}</span>
       </td>
-      
+
       <td className="px-4 py-3">{sample.key}</td>
       <td className="px-4 py-3">{sample.BPM}</td>
       <td className="px-4 py-3">{sample.genres}</td>

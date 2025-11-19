@@ -25,6 +25,14 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.spec.ts', '**/*.test.ts', 'tests/**/*'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+  },
+  {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',

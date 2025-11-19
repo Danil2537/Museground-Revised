@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Pack } from 'src/schemas/pack.schema';
-import { Preset } from 'src/schemas/preset.schema';
-import { Sample } from 'src/schemas/sample.schema';
-import { SavedItem, SavedItemDocument } from 'src/schemas/savedItem.schema';
-import { User } from 'src/schemas/user.schema';
+import { Pack } from '../schemas/pack.schema';
+import { Preset } from '../schemas/preset.schema';
+import { Sample } from '../schemas/sample.schema';
+import { SavedItem, SavedItemDocument } from '../schemas/savedItem.schema';
+import { User } from '../schemas/user.schema';
 
 @Injectable()
 export class SavedItemService {

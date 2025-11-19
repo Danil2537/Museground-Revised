@@ -78,9 +78,9 @@ export default function UploadSamplePage() {
   return (
     <>
       <Header activeTop="Upload" activeBottom="Samples" />
-      <main className="bg-[#333333] py-20 px-3"> 
+      <main className="bg-[#333333] py-20 px-3">
         <span className="flex justify-center">
-        <h1 className="py-5 pb-8 text-3xl">Upload New Sample</h1>
+          <h1 className="py-5 pb-8 text-3xl">Upload New Sample</h1>
         </span>
         <form
           onSubmit={handleSampleUpload}

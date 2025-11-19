@@ -5,7 +5,7 @@ import { User, UserDocument } from '../schemas/user.schema';
 import { CreateUserDTO } from './DTO/createUser.dto';
 import { SaveItemDTO } from './DTO/saveItem.dto';
 import * as bcrypt from 'bcrypt';
-import { SavedItem, SavedItemDocument } from 'src/schemas/savedItem.schema';
+import { SavedItem, SavedItemDocument } from '../schemas/savedItem.schema';
 
 @Injectable()
 export class UsersService {
@@ -45,7 +45,7 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async saveItem(saveItemDto: SaveItemDTO) {
+  async saveItem(saveItemDto: SaveItemDTO) { //TODO: add check if saved item is existing
     await new this.savedItemModel(saveItemDto).save();
     const user = await this.userModel.findById(saveItemDto.userId).exec();
     if (user) {

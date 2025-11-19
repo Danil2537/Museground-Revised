@@ -12,18 +12,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { MaterialService } from '../material.service';
-import { Pack, PackDocument } from 'src/schemas/pack.schema';
-import { FileService } from 'src/files/file.service';
+import { Pack, PackDocument } from '../../schemas/pack.schema';
+import { FileService } from '../../files/file.service';
 import { CreatePackDTO } from '../DTO/createPack.dto';
-import { FolderService } from 'src/folder/folder.service';
+import { FolderService } from '../../folder/folder.service';
 import { FilterQuery, Types } from 'mongoose';
 import { PACK_FOLDER_ID } from '../constants';
-import { CreateFolderDTO } from 'src/folder/DTO/createFolder.dto';
+import { CreateFolderDTO } from '../../folder/DTO/createFolder.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
 import { Stream } from 'stream';
 import archiver from 'archiver';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../../users/users.service';
 
 @Controller('packs')
 export class PackController {
@@ -251,8 +251,7 @@ export class PackController {
     const folder = await this.folderService.getFolderById(folderId);
     if (!folder) throw new BadRequestException('Folder not found');
 
-    // Resolve full folder path in bucket
-    await this.folderService['getFullFolderPath'](folder);
+    await this.folderService.getFullFolderPath(folder);
 
     //console.log(`folder id ${folderId},\n folder data: ${JSON.stringify(folder)},\n folderPath: ${folderPath}\n`,);
 
