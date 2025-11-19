@@ -12,8 +12,12 @@ import { TestDbModule, closeInMongodConnection } from './test-db.module';
 
 describe('FileService', () => {
   let service: FileService;
-  let fileModel: ReturnType<typeof jest.fn> extends never ? never : import('mongoose').Model<FileDocument>;
-  let folderModel: ReturnType<typeof jest.fn> extends never ? never : import('mongoose').Model<FolderDocument>;
+  let fileModel: ReturnType<typeof jest.fn> extends never
+    ? never
+    : import('mongoose').Model<FileDocument>;
+  let folderModel: ReturnType<typeof jest.fn> extends never
+    ? never
+    : import('mongoose').Model<FolderDocument>;
 
   const bucketServiceMock: jest.Mocked<BucketService> = {
     uploadFile: jest.fn(),
@@ -55,7 +59,6 @@ describe('FileService', () => {
     await closeInMongodConnection();
   });
 
-
   describe('uploadFile', () => {
     it('should upload file and persist metadata', async () => {
       bucketServiceMock.uploadFile.mockResolvedValue({
@@ -86,10 +89,9 @@ describe('FileService', () => {
     });
   });
 
-
   describe('downloadFile', () => {
     it('should delegate to bucketService.getFile', async () => {
-      const stream = new Readable({read(){}});
+      const stream = new Readable({ read() {} });
       bucketServiceMock.getFile.mockResolvedValue(stream);
 
       const result = await service.downloadFile('test.wav');
@@ -99,7 +101,6 @@ describe('FileService', () => {
     });
   });
 
-
   describe('updateParent', () => {
     it('should update parent field', async () => {
       const folder = await folderModel.create({ name: 'folder' });
@@ -108,24 +109,32 @@ describe('FileService', () => {
         url: 'url',
       });
 
-      const updated = await service.updateParent(file.id as string, folder.id as string);
+      const updated = await service.updateParent(
+        file.id as string,
+        folder.id as string,
+      );
 
       expect(updated.parent?.toString()).toBe(folder.id);
     });
 
     it('should throw when file does not exist', async () => {
       await expect(
-        service.updateParent(new Types.ObjectId().toString(), new Types.ObjectId().toString()),
+        service.updateParent(
+          new Types.ObjectId().toString(),
+          new Types.ObjectId().toString(),
+        ),
       ).rejects.toThrow('File not found');
     });
   });
-
 
   describe('deleteFile', () => {
     it('should delete file and remove from bucket', async () => {
       // folder chain
       const parentA = await folderModel.create({ name: 'packs' });
-      const parentB = await folderModel.create({ name: 'bass', parent: parentA._id });
+      const parentB = await folderModel.create({
+        name: 'bass',
+        parent: parentA._id,
+      });
 
       const file = await fileModel.create({
         name: 'sound.wav',
@@ -137,13 +146,15 @@ describe('FileService', () => {
         deleted: true,
         key: 'packs/bass/sound.wav',
         commandResult: {
-            $metadata: {},
-        }, 
+          $metadata: {},
+        },
       });
 
       const result = await service.deleteFile(file.id as string);
 
-      expect(bucketServiceMock.deleteFile).toHaveBeenCalledWith('packs/bass/sound.wav');
+      expect(bucketServiceMock.deleteFile).toHaveBeenCalledWith(
+        'packs/bass/sound.wav',
+      );
       expect(result).toEqual({
         deleted: true,
         key: 'packs/bass/sound.wav',
@@ -160,7 +171,6 @@ describe('FileService', () => {
     });
   });
 
-
   describe('getFileById', () => {
     it('should return an existing file', async () => {
       const file = await fileModel.create({ name: 'a.txt', url: 'url' });
@@ -170,7 +180,6 @@ describe('FileService', () => {
       expect(found?.id).toBe(file.id);
     });
   });
-
 
   describe('buildFilePath', () => {
     it('should return plain file name for root file', async () => {
@@ -196,7 +205,6 @@ describe('FileService', () => {
     });
   });
 
-
   describe('getFilesByParent', () => {
     it('should return all files for given parent folder', async () => {
       const folder = await folderModel.create({ name: 'folder' });
@@ -206,7 +214,9 @@ describe('FileService', () => {
         { name: '2.wav', url: 'u', parent: folder._id },
       ]);
 
-      const files = await service.getFilesByParent(folder._id as Types.ObjectId);
+      const files = await service.getFilesByParent(
+        folder._id as Types.ObjectId,
+      );
 
       expect(files.length).toBe(2);
       expect(files[0].parent?.toString()).toBe(folder.id);

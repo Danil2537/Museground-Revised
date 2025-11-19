@@ -21,11 +21,15 @@ describe('PresetController (e2e)', () => {
   let presetModel: Model<Preset>;
 
   const mockFileService = {
-    uploadFile: jest.fn().mockImplementation((file) =>
-      Promise.resolve({ _id: 'fileid', url: `mock://files/${file.key}` }),
-    ),
+    uploadFile: jest
+      .fn()
+      .mockImplementation((file) =>
+        Promise.resolve({ _id: 'fileid', url: `mock://files/${file.key}` }),
+      ),
     deleteFile: jest.fn().mockResolvedValue(true),
-    getFileById: jest.fn().mockResolvedValue({ _id: 'fileid', url: 'mock://files/file' }),
+    getFileById: jest
+      .fn()
+      .mockResolvedValue({ _id: 'fileid', url: 'mock://files/file' }),
     downloadFile: jest.fn().mockReturnValue({ pipe: jest.fn() }),
   };
 

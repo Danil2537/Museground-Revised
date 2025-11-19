@@ -45,7 +45,8 @@ export class UsersService {
     return this.userModel.findOne({ email }).exec();
   }
 
-  async saveItem(saveItemDto: SaveItemDTO) { //TODO: add check if saved item is existing
+  async saveItem(saveItemDto: SaveItemDTO) {
+    //TODO: add check if saved item is existing
     await new this.savedItemModel(saveItemDto).save();
     const user = await this.userModel.findById(saveItemDto.userId).exec();
     if (user) {

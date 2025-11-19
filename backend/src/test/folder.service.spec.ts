@@ -52,7 +52,10 @@ describe('FolderService (with in-memory MongoDB)', () => {
   });
 
   it('should create a folder', async () => {
-    (bucketServiceMock.createFolder as jest.Mock).mockResolvedValue({ key: 'bass/', url: 'url' });
+    (bucketServiceMock.createFolder as jest.Mock).mockResolvedValue({
+      key: 'bass/',
+      url: 'url',
+    });
 
     const folder = await service.createFolder({ name: 'bass' });
 
@@ -63,9 +66,15 @@ describe('FolderService (with in-memory MongoDB)', () => {
   it('should create a nested folder', async () => {
     const parent = await folderModel.create({ name: 'packs' });
 
-    (bucketServiceMock.createFolder as jest.Mock).mockResolvedValue({ key: 'packs/synths/', url: 'url' });
+    (bucketServiceMock.createFolder as jest.Mock).mockResolvedValue({
+      key: 'packs/synths/',
+      url: 'url',
+    });
 
-    const folder = await service.createFolder({ name: 'synths', parent: parent._id.toString() });
+    const folder = await service.createFolder({
+      name: 'synths',
+      parent: parent._id.toString(),
+    });
 
     expect(folder.name).toBe('synths');
     expect(bucketServiceMock.createFolder).toHaveBeenCalledWith('packs/synths');
@@ -74,9 +83,15 @@ describe('FolderService (with in-memory MongoDB)', () => {
   it('should get folder with files and children', async () => {
     const parent = await folderModel.create({ name: 'packs' });
     await folderModel.create({ name: 'sub', parent: parent._id });
-    await fileModel.create({ name: 'file.wav', url: 'url', parent: parent._id });
+    await fileModel.create({
+      name: 'file.wav',
+      url: 'url',
+      parent: parent._id,
+    });
 
-    const result = await service.getFolderWithChildrenAndFiles(parent._id as Types.ObjectId);
+    const result = await service.getFolderWithChildrenAndFiles(
+      parent._id as Types.ObjectId,
+    );
 
     expect(result.files).toHaveLength(1);
     expect(result.children).toHaveLength(1);

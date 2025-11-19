@@ -34,39 +34,70 @@ describe('PackController (e2e)', () => {
       }),
     ),
     deleteFile: jest.fn().mockResolvedValue(true),
-    getFileById: jest.fn().mockImplementation((id) =>
-      Promise.resolve({ _id: id, name: `mock_${id}`, save: jest.fn() }),
-    ),
-    buildFilePath: jest.fn().mockImplementation((file) => Promise.resolve(file.name)),
+    getFileById: jest
+      .fn()
+      .mockImplementation((id) =>
+        Promise.resolve({ _id: id, name: `mock_${id}`, save: jest.fn() }),
+      ),
+    buildFilePath: jest
+      .fn()
+      .mockImplementation((file) => Promise.resolve(file.name)),
     downloadFile: jest.fn().mockImplementation(() => {
-        const stream = new Readable();
-        stream._read = () => {}; // no-op
-        stream.push('mock file content'); // push some data
-        stream.push(null); // end the stream
-        return stream;
-      }),
-      
+      const stream = new Readable();
+      stream._read = () => {}; // no-op
+      stream.push('mock file content'); // push some data
+      stream.push(null); // end the stream
+      return stream;
+    }),
+
     getFilesByParent: jest.fn().mockResolvedValue([]),
   };
-  
 
   const rootFolderId = new Types.ObjectId().toHexString();
   const subFolderId = new Types.ObjectId().toHexString();
   const mockFolderService = {
-    createFolder: jest.fn().mockImplementation((dto) =>
-      Promise.resolve({ _id: dto.parent ? subFolderId : rootFolderId, name: dto.name, parent: dto.parent }),
-    ),
-    getFolderById: jest.fn().mockImplementation((id) =>
-      Promise.resolve({ _id: id, name: `folder_${id}` }),
-    ),
+    createFolder: jest
+      .fn()
+      .mockImplementation((dto) =>
+        Promise.resolve({
+          _id: dto.parent ? subFolderId : rootFolderId,
+          name: dto.name,
+          parent: dto.parent,
+        }),
+      ),
+    getFolderById: jest
+      .fn()
+      .mockImplementation((id) =>
+        Promise.resolve({ _id: id, name: `folder_${id}` }),
+      ),
     getSubfolders: jest.fn().mockImplementation((parentId) => {
-      if (parentId === rootFolderId) return Promise.resolve([{ _id: subFolderId, name: 'SubFolder' }]);
+      if (parentId === rootFolderId)
+        return Promise.resolve([{ _id: subFolderId, name: 'SubFolder' }]);
       return Promise.resolve([]);
     }),
     getFolderWithChildrenAndFiles: jest.fn().mockImplementation((id) => {
-      if (id === rootFolderId) return Promise.resolve({ _id: rootFolderId, name: 'root', children: [{ _id: subFolderId, name: 'SubFolder', children: [], files: [] }], files: [] });
-      if (id === subFolderId) return Promise.resolve({ _id: subFolderId, name: 'SubFolder', children: [], files: [] });
-      return Promise.resolve({ _id: id, name: 'unknown', children: [], files: [] });
+      if (id === rootFolderId)
+        return Promise.resolve({
+          _id: rootFolderId,
+          name: 'root',
+          children: [
+            { _id: subFolderId, name: 'SubFolder', children: [], files: [] },
+          ],
+          files: [],
+        });
+      if (id === subFolderId)
+        return Promise.resolve({
+          _id: subFolderId,
+          name: 'SubFolder',
+          children: [],
+          files: [],
+        });
+      return Promise.resolve({
+        _id: id,
+        name: 'unknown',
+        children: [],
+        files: [],
+      });
     }),
     findChildren: jest.fn().mockResolvedValue([]),
     deleteFolder: jest.fn().mockResolvedValue(true),
@@ -75,16 +106,16 @@ describe('PackController (e2e)', () => {
 
   const mockMaterialService = {
     create: jest.fn().mockImplementation((dto) => {
-        const pack = {
-          _id: new Types.ObjectId().toHexString(),
-          name: dto.name,
-          rootFolder: rootFolderId,
-          save: jest.fn().mockImplementation(function() {
-            return Promise.resolve(this); // return the pack itself
-          }),
-        };
-        return Promise.resolve(pack);
-      }),
+      const pack = {
+        _id: new Types.ObjectId().toHexString(),
+        name: dto.name,
+        rootFolder: rootFolderId,
+        save: jest.fn().mockImplementation(function () {
+          return Promise.resolve(this); // return the pack itself
+        }),
+      };
+      return Promise.resolve(pack);
+    }),
     findOne: jest.fn().mockImplementation((id) =>
       Promise.resolve({
         _id: id,
@@ -93,27 +124,28 @@ describe('PackController (e2e)', () => {
       }),
     ),
     delete: jest.fn().mockImplementation((id) => {
-        return Promise.resolve({
-          _id: id, 
-          name: 'My Pack',
-        });
-      }),
+      return Promise.resolve({
+        _id: id,
+        name: 'My Pack',
+      });
+    }),
     findByConditions: jest.fn().mockImplementation((filter) => {
-        if (filter.authorId === '507f1f77bcf86cd799439011') {
-          return Promise.resolve([
-            {
-              _id: new Types.ObjectId().toHexString(),
-              name: 'My Pack',
-              rootFolder: rootFolderId,
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-              toObject: function () { return this; }, // for controller mapping
-            },
-          ]);
-        }
-        return Promise.resolve([]);
-      }),
+      if (filter.authorId === '507f1f77bcf86cd799439011') {
+        return Promise.resolve([
+          {
+            _id: new Types.ObjectId().toHexString(),
+            name: 'My Pack',
+            rootFolder: rootFolderId,
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+            toObject: function () {
+              return this;
+            }, // for controller mapping
+          },
+        ]);
+      }
+      return Promise.resolve([]);
+    }),
   };
-
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
@@ -225,7 +257,7 @@ describe('PackController (e2e)', () => {
       .get(`/packs/download-folder/${rootFolderId}`)
       .expect(200);
 
-      const deletePackRes = await request(app.getHttpServer())
+    const deletePackRes = await request(app.getHttpServer())
       .delete('/packs/delete-pack')
       .send({ packId })
       .expect(200);

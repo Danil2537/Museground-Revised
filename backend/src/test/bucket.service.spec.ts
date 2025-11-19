@@ -56,7 +56,9 @@ describe('BucketService', () => {
 
     it('should throw if env variables missing', () => {
       configService.get = jest.fn().mockReturnValue(null);
-      expect(() => new BucketService(configService)).toThrow(BadRequestException);
+      expect(() => new BucketService(configService)).toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -64,7 +66,11 @@ describe('BucketService', () => {
     it('should upload file and return url', async () => {
       s3Client.send.mockResolvedValue({});
 
-      const result = await service.uploadFile('file.txt', Buffer.from('abc'), 'text/plain');
+      const result = await service.uploadFile(
+        'file.txt',
+        Buffer.from('abc'),
+        'text/plain',
+      );
 
       expect(s3Client.send).toHaveBeenCalledWith(expect.any(PutObjectCommand));
       expect(result).toEqual({
@@ -80,7 +86,9 @@ describe('BucketService', () => {
 
       const result = await service.deleteFileByKey('aaa.png');
 
-      expect(s3Client.send).toHaveBeenCalledWith(expect.any(DeleteObjectCommand));
+      expect(s3Client.send).toHaveBeenCalledWith(
+        expect.any(DeleteObjectCommand),
+      );
       expect(result).toEqual({ deleted: true, key: 'aaa.png' });
     });
   });
@@ -109,8 +117,14 @@ describe('BucketService', () => {
 
       const res = await service.deleteFolder('folder');
 
-      expect(s3Client.send).toHaveBeenNthCalledWith(1, expect.any(ListObjectsV2Command));
-      expect(s3Client.send).toHaveBeenNthCalledWith(2, expect.any(DeleteObjectsCommand));
+      expect(s3Client.send).toHaveBeenNthCalledWith(
+        1,
+        expect.any(ListObjectsV2Command),
+      );
+      expect(s3Client.send).toHaveBeenNthCalledWith(
+        2,
+        expect.any(DeleteObjectsCommand),
+      );
       expect(res).toEqual({ deleted: true, prefix: 'folder/' });
     });
 

@@ -18,15 +18,14 @@ describe('SampleController (e2e)', () => {
   let app: INestApplication;
   let mongod: MongoMemoryServer;
   let sampleModel: Model<Sample>;
-  
 
   beforeAll(async () => {
     mongod = await MongoMemoryServer.create();
     const uri = mongod.getUri();
-  
+
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({ isGlobal: true }), 
+        ConfigModule.forRoot({ isGlobal: true }),
         MongooseModule.forRoot(uri),
         MongooseModule.forFeature([
           { name: Sample.name, schema: SampleSchema },
@@ -37,11 +36,11 @@ describe('SampleController (e2e)', () => {
         MaterialModule.register({ modelName: 'Sample', schema: SampleSchema }),
       ],
     }).compile();
-  
+
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
-  
+
     sampleModel = moduleFixture.get<Model<Sample>>(getModelToken(Sample.name));
   });
 
@@ -63,7 +62,7 @@ describe('SampleController (e2e)', () => {
       .attach('file', Buffer.from('fake audio data'), 'sample.mp3')
       .expect(201);
 
-    const sampleId:string = createRes.body._id as string;
+    const sampleId: string = createRes.body._id as string;
     expect(createRes.body.name).toBe('Test Sample');
     expect(createRes.body.fileUrl).toBeDefined();
     expect(createRes.body.fileId).toBeDefined();
