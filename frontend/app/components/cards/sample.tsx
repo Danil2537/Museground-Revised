@@ -155,26 +155,26 @@ export default function SampleCard({
   if (loading) return <p>Loading...</p>;
 
   return (
-    <tr className="hover:bg-zinc-800 transition-colors">
-      {" "}
+    <tr className={`transition-colors ${(user && showIsCreated) ? 'bg-blue-800 hover:bg-blue-700' : 'bg-zinc-900 hover:bg-zinc-800'}`}>
+      
       <td className="px-4 py-3">
         <button
           onClick={handlePlayPause}
           aria-label={isPlaying ? "Pause" : "Play"}
           className="text-cyan-400 hover:text-sky-500 transition"
         >
-          {" "}
+          
           <span className="material-symbols-outlined text-3xl">
-            {isPlaying ? "pause" : "play_arrow"}{" "}
-          </span>{" "}
-        </button>{" "}
-      </td>{" "}
+            {isPlaying ? "pause" : "play_arrow"}
+          </span>
+        </button>
+      </td>
       <td className="px-4 py-3 w-[250px]">
-        {" "}
-        <div ref={waveformRef} className="w-full"></div>{" "}
-      </td>{" "}
+        
+        <div ref={waveformRef} className="w-full"></div>
+      </td>
       <td className="px-4 py-3">
-        {" "}
+        
         <input
           type="range"
           min="0.01"
@@ -183,8 +183,8 @@ export default function SampleCard({
           value={loudness}
           onChange={handleLoudnessChange}
           className="w-full accent-cyan-400"
-        />{" "}
-      </td>{" "}
+        />
+      </td>
       <td className="px-4 py-3">
         <input
           type="range"
@@ -202,55 +202,55 @@ export default function SampleCard({
             wave?.setPlaybackRate(1.0, false);
           }}
           className="w-full accent-cyan-400"
-        />{" "}
-      </td>{" "}
-      <td className="px-4 py-3">{sample.name}</td>{" "}
-      <td className="px-4 py-3">{sample.key}</td>{" "}
-      <td className="px-4 py-3">{sample.BPM}</td>{" "}
-      <td className="px-4 py-3">{sample.genres}</td>{" "}
-      <td className="px-4 py-3">{sample.instruments}</td>{" "}
-      <td className="px-4 py-3">{sample.authorName}</td>{" "}
+        />
+      </td>
+      <td className="px-4 py-3">{sample.name}</td>
+      <td className="px-4 py-3">{sample.key}</td>
+      <td className="px-4 py-3">{sample.BPM}</td>
+      <td className="px-4 py-3">{sample.genres}</td>
+      <td className="px-4 py-3">{sample.instruments}</td>
+      <td className="px-4 py-3">{(user && showIsCreated)? 'You' : sample.authorName}</td>
       <td className="px-4 py-3">
         {user && !showIsSaved && (
           <button
             onClick={handleSave}
             className="w-full py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-500 transition disabled:opacity-50"
           >
-            Save{" "}
+            Save
           </button>
         )}
         {user && showIsSaved && (
           <div>
-            {" "}
+            
             <button
               onClick={handleDeleteSave}
               className="w-full py-2 rounded-lg bg-cyan-400 text-white font-semibold hover:bg-cyan-500 transition disabled:opacity-50"
             >
-              Saved{" "}
-            </button>{" "}
+              Saved
+            </button>
             <button
               onClick={handleDownloadSample}
               className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition disabled:opacity-50"
             >
-              Download{" "}
-            </button>{" "}
+              Download
+            </button>
           </div>
         )}
         {user && showIsCreated && (
           <div className="flex">
-            {" "}
-            <span className="w-1/2 py-2 rounded-lg text-center bg-violet-400 text-white font-semibold transition disabled:opacity-50">
-              Created By You{" "}
-            </span>{" "}
+            
+            {/* <span className="w-1/2 py-2 rounded-lg text-center bg-violet-400 text-white font-semibold transition disabled:opacity-50">
+              Created By You
+            </span> */}
             <button
               onClick={handleDelete}
-              className="w-1/2 py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition disabled:opacity-50"
+              className="w-full py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition disabled:opacity-50"
             >
-              Delete{" "}
-            </button>{" "}
+              Delete
+            </button>
           </div>
-        )}{" "}
-      </td>{" "}
+        )}
+      </td>
     </tr>
   );
 }

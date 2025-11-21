@@ -186,7 +186,8 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
   if (!user) return null;
 
   return (
-    <div className="bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-cyan-400 transition-colors p-4">
+    <div className={`rounded-xl shadow-lg border border-zinc-800 hover:border-cyan-400 transition-colors p-4
+    ${(user && showIsCreated) ? 'bg-blue-800 hover:bg-blue-700' : 'bg-zinc-900 hover:bg-zinc-800'}`}>
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-lg font-semibold text-gray-100 truncate">
           {pack.name}
@@ -197,7 +198,7 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
           }
           className="text-cyan-400 hover:underline"
         >
-          @{pack.authorName ?? pack.authorId}
+        @{(user && showIsCreated) ? 'You' : pack.authorName ?? pack.authorId}
         </button>
       </div>
 
@@ -229,12 +230,12 @@ export default function PackCard({ pack, onFilterClick }: PackCardProps) {
         )}
         {showIsCreated && (
           <div className="flex">
-            <span className="w-1/2 py-2 rounded-lg text-center  bg-violet-400 text-white font-semibold  transition disabled:opacity-50">
+            {/* <span className="w-1/2 py-2 rounded-lg text-center  bg-violet-400 text-white font-semibold  transition disabled:opacity-50">
               Created By You
-            </span>
+            </span> */}
             <button
               onClick={handleDeletePack}
-              className="w-1/2 py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition disabled:opacity-50"
+              className="w-full py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition disabled:opacity-50"
             >
               Delete
             </button>

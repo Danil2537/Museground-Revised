@@ -205,7 +205,8 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
   };
 
   return (
-    <div className="bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-cyan-400 transition-colors flex flex-col justify-between p-4">
+    <div className={`rounded-xl shadow-lg border border-zinc-800 hover:border-cyan-400 transition-colors flex flex-col justify-between p-4
+        ${(user && showIsCreated) ? 'bg-blue-800 hover:bg-blue-700' : 'bg-zinc-900 hover:bg-zinc-800'}`}>
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={handlePlayPause}
@@ -255,7 +256,7 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
           }
           className="text-cyan-300 font-medium hover:underline"
         >
-          @{preset.authorName ?? preset.authorId}
+          @{(user && showIsCreated) ? 'You' : preset.authorName ?? preset.authorId}
         </button>
       </div>
 
@@ -288,12 +289,12 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
 
         {showIsCreated && (
           <div className="flex">
-            <span className="w-1/2 py-2 rounded-lg text-center bg-violet-400 text-white font-semibold">
+            {/* <span className="w-1/2 py-2 rounded-lg text-center bg-violet-400 text-white font-semibold">
               Created by You
-            </span>
+            </span> */}
             <button
               onClick={handleDelete}
-              className="w-1/2 py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition"
+              className="w-full py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition"
             >
               Delete
             </button>
