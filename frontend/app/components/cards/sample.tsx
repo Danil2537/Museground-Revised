@@ -2,8 +2,7 @@
 
 import { BACKEND_URL } from "@/app/constants";
 import { useAuth } from "@/app/context/AuthContext";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import WaveSurfer from "wavesurfer.js";
 
 interface Sample {
@@ -33,17 +32,9 @@ export default function SampleCard({
   const [showIsSaved, setShowIsSaved] = useState(false);
   const [showIsCreated, setShowIsCreated] = useState(false);
   const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [loading, user, router]);
 
   useEffect(() => {
     if (!waveformRef.current) return;
-
     let ws: WaveSurfer | null = null;
     let isCancelled = false;
 
@@ -55,27 +46,25 @@ export default function SampleCard({
           progressColor: "#0070FF",
           height: 80,
         });
-
         await ws.load(sample.fileUrl);
-
         if (isCancelled) {
           ws.destroy();
           return;
         }
-
         ws.on("play", () => setIsPlaying(true));
         ws.on("pause", () => setIsPlaying(false));
-
         setWave(ws);
 
-        const isSavedRes = await fetch(
-          `${BACKEND_URL}/saved-items/check-saved/${user?._id}/Sample/${sample._id}`,
-        );
-        const isSaved = await isSavedRes.json();
-        //alert(isSaved);
-        setShowIsSaved(isSaved);
-        if (sample.authorId == user?._id) {
-          setShowIsCreated(true);
+        // Only fetch saved/created status if user is logged in
+        if (user) {
+          const isSavedRes = await fetch(
+            `${BACKEND_URL}/saved-items/check-saved/${user._id}/Sample/${sample._id}`,
+          );
+          if (isSavedRes.ok) {
+            const isSaved = await isSavedRes.json();
+            setShowIsSaved(isSaved);
+            setShowIsCreated(sample.authorId === user._id);
+          }
         }
       } catch (err) {
         console.error("WaveSurfer init error:", err);
@@ -86,26 +75,16 @@ export default function SampleCard({
 
     return () => {
       isCancelled = true;
-      if (ws) {
-        try {
-          ws.destroy();
-        } catch (err) {
-          console.warn("WaveSurfer destroy error:", err);
-        }
-      }
+      if (ws) ws.destroy();
     };
-  }, [sample._id, sample.authorId, sample.fileUrl, user?._id]);
+  }, [sample._id, sample.authorId, sample.fileUrl, user]);
 
-  const handlePlayPause = () => {
-    wave?.playPause();
-  };
-
+  const handlePlayPause = () => wave?.playPause();
   const handleLoudnessChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setLoudness(newVolume);
-    wave?.setVolume(loudness);
+    wave?.setVolume(newVolume);
   };
-
   const handlePitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPitch = parseFloat(e.target.value);
     setPitch(newPitch);
@@ -113,25 +92,18 @@ export default function SampleCard({
   };
 
   const handleSave = async () => {
-    const saveSampleDto = {
-      userId: user?._id,
-      itemType: "Sample",
-      itemId: sample._id,
-    };
-    const url = `${BACKEND_URL}/users/save-item`;
-    const res = await fetch(url, {
+    if (!user) return;
+    const res = await fetch(`${BACKEND_URL}/users/save-item`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify(saveSampleDto),
+      body: JSON.stringify({
+        userId: user._id,
+        itemType: "Sample",
+        itemId: sample._id,
+      }),
     });
-
-    await res.json();
-    if (res.ok) {
-      //alert("Un-saved succesfully!");
-      setShowIsSaved(true);
-    }
-    //alert(JSON.stringify(data));
+    if (res.ok) setShowIsSaved(true);
   };
 
   const handleDeleteSave = async () => {
@@ -145,41 +117,18 @@ export default function SampleCard({
         itemId: sample._id,
       }),
     });
-    if (res.ok) {
-      //alert("Un-saved succesfully!");
-      setShowIsSaved(false);
-    }
+    if (res.ok) setShowIsSaved(false);
   };
+
   const handleDelete = async () => {
-    if (!user || sample.authorId !== user._id) {
-      alert("You can only delete your own samples.");
-      return;
-    }
-
-    try {
-      const url = `${BACKEND_URL}/samples/delete/${sample._id}`;
-      const res = await fetch(url, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(errorText || "Failed to delete the sample.");
-      }
-
-      await res.json();
-      //console.log("Delete result:", result);
-
-      //alert(`Sample "${sample.name}" was successfully deleted.`);
-      // Option 1: refresh the page
-      router.refresh();
-      // Option 2 (alternative): remove from UI state if parent manages the list
+    if (!user || sample.authorId !== user._id) return;
+    const res = await fetch(`${BACKEND_URL}/samples/delete/${sample._id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+    if (res.ok) {
       onDelete?.(sample._id);
-    } catch (err) {
-      console.error("Error deleting sample:", err);
-      alert("Failed to delete sample. See console for details.");
     }
   };
 
@@ -189,7 +138,6 @@ export default function SampleCard({
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to download sample");
-
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -201,29 +149,32 @@ export default function SampleCard({
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error("Download error:", err);
-      alert("Failed to download sample.");
     }
   };
+
   if (loading) return <p>Loading...</p>;
-  if (!user) return null;
 
   return (
     <tr className="hover:bg-zinc-800 transition-colors">
+      {" "}
       <td className="px-4 py-3">
         <button
           onClick={handlePlayPause}
           aria-label={isPlaying ? "Pause" : "Play"}
           className="text-cyan-400 hover:text-sky-500 transition"
         >
+          {" "}
           <span className="material-symbols-outlined text-3xl">
-            {isPlaying ? "pause" : "play_arrow"}
-          </span>
-        </button>
-      </td>
+            {isPlaying ? "pause" : "play_arrow"}{" "}
+          </span>{" "}
+        </button>{" "}
+      </td>{" "}
       <td className="px-4 py-3 w-[250px]">
-        <div ref={waveformRef} className="w-full"></div>
-      </td>
+        {" "}
+        <div ref={waveformRef} className="w-full"></div>{" "}
+      </td>{" "}
       <td className="px-4 py-3">
+        {" "}
         <input
           type="range"
           min="0.01"
@@ -232,8 +183,8 @@ export default function SampleCard({
           value={loudness}
           onChange={handleLoudnessChange}
           className="w-full accent-cyan-400"
-        />
-      </td>
+        />{" "}
+      </td>{" "}
       <td className="px-4 py-3">
         <input
           type="range"
@@ -251,62 +202,55 @@ export default function SampleCard({
             wave?.setPlaybackRate(1.0, false);
           }}
           className="w-full accent-cyan-400"
-        />
-      </td>
+        />{" "}
+      </td>{" "}
+      <td className="px-4 py-3">{sample.name}</td>{" "}
+      <td className="px-4 py-3">{sample.key}</td>{" "}
+      <td className="px-4 py-3">{sample.BPM}</td>{" "}
+      <td className="px-4 py-3">{sample.genres}</td>{" "}
+      <td className="px-4 py-3">{sample.instruments}</td>{" "}
+      <td className="px-4 py-3">{sample.authorName}</td>{" "}
       <td className="px-4 py-3">
-        <span>{sample.name}</span>
-      </td>
-
-      <td className="px-4 py-3">{sample.key}</td>
-      <td className="px-4 py-3">{sample.BPM}</td>
-      <td className="px-4 py-3">{sample.genres}</td>
-      <td className="px-4 py-3">{sample.instruments}</td>
-      <td className="px-4 py-3">{sample.authorName}</td>
-      <td className="px-4 py-3">
-        {!showIsSaved && (
+        {user && !showIsSaved && (
           <button
             onClick={handleSave}
             className="w-full py-2 rounded-lg bg-green-600 text-white font-semibold hover:bg-green-500 transition disabled:opacity-50"
           >
-            Save
+            Save{" "}
           </button>
         )}
-        {showIsSaved == true && (
+        {user && showIsSaved && (
           <div>
+            {" "}
             <button
               onClick={handleDeleteSave}
-              className="w-full py-2 rounded-lg text-center  bg-cyan-400 text-white font-semibold hover:bg-cyan-500 transition disabled:opacity-50"
+              className="w-full py-2 rounded-lg bg-cyan-400 text-white font-semibold hover:bg-cyan-500 transition disabled:opacity-50"
             >
-              Saved
-            </button>
+              Saved{" "}
+            </button>{" "}
             <button
               onClick={handleDownloadSample}
               className="w-full py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-500 transition disabled:opacity-50"
             >
-              Download
-            </button>
+              Download{" "}
+            </button>{" "}
           </div>
         )}
-        {showIsCreated && (
+        {user && showIsCreated && (
           <div className="flex">
-            <span className="w-1/2 py-2 rounded-lg text-center  bg-violet-400 text-white font-semibold  transition disabled:opacity-50">
-              Created By You
-            </span>
+            {" "}
+            <span className="w-1/2 py-2 rounded-lg text-center bg-violet-400 text-white font-semibold transition disabled:opacity-50">
+              Created By You{" "}
+            </span>{" "}
             <button
               onClick={handleDelete}
               className="w-1/2 py-2 rounded-lg text-center bg-red-500 text-white font-semibold hover:bg-red-600 transition disabled:opacity-50"
             >
-              Delete
-            </button>
+              Delete{" "}
+            </button>{" "}
           </div>
-        )}
-        {/* <button
-          onClick={handleSave}
-          className="bg-cyan-400 text-shadow-white hover:bg-sky-500 hover:text-[#343a40] font-semibold rounded-lg px-3 py-1 transition"
-        >
-          Save
-        </button> */}
-      </td>
+        )}{" "}
+      </td>{" "}
     </tr>
   );
 }

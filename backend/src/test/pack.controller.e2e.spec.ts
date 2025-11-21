@@ -136,8 +136,8 @@ describe('PackController (e2e)', () => {
             _id: new Types.ObjectId().toHexString(),
             name: 'My Pack',
             rootFolder: rootFolderId,
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-return
             toObject: function () {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return
               return this;
             }, // for controller mapping
           },

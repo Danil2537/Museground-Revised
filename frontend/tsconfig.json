@@ -27,7 +27,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/tailwind.config.js"
+    "app/tailwind.config.js",
+    "tests/utils/codegen-auth.js",
+    "tests/utils/playwright.global.ts"
   ],
   "exclude": ["node_modules"]
 }

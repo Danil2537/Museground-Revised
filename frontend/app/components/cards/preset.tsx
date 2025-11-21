@@ -206,7 +206,6 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
 
   return (
     <div className="bg-zinc-900 rounded-xl shadow-lg border border-zinc-800 hover:border-cyan-400 transition-colors flex flex-col justify-between p-4">
-      {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={handlePlayPause}
@@ -220,7 +219,6 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
         </h2>
       </div>
 
-      {/* Metadata */}
       <div className="text-sm text-gray-400 space-y-1">
         {preset.vst && (
           <button
@@ -248,10 +246,8 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
         )}
       </div>
 
-      {/* Waveform */}
       <div ref={waveformRef} className="mt-3 rounded-md overflow-hidden" />
 
-      {/* Author */}
       <div className="flex items-center justify-between mt-3 text-sm text-gray-400">
         <button
           onClick={() =>
@@ -263,7 +259,6 @@ export default function PresetCard({ preset, onFilterClick }: PresetCardProps) {
         </button>
       </div>
 
-      {/* Action Buttons */}
       <div className="flex flex-col gap-2 mt-3">
         {!showIsSaved && (
           <button

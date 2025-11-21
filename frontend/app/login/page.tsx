@@ -32,7 +32,7 @@ export default function Login() {
       if (res.ok) {
         if (res.ok) {
           await refetchUser(); // ensures AuthProvider has user info
-          router.push("/profile");
+          router.push("/explore/samples");
         }
       } else {
         setError(data?.error ?? "Login failed");

@@ -2,7 +2,7 @@
 "use client";
 import SampleCard from "@/app/components/cards/sample";
 import Header from "@/app/components/header";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BACKEND_URL } from "@/app/constants";
 
 export default function ExploreSamplesPage() {
@@ -34,34 +34,44 @@ export default function ExploreSamplesPage() {
   };
 
   //const sortedResults =
-  setResults(
-    sortConfig
-      ? [...results].sort((a: any, b: any) => {
-          if (!sortConfig) return 0;
+  //   setResults(
+  //     sortConfig
+  //       ? [...results].sort((a: any, b: any) => {
+  //           if (!sortConfig) return 0;
 
-          const { key, direction } = sortConfig;
-          const aValue = a[key];
-          const bValue = b[key];
+  //           const { key, direction } = sortConfig;
+  //           const aValue = a[key];
+  //           const bValue = b[key];
 
-          // Handle missing values safely
-          if (aValue == null) return 1;
-          if (bValue == null) return -1;
+  //           // Handle missing values safely
+  //           if (aValue == null) return 1;
+  //           if (bValue == null) return -1;
 
-          // Handle numeric sort
-          if (typeof aValue === "number" && typeof bValue === "number") {
-            return direction === "asc" ? aValue - bValue : bValue - aValue;
-          }
+  //           // Handle numeric sort
+  //           if (typeof aValue === "number" && typeof bValue === "number") {
+  //             return direction === "asc" ? aValue - bValue : bValue - aValue;
+  //           }
 
-          // Fallback to string comparison
-          const aStr = String(aValue).toLowerCase();
-          const bStr = String(bValue).toLowerCase();
+  //           // Fallback to string comparison
+  //           const aStr = String(aValue).toLowerCase();
+  //           const bStr = String(bValue).toLowerCase();
 
-          if (aStr < bStr) return direction === "asc" ? -1 : 1;
-          if (aStr > bStr) return direction === "asc" ? 1 : -1;
-          return 0;
-        })
-      : results,
-  );
+  //           if (aStr < bStr) return direction === "asc" ? -1 : 1;
+  //           if (aStr > bStr) return direction === "asc" ? 1 : -1;
+  //           return 0;
+  //         })
+  //       : results,
+  //   );
+
+  const sortedResults = useMemo(() => {
+    if (!sortConfig) return results;
+
+    const { key, direction } = sortConfig;
+    return [...results].sort((a: any, b: any) => {
+      const dir = direction === "asc" ? 1 : -1;
+      return a[key] > b[key] ? dir : -dir;
+    });
+  }, [results, sortConfig]);
 
   const handleSort = (key: string) => {
     setSortConfig((prev) => {
@@ -224,7 +234,7 @@ export default function ExploreSamplesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
-                {results.map((sample: any) => (
+                {sortedResults.map((sample: any) => (
                   <SampleCard
                     key={sample._id}
                     sample={sample}
